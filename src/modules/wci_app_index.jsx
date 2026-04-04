@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const B = {
   primary: "#1A1A1A", accent: "#F5C518", surface: "#FFFFFF", surfaceHover: "#F8F8F6", border: "#E8E6E1",
@@ -93,6 +94,7 @@ export default function WciAppIndex() {
   const [selectedGuide, setSelectedGuide] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => { function c() { setIsMobile(window.innerWidth < 900); } c(); window.addEventListener("resize", c); return () => window.removeEventListener("resize", c); }, []);
 
   const allMods = MODULES.flatMap(c => c.items);
@@ -117,6 +119,25 @@ export default function WciAppIndex() {
           {n?.validate && <Card style={{ marginBottom: 14, border: `1px solid ${B.warning}30` }}><h4 style={{ fontSize: 14, fontWeight: 700, color: B.warning, marginBottom: 10 }}>❓ Preguntas para validar</h4>{n.validate.map((q, i) => <div key={i} style={{ display: "flex", gap: 8, padding: "8px 0", borderBottom: i < n.validate.length - 1 ? `1px solid ${B.border}` : "none" }}><span style={{ color: B.warning, fontWeight: 700 }}>{i + 1}.</span><span style={{ fontSize: 13, lineHeight: 1.5 }}>{q}</span></div>)}</Card>}
           {n?.decision && <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>🏗️ Decisión de diseño</h4><div style={{ fontSize: 13, lineHeight: 1.5 }}>{n.decision}</div></Card>}
           {n?.roles && <Card><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>👥 Roles</h4><div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{n.roles.map((r, i) => <Badge key={i} color={B.text} bg={B.surfaceHover}>{r}</Badge>)}</div></Card>}
+          <button
+            type="button"
+            onClick={() => navigate("/" + selectedModule.replaceAll("_", "-"))}
+            style={{
+              width: "100%",
+              marginTop: 16,
+              padding: 16,
+              borderRadius: 12,
+              border: "none",
+              cursor: "pointer",
+              fontFamily: font,
+              fontSize: 16,
+              fontWeight: 800,
+              background: "#F5C518",
+              color: "#000",
+            }}
+          >
+            🚀 Abrir maqueta interactiva
+          </button>
         </main>
       </div>
     );
