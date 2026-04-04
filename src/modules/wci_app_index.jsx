@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+
+const LS_REVIEWER = "wci_reviewer_name";
 
 const B = {
   primary: "#1A1A1A", accent: "#F5C518", surface: "#FFFFFF", surfaceHover: "#F8F8F6", border: "#E8E6E1",
@@ -89,63 +92,289 @@ const MODULES = [
   ]},
 ];
 
+function responseGlyph(response) {
+  if (response === "si") return "✓";
+  if (response === "no") return "✗";
+  return "~";
+}
+
+function ReviewerNameModal({ onPick, showOther, setShowOther, otherDraft, setOtherDraft, onSaveOther, font, B, Card }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(26,26,26,0.5)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, fontFamily: font }}>
+      <Card style={{ maxWidth: 380, width: "100%", padding: "24px 22px" }}>
+        <div style={{ fontSize: 17, fontWeight: 800, marginBottom: 16, color: B.text }}>¿Quién eres?</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <button type="button" onClick={() => onPick("Nacho")} style={{ padding: "12px 16px", borderRadius: 10, border: `1px solid ${B.border}`, background: B.surfaceHover, cursor: "pointer", fontFamily: font, fontSize: 15, fontWeight: 700 }}>Nacho</button>
+          <button type="button" onClick={() => onPick("Yefersson")} style={{ padding: "12px 16px", borderRadius: 10, border: `1px solid ${B.border}`, background: B.surfaceHover, cursor: "pointer", fontFamily: font, fontSize: 15, fontWeight: 700 }}>Yefersson</button>
+          {!showOther ? (
+            <button type="button" onClick={() => setShowOther(true)} style={{ padding: "12px 16px", borderRadius: 10, border: `1px dashed ${B.border}`, background: B.surface, cursor: "pointer", fontFamily: font, fontSize: 15, fontWeight: 600, color: B.textMuted }}>Otro</button>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <input value={otherDraft} onChange={e => setOtherDraft(e.target.value)} placeholder="Tu nombre" style={{ padding: "10px 12px", borderRadius: 8, border: `1px solid ${B.border}`, fontFamily: font, fontSize: 14 }} />
+              <button type="button" onClick={onSaveOther} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: B.primary, color: B.accent, cursor: "pointer", fontFamily: font, fontSize: 14, fontWeight: 700 }}>Continuar</button>
+            </div>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function ModuleDetailView({ selectedModule, mod, n, reviewerName, onBack, navigate, font, B, Card, Badge }) {
+  const [feedbackRows, setFeedbackRows] = useState([]);
+  const [generalComments, setGeneralComments] = useState([]);
+  const [questionDrafts, setQuestionDrafts] = useState({});
+  const [generalDraft, setGeneralDraft] = useState("");
+  const [loadingFb, setLoadingFb] = useState(true);
+  const [fbError, setFbError] = useState(null);
+  const [savingGeneral, setSavingGeneral] = useState(false);
+
+  const loadModuleFeedback = useCallback(async () => {
+    setLoadingFb(true);
+    setFbError(null);
+    const [fbRes, gcRes] = await Promise.all([
+      supabase.from("wci_review_feedback").select("*").eq("module_id", selectedModule),
+      supabase.from("wci_review_comments").select("*").eq("module_id", selectedModule).order("created_at", { ascending: false }),
+    ]);
+    if (fbRes.error) setFbError(fbRes.error.message);
+    else setFeedbackRows(fbRes.data || []);
+    if (!fbRes.error && gcRes.error) setFbError(gcRes.error.message);
+    if (!gcRes.error) setGeneralComments(gcRes.data || []);
+    setLoadingFb(false);
+  }, [selectedModule]);
+
+  useEffect(() => { loadModuleFeedback(); }, [loadModuleFeedback]);
+
+  const feedbackForIndex = i => feedbackRows.filter(r => r.question_index === i);
+
+  async function saveQuestionResponse(i, response) {
+    if (!reviewerName) return;
+    const commentText = (questionDrafts[i] || "").trim();
+    const { error } = await supabase.from("wci_review_feedback").upsert(
+      {
+        module_id: selectedModule,
+        question_index: i,
+        reviewer_name: reviewerName,
+        response,
+        comment: commentText || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "module_id,question_index,reviewer_name" }
+    );
+    if (error) setFbError(error.message);
+    else await loadModuleFeedback();
+  }
+
+  async function submitGeneralComment() {
+    const text = generalDraft.trim();
+    if (!text || !reviewerName) return;
+    setSavingGeneral(true);
+    setFbError(null);
+    const { error } = await supabase.from("wci_review_comments").insert({
+      module_id: selectedModule,
+      reviewer_name: reviewerName,
+      comment: text,
+    });
+    setSavingGeneral(false);
+    if (error) setFbError(error.message);
+    else {
+      setGeneralDraft("");
+      await loadModuleFeedback();
+    }
+  }
+
+  const btnCompact = { padding: "4px 8px", fontSize: 11, fontWeight: 700, borderRadius: 6, border: "none", cursor: "pointer", fontFamily: font, whiteSpace: "nowrap" };
+
+  return (
+    <div style={{ fontFamily: font, background: "#F5F4F0", minHeight: "100vh" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style>
+      <header style={{ background: B.surface, borderBottom: `1px solid ${B.border}`, padding: "0 24px", height: 52, display: "flex", alignItems: "center", gap: 12 }}>
+        <button type="button" onClick={onBack} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 16, padding: "4px 8px", fontFamily: font, color: B.textMuted }}>← Volver</button>
+        <span style={{ fontSize: 24 }}>{mod?.icon}</span>
+        <div style={{ fontSize: 16, fontWeight: 700 }}>{mod?.name}</div>
+      </header>
+      <main style={{ padding: "20px 32px", maxWidth: 900, margin: "0 auto" }}>
+        <Card style={{ background: `${B.accent}08`, border: `1px solid ${B.accent}30`, marginBottom: 14 }}>
+          <div style={{ display: "flex", gap: 10 }}><span style={{ fontSize: 20 }}>🧪</span><div><div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Proof of Concept — datos de ejemplo</div><div style={{ fontSize: 13, color: B.textMuted, lineHeight: 1.5 }}>{n?.poc}</div></div></div>
+        </Card>
+        <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>¿Qué es?</h4><div style={{ fontSize: 13, lineHeight: 1.6 }}>{n?.what}</div></Card>
+        <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Pantallas</h4><div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{mod?.tabs?.map((t, i) => <div key={i} style={{ padding: "8px 14px", background: B.surfaceHover, borderRadius: 8, fontSize: 13, fontWeight: 600, border: `1px solid ${B.border}` }}>{t}</div>)}</div></Card>
+        {n?.validate && (
+          <Card style={{ marginBottom: 14, border: `1px solid ${B.warning}30` }}>
+            <h4 style={{ fontSize: 14, fontWeight: 700, color: B.warning, marginBottom: 10 }}>❓ Preguntas para validar</h4>
+            {fbError && <div style={{ fontSize: 12, color: B.danger, marginBottom: 10 }}>{fbError}</div>}
+            {loadingFb && <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 8 }}>Cargando respuestas…</div>}
+            {n.validate.map((q, i) => (
+              <div key={i} style={{ padding: "10px 0", borderBottom: i < n.validate.length - 1 ? `1px solid ${B.border}` : "none" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start", justifyContent: "space-between" }}>
+                  <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <span style={{ color: B.warning, fontWeight: 700 }}>{i + 1}.</span>
+                      <span style={{ fontSize: 13, lineHeight: 1.5 }}>{q}</span>
+                    </div>
+                    {feedbackForIndex(i).length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                        {feedbackForIndex(i).map(row => (
+                          <Badge key={`${row.reviewer_name}-${row.question_index}-${row.updated_at}`} color={B.text} bg={B.surfaceHover}>
+                            {row.reviewer_name}: {responseGlyph(row.response)}{row.comment ? ` - ${row.comment}` : ""}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                    <input
+                      value={questionDrafts[i] ?? ""}
+                      onChange={e => setQuestionDrafts(d => ({ ...d, [i]: e.target.value }))}
+                      placeholder="Comentario..."
+                      disabled={!reviewerName}
+                      style={{ width: 130, maxWidth: "100%", padding: "4px 8px", fontSize: 12, borderRadius: 6, border: `1px solid ${B.border}`, fontFamily: font, background: reviewerName ? B.surface : B.surfaceHover }}
+                    />
+                    <button type="button" disabled={!reviewerName} onClick={() => saveQuestionResponse(i, "si")} style={{ ...btnCompact, background: B.successBg, color: B.success }}>✓ Sí</button>
+                    <button type="button" disabled={!reviewerName} onClick={() => saveQuestionResponse(i, "no")} style={{ ...btnCompact, background: B.dangerBg, color: B.danger }}>✗ No</button>
+                    <button type="button" disabled={!reviewerName} onClick={() => saveQuestionResponse(i, "parcial")} style={{ ...btnCompact, background: `${B.accent}40`, color: B.warning }}>~ Parcial</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: 18, paddingTop: 16, borderTop: `1px solid ${B.border}` }}>
+              <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: B.text }}>Comentario general</h4>
+              <textarea
+                value={generalDraft}
+                onChange={e => setGeneralDraft(e.target.value)}
+                placeholder="Observaciones sobre el módulo…"
+                disabled={!reviewerName}
+                rows={3}
+                style={{ width: "100%", padding: "10px 12px", fontSize: 13, borderRadius: 8, border: `1px solid ${B.border}`, fontFamily: font, resize: "vertical", marginBottom: 8, background: reviewerName ? B.surface : B.surfaceHover }}
+              />
+              <button
+                type="button"
+                disabled={!reviewerName || !generalDraft.trim() || savingGeneral}
+                onClick={submitGeneralComment}
+                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: B.primary, color: B.accent, cursor: reviewerName && generalDraft.trim() ? "pointer" : "default", fontFamily: font, fontSize: 13, fontWeight: 700, opacity: reviewerName && generalDraft.trim() ? 1 : 0.5 }}
+              >
+                {savingGeneral ? "Enviando…" : "Enviar"}
+              </button>
+              {generalComments.length > 0 && (
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 8 }}>Comentarios</div>
+                  {generalComments.map(c => (
+                    <Card key={c.id ?? `${c.reviewer_name}-${c.created_at}`} style={{ marginBottom: 8, padding: "12px 14px" }}>
+                      <Badge color={B.text} bg={`${B.accent}35`}>{c.reviewer_name}</Badge>
+                      <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 8, color: B.text }}>{c.comment}</div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+        {n?.decision && <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>🏗️ Decisión de diseño</h4><div style={{ fontSize: 13, lineHeight: 1.5 }}>{n.decision}</div></Card>}
+        {n?.roles && <Card><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>👥 Roles</h4><div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{n.roles.map((r, i) => <Badge key={i} color={B.text} bg={B.surfaceHover}>{r}</Badge>)}</div></Card>}
+        <button
+          type="button"
+          onClick={() => navigate("/" + selectedModule.replaceAll("_", "-"))}
+          style={{
+            width: "100%",
+            marginTop: 16,
+            padding: 16,
+            borderRadius: 12,
+            border: "none",
+            cursor: "pointer",
+            fontFamily: font,
+            fontSize: 16,
+            fontWeight: 800,
+            background: "#F5C518",
+            color: "#000",
+          }}
+        >
+          🚀 Abrir maqueta interactiva
+        </button>
+      </main>
+    </div>
+  );
+}
+
 export default function WciAppIndex() {
   const [view, setView] = useState("index");
   const [selectedGuide, setSelectedGuide] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const [reviewerName, setReviewerName] = useState("");
+  const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [showOtherInput, setShowOtherInput] = useState(false);
+  const [otherNameDraft, setOtherNameDraft] = useState("");
+
   useEffect(() => { function c() { setIsMobile(window.innerWidth < 900); } c(); window.addEventListener("resize", c); return () => window.removeEventListener("resize", c); }, []);
 
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem(LS_REVIEWER);
+      if (s) {
+        setReviewerName(s);
+        setNameModalOpen(false);
+      } else {
+        setNameModalOpen(true);
+      }
+    } catch {
+      setNameModalOpen(true);
+    }
+  }, []);
+
+  function persistReviewer(name) {
+    const t = String(name).trim();
+    if (!t) return;
+    localStorage.setItem(LS_REVIEWER, t);
+    setReviewerName(t);
+    setNameModalOpen(false);
+    setShowOtherInput(false);
+    setOtherNameDraft("");
+  }
+
   const allMods = MODULES.flatMap(c => c.items);
+
+  const nameModal = nameModalOpen && (
+    <ReviewerNameModal
+      font={font}
+      B={B}
+      Card={Card}
+      showOther={showOtherInput}
+      setShowOther={setShowOtherInput}
+      otherDraft={otherNameDraft}
+      setOtherDraft={setOtherNameDraft}
+      onPick={persistReviewer}
+      onSaveOther={() => persistReviewer(otherNameDraft)}
+    />
+  );
 
   if (view === "module" && selectedModule) {
     const mod = allMods.find(m => m.id === selectedModule);
     const n = NOTES[selectedModule];
     return (
-      <div style={{ fontFamily: font, background: "#F5F4F0", minHeight: "100vh" }}>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style>
-        <header style={{ background: B.surface, borderBottom: `1px solid ${B.border}`, padding: "0 24px", height: 52, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => { setView("index"); setSelectedModule(null); }} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 16, padding: "4px 8px", fontFamily: font, color: B.textMuted }}>← Volver</button>
-          <span style={{ fontSize: 24 }}>{mod?.icon}</span>
-          <div style={{ fontSize: 16, fontWeight: 700 }}>{mod?.name}</div>
-        </header>
-        <main style={{ padding: "20px 32px", maxWidth: 900, margin: "0 auto" }}>
-          <Card style={{ background: `${B.accent}08`, border: `1px solid ${B.accent}30`, marginBottom: 14 }}>
-            <div style={{ display: "flex", gap: 10 }}><span style={{ fontSize: 20 }}>🧪</span><div><div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Proof of Concept — datos de ejemplo</div><div style={{ fontSize: 13, color: B.textMuted, lineHeight: 1.5 }}>{n?.poc}</div></div></div>
-          </Card>
-          <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>¿Qué es?</h4><div style={{ fontSize: 13, lineHeight: 1.6 }}>{n?.what}</div></Card>
-          <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Pantallas</h4><div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{mod?.tabs?.map((t, i) => <div key={i} style={{ padding: "8px 14px", background: B.surfaceHover, borderRadius: 8, fontSize: 13, fontWeight: 600, border: `1px solid ${B.border}` }}>{t}</div>)}</div></Card>
-          {n?.validate && <Card style={{ marginBottom: 14, border: `1px solid ${B.warning}30` }}><h4 style={{ fontSize: 14, fontWeight: 700, color: B.warning, marginBottom: 10 }}>❓ Preguntas para validar</h4>{n.validate.map((q, i) => <div key={i} style={{ display: "flex", gap: 8, padding: "8px 0", borderBottom: i < n.validate.length - 1 ? `1px solid ${B.border}` : "none" }}><span style={{ color: B.warning, fontWeight: 700 }}>{i + 1}.</span><span style={{ fontSize: 13, lineHeight: 1.5 }}>{q}</span></div>)}</Card>}
-          {n?.decision && <Card style={{ marginBottom: 14 }}><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>🏗️ Decisión de diseño</h4><div style={{ fontSize: 13, lineHeight: 1.5 }}>{n.decision}</div></Card>}
-          {n?.roles && <Card><h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>👥 Roles</h4><div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{n.roles.map((r, i) => <Badge key={i} color={B.text} bg={B.surfaceHover}>{r}</Badge>)}</div></Card>}
-          <button
-            type="button"
-            onClick={() => navigate("/" + selectedModule.replaceAll("_", "-"))}
-            style={{
-              width: "100%",
-              marginTop: 16,
-              padding: 16,
-              borderRadius: 12,
-              border: "none",
-              cursor: "pointer",
-              fontFamily: font,
-              fontSize: 16,
-              fontWeight: 800,
-              background: "#F5C518",
-              color: "#000",
-            }}
-          >
-            🚀 Abrir maqueta interactiva
-          </button>
-        </main>
-      </div>
+      <>
+        {nameModal}
+        <ModuleDetailView
+          selectedModule={selectedModule}
+          mod={mod}
+          n={n}
+          reviewerName={reviewerName}
+          onBack={() => { setView("index"); setSelectedModule(null); }}
+          navigate={navigate}
+          font={font}
+          B={B}
+          Card={Card}
+          Badge={Badge}
+        />
+      </>
     );
   }
 
   if (view === "guide" && selectedGuide) {
     const g = GUIDES[selectedGuide];
     return (
+      <>
+        {nameModal}
       <div style={{ fontFamily: font, background: "#F5F4F0", minHeight: "100vh" }}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style>
         <header style={{ background: B.surface, borderBottom: `1px solid ${B.border}`, padding: "0 24px", height: 52, display: "flex", alignItems: "center", gap: 12 }}>
@@ -179,10 +408,13 @@ export default function WciAppIndex() {
           <Card style={{ marginTop: 16, background: B.surfaceHover }}><div style={{ fontSize: 13, color: B.textMuted }}><span style={{ fontWeight: 700 }}>No te preocupes por:</span> {g.skip}</div></Card>
         </main>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+      {nameModal}
     <div style={{ fontFamily: font, background: "#F5F4F0", minHeight: "100vh" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style>
       <header style={{ background: B.primary, padding: "0 32px" }}>
@@ -241,5 +473,6 @@ export default function WciAppIndex() {
         <div style={{ textAlign: "center", padding: "8px 0 16px", fontSize: 11, color: B.textLight }}>WCI ERP · Cheddar's Group · Prep · Abril 2026</div>
       </main>
     </div>
+    </>
   );
 }
