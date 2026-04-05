@@ -141,7 +141,7 @@ export default function AuditoriaFlow() {
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 8 }}>
               {LOCATIONS.map(loc => {
                 const isSelected = selectedLocation?.id === loc.id;
-                const scoreColor = loc.lastScore >= 80 ? B.success : loc.lastScore >= 60 ? B.warning : B.danger;
+                const scoreColor = loc.lastScore >= 90 ? B.success : loc.lastScore >= 70 ? B.warning : B.danger;
                 return (
                   <button key={loc.id} onClick={() => setSelectedLocation(loc)} style={{
                     padding: "14px 16px", borderRadius: 10, cursor: "pointer", textAlign: "left",
@@ -359,8 +359,8 @@ export default function AuditoriaFlow() {
   // ── STEP 3: REVIEW ──
   if (step === "review") {
     const score = calculateScore();
-    const scoreColor = score >= 80 ? B.success : score >= 60 ? B.warning : B.danger;
-    const result = score >= 80 ? "Aprobado" : score >= 60 ? "Observado" : "Reprobado";
+    const scoreColor = score >= 90 ? B.success : score >= 70 ? B.warning : B.danger;
+    const result = score >= 90 ? "Aprobado" : score >= 70 ? "Observado" : "Reprobado";
     const failItems = allItems.filter(i => responses[i.id] === "fail");
     const partialItems = allItems.filter(i => responses[i.id] === "partial");
 
@@ -403,7 +403,7 @@ export default function AuditoriaFlow() {
               const catPartial = catItems.filter(i => responses[i.id] === "partial").length;
               const catFail = catItems.filter(i => responses[i.id] === "fail").length;
               const catScore = Math.round(((catPass + catPartial * 0.5) / catItems.length) * 100);
-              const catColor = catScore >= 80 ? B.success : catScore >= 60 ? B.warning : B.danger;
+              const catColor = catScore >= 90 ? B.success : catScore >= 70 ? B.warning : B.danger;
 
               return (
                 <div key={cat.name} style={{ marginBottom: 10 }}>
@@ -497,8 +497,8 @@ export default function AuditoriaFlow() {
   // ── STEP 4: DONE ──
   if (step === "done") {
     const score = calculateScore();
-    const scoreColor = score >= 80 ? B.success : score >= 60 ? B.warning : B.danger;
-    const result = score >= 80 ? "Aprobado" : score >= 60 ? "Observado" : "Reprobado";
+    const scoreColor = score >= 90 ? B.success : score >= 70 ? B.warning : B.danger;
+    const result = score >= 90 ? "Aprobado" : score >= 70 ? "Observado" : "Reprobado";
     const failItems = allItems.filter(i => responses[i.id] === "fail");
 
     return (

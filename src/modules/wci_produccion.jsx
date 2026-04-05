@@ -54,18 +54,27 @@ const RECIPES = [
     { name: "Cilantro", qty: 0.3, unit: "kg", cost: 5000, stock: 0.8, enough: true },
     { name: "Limón", qty: 0.5, unit: "lt", cost: 3000, stock: 1, enough: true },
   ], costPerUnit: 2800, zone: "cocina" },
-  { id: 3, name: "Cheddar cheese sauce WCI", batch: "5 lt", yield: "4.8 lt", yieldPct: 96, ingredients: [
+  { id: 3, name: "Cheddar cheese sauce WCI", batch: "5 lt", yield: "4.7 lt", yieldPct: 94, ingredients: [
     { name: "Queso cheddar", qty: 2, unit: "kg", cost: 8500, stock: 4, enough: true },
     { name: "Leche", qty: 2, unit: "lt", cost: 1200, stock: 5, enough: true },
     { name: "Harina", qty: 0.3, unit: "kg", cost: 850, stock: 8, enough: true },
     { name: "Mantequilla", qty: 0.2, unit: "kg", cost: 6000, stock: 1, enough: true },
   ], costPerUnit: 4100, zone: "frio" },
-  { id: 4, name: "Hamburguesa WCI premoldeada", batch: "50 ud", yield: "48 ud", yieldPct: 96, ingredients: [
+  { id: 4, name: "Hamburguesa WCI premoldeada", batch: "50 ud", yield: "48.5 ud", yieldPct: 97, ingredients: [
     { name: "Carne molida", qty: 7.5, unit: "kg", cost: 5200, stock: 30, enough: true },
     { name: "Cebolla", qty: 0.5, unit: "kg", cost: 800, stock: 20, enough: true },
     { name: "Pan rallado", qty: 0.3, unit: "kg", cost: 2000, stock: 1, enough: true },
     { name: "Huevo", qty: 3, unit: "ud", cost: 200, stock: 24, enough: true },
   ], costPerUnit: 820, zone: "frio" },
+  { id: 5, name: "Cebolla caramelizada WCI", batch: "8 kg", yield: "6.6 kg", yieldPct: 82, ingredients: [
+    { name: "Cebolla", qty: 6, unit: "kg", cost: 800, stock: 20, enough: true },
+    { name: "Aceite", qty: 0.4, unit: "lt", cost: 2200, stock: 5, enough: true },
+    { name: "Azúcar", qty: 0.2, unit: "kg", cost: 1200, stock: 3, enough: true },
+  ], costPerUnit: 2100, zone: "cocina" },
+  { id: 6, name: "Pepinos al vacío WCI", batch: "10 kg", yield: "7.8 kg", yieldPct: 78, ingredients: [
+    { name: "Pepino", qty: 10, unit: "kg", cost: 1200, stock: 15, enough: true },
+    { name: "Salmuera", qty: 1, unit: "lt", cost: 500, stock: 4, enough: true },
+  ], costPerUnit: 1800, zone: "frio" },
 ];
 
 const PLAN_TODAY = [
@@ -207,6 +216,9 @@ function PlanView() {
           <Btn variant="primary">Confirmar plan</Btn>
         </div>
       </Card>
+      <Card style={{ marginBottom: 14, background: B.infoBg, border: `1px solid ${B.info}20` }}>
+        <div style={{ fontSize: 13, color: B.textMuted }}><span style={{ fontWeight: 600, color: B.text }}>Rendimiento configurable por receta</span> — varía según producto (p. ej. BBQ 95%, hamburguesa 97%, pepinos al vacío 78%).</div>
+      </Card>
 
       {PLAN_TODAY.map((item, i) => {
         const recipe = RECIPES.find(r => r.name === item.recipe);
@@ -274,6 +286,16 @@ function RegistrarView() {
           <span style={{ fontWeight: 600 }}>Lista completa del día.</span>
           <span style={{ color: B.textMuted, marginLeft: 6 }}>Marca cada producto como producido con cantidad real + merma. Puedes registrar todo al final del día.</span>
         </div>
+      </Card>
+
+      <Card style={{ marginBottom: 14 }}>
+        <h4 style={{ fontSize: 13, fontWeight: 700, color: B.textMuted, marginBottom: 10 }}>Etiqueta térmica estandarizada (pre-elaborado)</h4>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8, fontSize: 12 }}>
+          {["LOT ID", "Producto", "Fecha producción", "Fecha vencimiento", "Cantidad", "Zona destino", "Responsable", "QR trazabilidad"].map(f => (
+            <div key={f} style={{ padding: "8px 10px", background: B.surfaceHover, borderRadius: 6, fontWeight: 600 }}>{f}</div>
+          ))}
+        </div>
+        <div style={{ fontSize: 12, color: B.textMuted, marginTop: 10 }}>Formato pre-elaborado impreso con impresora de etiquetas</div>
       </Card>
 
       <Card style={{ padding: 0, overflow: "hidden" }}>
@@ -362,7 +384,7 @@ function CalidadView() {
 
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>Verificación</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-            {["Apariencia", "Temperatura", "Sabor", "Textura"].map(c => (
+            {["Apariencia (color + olor)", "Temperatura", "Sabor", "Textura"].map(c => (
               <div key={c} style={{ padding: "12px", border: `1px solid ${B.border}`, borderRadius: 8 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{c}</div>
                 <div style={{ display: "flex", gap: 6 }}>
@@ -403,7 +425,11 @@ function CalidadView() {
 
   return (
     <div>
-      <div style={{ fontSize: 13, color: B.textMuted, marginBottom: 14 }}>Cada lote pasa por verificación post-producción. Rechazado = merma completa con valorización.</div>
+      <div style={{ fontSize: 13, color: B.textMuted, marginBottom: 10 }}>Cada lote pasa por verificación post-producción. Rechazado = merma completa con valorización.</div>
+      <Card style={{ marginBottom: 14, background: B.surfaceHover, border: `1px solid ${B.border}` }}>
+        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>Umbrales QC (score ponderado)</div>
+        <div style={{ fontSize: 12, color: B.textMuted }}>Aprobado ≥90% · Observado 70–89% · Reprobado &lt;70%</div>
+      </Card>
 
       <Card style={{ padding: 0, overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
@@ -616,7 +642,7 @@ export default function ProduccionModule() {
       <main style={{ padding: isMobile ? 16 : "20px 32px", maxWidth: 1320, margin: "0 auto" }}>
         <div style={{ marginBottom: 16 }}>
           <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 800, color: B.text, fontFamily: serif }}>👩‍🍳 Producción</h1>
-          <p style={{ fontSize: 13, color: B.textMuted, marginTop: 2 }}>{RECIPES.length} recetas · {LOTS.length} lotes esta semana · {PLAN_TODAY.filter(p => p.status === "pending").length} pendientes hoy</p>
+          <p style={{ fontSize: 13, color: B.textMuted, marginTop: 2 }}>{RECIPES.length} recetas · {LOTS.length} lotes esta semana · {PLAN_TODAY.filter(p => p.status === "pending").length} pendientes hoy · Rendimiento configurable por receta · Etiqueta térmica estandarizada</p>
         </div>
 
         <TabBar tabs={TABS} active={tab} onChange={setTab} />

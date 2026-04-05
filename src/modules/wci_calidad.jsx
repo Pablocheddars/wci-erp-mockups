@@ -90,6 +90,27 @@ const AUDITS = [
   { id: "AG-009", type: "BPM", location: "WCI Cocina prod.", date: "25/03", score: 95, result: "Aprobado", auditor: "Enc. calidad" },
 ];
 
+const PILARES_CALIDAD = [
+  { title: "BPM SEREMI", desc: "Cumplimiento normativo sanitario" },
+  { title: "Planillas uso día", desc: "Registros operativos diarios obligatorios" },
+  { title: "Certificados", desc: "Patentes, autorizaciones, mantenciones" },
+  { title: "Descarte (RILES)", desc: "Registros COVEMAR / ECOIL, gestión residuos" },
+  { title: "No Conformidad", desc: "Tracking de desperfectos de productos elaborados y simples vendidos por WCI" },
+];
+
+const NO_CONFORMIDAD = [
+  { fecha: "02/04", producto: "Hamburguesa premoldeada", tipo: "elaborado", descripcion: "Textura irregular", responsable: "Carmen R.", estado: "resuelta", fechaResolucion: "04/04" },
+  { fecha: "03/04", producto: "Salsa BBQ WCI", tipo: "elaborado", descripcion: "Color fuera de especificación", responsable: "Chef Marco", estado: "en gestión", fechaResolucion: "—" },
+  { fecha: "04/04", producto: "Queso mozzarella (reventa)", tipo: "simple", descripcion: "Empaque dañado en cámara", responsable: "Bodega WCI", estado: "abierta", fechaResolucion: "—" },
+  { fecha: "28/03", producto: "Pan hamburguesa", tipo: "simple", descripcion: "Humedad en borde inferior", responsable: "DK Alley", estado: "resuelta", fechaResolucion: "30/03" },
+];
+
+const NC_ESTADO = {
+  abierta: { label: "Abierta", color: B.warning, bg: B.warningBg },
+  "en gestión": { label: "En gestión", color: B.info, bg: B.infoBg },
+  resuelta: { label: "Resuelta", color: B.success, bg: B.successBg },
+};
+
 // ══════════════════════════════════════════════════════
 // VISIBILIDAD AUTOCONTROLES (P13 — WCI ve locales)
 // ══════════════════════════════════════════════════════
@@ -377,7 +398,7 @@ function AuditoriasView() {
           { location: "DK", score: 72, trend: "↑" },
           { location: "WCI", score: 95, trend: "→" },
         ].map(l => {
-          const color = l.score >= 80 ? B.success : l.score >= 60 ? B.warning : B.danger;
+          const color = l.score >= 90 ? B.success : l.score >= 70 ? B.warning : B.danger;
           return (
             <Card key={l.location} style={{ textAlign: "center", padding: "14px" }}>
               <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 6 }}>{l.location}</div>
@@ -400,7 +421,7 @@ function AuditoriasView() {
           </thead>
           <tbody>
             {AUDITS.map(a => {
-              const color = a.score >= 80 ? B.success : a.score >= 60 ? B.warning : B.danger;
+              const color = a.score >= 90 ? B.success : a.score >= 70 ? B.warning : B.danger;
               return (
                 <tr key={a.id} style={{ borderBottom: `1px solid ${B.border}`, cursor: "pointer" }}
                   onMouseEnter={e => e.currentTarget.style.background = B.surfaceHover}
@@ -412,6 +433,61 @@ function AuditoriasView() {
                   <td style={{ padding: "10px 12px", color: B.textMuted }}>{a.auditor}</td>
                   <td style={{ padding: "10px 12px", fontWeight: 800, color }}>{a.score}</td>
                   <td style={{ padding: "10px 12px" }}><Badge color={color} bg={`${color}15`}>{a.result}</Badge></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════
+// 5 PILARES + NO CONFORMIDAD (Gte. Operaciones)
+// ══════════════════════════════════════════════════════
+function PilaresNcView() {
+  return (
+    <div>
+      <Card style={{ marginBottom: 14, background: `${B.accent}08`, border: `1px solid ${B.accent}30` }}>
+        <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+          <span style={{ fontWeight: 700 }}>Cinco pilares de calidad WCI.</span>
+          <span style={{ color: B.textMuted, marginLeft: 6 }}>Ventaja competitiva para posicionar Prep como servicio en HORECA mediana/grande.</span>
+        </div>
+      </Card>
+
+      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: B.text }}>Secciones</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10, marginBottom: 20 }}>
+        {PILARES_CALIDAD.map((p, i) => (
+          <Card key={i} style={{ padding: "12px 14px" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{p.title}</div>
+            <div style={{ fontSize: 12, color: B.textMuted, lineHeight: 1.45 }}>{p.desc}</div>
+          </Card>
+        ))}
+      </div>
+
+      <Card style={{ padding: 0, overflow: "hidden" }}>
+        <div style={{ padding: "12px 16px", borderBottom: `1px solid ${B.border}`, fontSize: 14, fontWeight: 700 }}>No Conformidad — productos elaborados y simples</div>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
+          <thead>
+            <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+              {["Fecha", "Producto", "Tipo", "Descripción del desperfecto", "Responsable", "Estado", "Fecha resolución"].map(h =>
+                <th key={h} style={{ padding: "10px 12px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 11 }}>{h}</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {NO_CONFORMIDAD.map((row, i) => {
+              const st = NC_ESTADO[row.estado];
+              return (
+                <tr key={i} style={{ borderBottom: `1px solid ${B.border}` }}>
+                  <td style={{ padding: "10px 12px", color: B.textMuted }}>{row.fecha}</td>
+                  <td style={{ padding: "10px 12px", fontWeight: 600 }}>{row.producto}</td>
+                  <td style={{ padding: "10px 12px" }}><Badge>{row.tipo}</Badge></td>
+                  <td style={{ padding: "10px 12px" }}>{row.descripcion}</td>
+                  <td style={{ padding: "10px 12px", color: B.textMuted }}>{row.responsable}</td>
+                  <td style={{ padding: "10px 12px" }}><Badge color={st.color} bg={st.bg}>{st.label}</Badge></td>
+                  <td style={{ padding: "10px 12px", color: B.textMuted }}>{row.fechaResolucion}</td>
                 </tr>
               );
             })}
@@ -480,10 +556,10 @@ function ReportesView() {
           <div key={l.local} style={{ marginBottom: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 3 }}>
               <span style={{ fontWeight: 600 }}>{l.local}</span>
-              <span style={{ fontWeight: 700, color: l.pct >= 90 ? B.success : l.pct >= 80 ? B.warning : B.danger }}>{l.pct}%</span>
+              <span style={{ fontWeight: 700, color: l.pct >= 90 ? B.success : l.pct >= 70 ? B.warning : B.danger }}>{l.pct}%</span>
             </div>
             <div style={{ height: 6, background: B.surfaceHover, borderRadius: 3 }}>
-              <div style={{ width: `${l.pct}%`, height: "100%", background: l.pct >= 90 ? B.success : l.pct >= 80 ? B.warning : B.danger, borderRadius: 3 }} />
+              <div style={{ width: `${l.pct}%`, height: "100%", background: l.pct >= 90 ? B.success : l.pct >= 70 ? B.warning : B.danger, borderRadius: 3 }} />
             </div>
           </div>
         ))}
@@ -526,6 +602,7 @@ export default function CalidadModule() {
 
   const TABS = [
     { id: "autocontroles", label: "Autocontroles", icon: "✅", badge: notDone > 0 ? notDone : null, badgeBg: B.dangerBg, badgeColor: B.danger },
+    { id: "pilares", label: "Pilares + NC", icon: "📑" },
     { id: "auditorias", label: "Auditorías", icon: "🔍" },
     { id: "temperaturas", label: "Temperaturas", icon: "🌡️" },
     { id: "acciones", label: "Acciones", icon: "⚡", badge: overdueActions > 0 ? overdueActions : null, badgeBg: B.dangerBg, badgeColor: B.danger },
@@ -566,12 +643,13 @@ export default function CalidadModule() {
       <main style={{ padding: isMobile ? 16 : "20px 32px", maxWidth: 1320, margin: "0 auto" }}>
         <div style={{ marginBottom: 16 }}>
           <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 800, color: B.text, fontFamily: serif }}>✅ Calidad (BPM)</h1>
-          <p style={{ fontSize: 13, color: B.textMuted, marginTop: 2 }}>Autocontrol diario (Prep Plus) + Auditorías en terreno (WCI) + Temperaturas + Acciones correctivas</p>
+          <p style={{ fontSize: 13, color: B.textMuted, marginTop: 2 }}>Autocontrol diario (Prep Plus) + Auditorías en terreno (WCI) + Temperaturas + Acciones correctivas · 5 secciones: BPM SEREMI, Planillas día, Certificados, Descarte RILES, No Conformidad · Ventaja competitiva para posicionar Prep como servicio en HORECA mediana/grande</p>
         </div>
 
         <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
         {tab === "autocontroles" && <AutocontrolWciView />}
+        {tab === "pilares" && <PilaresNcView />}
         {tab === "auditorias" && <AuditoriasView />}
         {tab === "temperaturas" && <TemperaturasView />}
         {tab === "acciones" && <AccionesView />}

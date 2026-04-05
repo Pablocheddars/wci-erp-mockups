@@ -101,10 +101,18 @@ function ArmarRutaView() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ fontSize: 13 }}>
               <span style={{ fontWeight: 600 }}>Conductor:</span> {selectedRoute.driver} · <span style={{ fontWeight: 600 }}>{selectedRoute.stops} paradas</span> · <span style={{ fontWeight: 600 }}>${selectedRoute.totalValue.toLocaleString()}</span> total
+              <div style={{ fontSize: 12, color: B.textMuted, marginTop: 4 }}>Repartidor en auto propio (no camión WCI)</div>
             </div>
-            {selectedRoute.status === "planning" && <Btn variant="primary">🚛 Iniciar despacho</Btn>}
+            {selectedRoute.status === "planning" && <Btn variant="primary">🚛 Iniciar ruta</Btn>}
           </div>
         </Card>
+
+        {selectedRoute.status === "planning" && (
+          <Card style={{ marginBottom: 14, borderLeft: `4px solid ${B.accent}` }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>📸 Foto kilometraje inicio</div>
+            <div style={{ fontSize: 12, color: B.textMuted }}>(captura en el momento, no subir foto)</div>
+          </Card>
+        )}
 
         {/* Sortable stops */}
         <div style={{ fontSize: 12, fontWeight: 600, color: B.textMuted, marginBottom: 8, letterSpacing: 0.5, textTransform: "uppercase" }}>Orden de paradas (arrastra para reordenar)</div>
@@ -187,7 +195,7 @@ function ArmarRutaView() {
 }
 
 // ══════════════════════════════════════════════════════
-// P3: CARGAR VEHÍCULO
+// P3: CARGAR AUTO DEL REPARTIDOR
 // ══════════════════════════════════════════════════════
 function CargarView() {
   return (
@@ -195,7 +203,7 @@ function CargarView() {
       <Card style={{ marginBottom: 14, background: B.infoBg, border: `1px solid ${B.info}20` }}>
         <div style={{ fontSize: 13 }}>
           <span style={{ fontWeight: 600 }}>Orden de carga = inverso a la ruta.</span>
-          <span style={{ color: B.textMuted, marginLeft: 6 }}>Lo que se entrega último se carga primero (queda al fondo del vehículo).</span>
+          <span style={{ color: B.textMuted, marginLeft: 6 }}>El repartidor usa su auto propio. Lo que se entrega último se carga primero (queda al fondo del auto del repartidor).</span>
         </div>
       </Card>
 
@@ -219,7 +227,7 @@ function CargarView() {
         </Card>
       ))}
 
-      <Btn variant="primary" style={{ width: "100%", padding: 14, marginTop: 8, fontSize: 15 }}>✓ Carga completa — Iniciar ruta</Btn>
+      <Btn variant="primary" style={{ width: "100%", padding: 14, marginTop: 8, fontSize: 15 }}>✓ Carga completa en auto del repartidor — Iniciar ruta</Btn>
     </div>
   );
 }
@@ -491,6 +499,11 @@ function CierreView() {
         ))}
       </div>
 
+      <Card style={{ marginBottom: 14, borderLeft: `4px solid ${B.info}` }}>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>📸 Foto kilometraje fin</div>
+        <div style={{ fontSize: 12, color: B.textMuted }}>(para control de gasto bencina)</div>
+      </Card>
+
       <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Detalle por parada</div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
         <thead>
@@ -539,7 +552,7 @@ export default function DespachoModule() {
 
   const TABS = [
     { id: "rutas", label: "Rutas", icon: "🚛" },
-    { id: "cargar", label: "Cargar vehículo", icon: "📦" },
+    { id: "cargar", label: "Cargar auto repartidor", icon: "📦" },
     { id: "entregar", label: "Entregar", icon: "📍" },
     { id: "recepcion", label: "Recepción + stock", icon: "✅" },
     { id: "cierre", label: "Cierre ruta", icon: "🏁" },

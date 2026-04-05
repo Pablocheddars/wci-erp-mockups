@@ -269,7 +269,7 @@ function BudgetView() {
 }
 
 // ══════════════════════════════════════════════════════
-// P6+P8: VENTAS VS INGRESOS + FLUJO DE CAJA
+// P6+P8: VENTAS VS INGRESOS + PRESUPUESTO DE CAJA
 // ══════════════════════════════════════════════════════
 function CashflowView() {
   const [section, setSection] = useState("sales");
@@ -279,8 +279,10 @@ function CashflowView() {
       <div>
         <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
           <button onClick={() => setSection("sales")} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, border: `1px solid ${B.border}`, background: B.surface, cursor: "pointer", fontFamily: font, color: B.textMuted }}>Ventas vs ingresos</button>
-          <button onClick={() => setSection("cashflow")} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, fontWeight: 650, border: `2px solid ${B.accent}`, background: `${B.accent}08`, cursor: "pointer", fontFamily: font }}>Flujo de caja</button>
+          <button onClick={() => setSection("cashflow")} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, fontWeight: 650, border: `2px solid ${B.accent}`, background: `${B.accent}08`, cursor: "pointer", fontFamily: font }}>Ppto. caja</button>
         </div>
+
+        <div style={{ fontSize: 13, color: B.textMuted, marginBottom: 12 }}>Presupuesto de caja — Ingresos − Egresos por día</div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
           {[
@@ -322,7 +324,7 @@ function CashflowView() {
     <div>
       <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
         <button onClick={() => setSection("sales")} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, fontWeight: 650, border: `2px solid ${B.accent}`, background: `${B.accent}08`, cursor: "pointer", fontFamily: font }}>Ventas vs ingresos</button>
-        <button onClick={() => setSection("cashflow")} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, border: `1px solid ${B.border}`, background: B.surface, cursor: "pointer", fontFamily: font, color: B.textMuted }}>Flujo de caja</button>
+        <button onClick={() => setSection("cashflow")} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, fontWeight: 500, border: `1px solid ${B.border}`, background: B.surface, cursor: "pointer", fontFamily: font, color: B.textMuted }}>Ppto. caja</button>
       </div>
 
       <Card style={{ marginBottom: 14, background: B.warningBg, border: `1px solid ${B.warning}25` }}>
@@ -537,7 +539,7 @@ export default function FinanzasModule() {
   const TABS = [
     { id: "pnl", label: "P&L", icon: "📊" },
     { id: "budget", label: "Budget", icon: "🎯" },
-    { id: "cashflow", label: "Ventas + flujo", icon: "💰" },
+    { id: "cashflow", label: "Ventas + ppto. caja", icon: "💰" },
     { id: "conciliacion", label: "Conciliación", icon: "🏦" },
     { id: "tesoreria", label: "Tesorería", icon: "💵" },
   ];

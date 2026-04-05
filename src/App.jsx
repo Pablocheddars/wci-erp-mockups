@@ -19,6 +19,7 @@ import Comisiones from "./modules/wci_comisiones_v2";
 import CxpCxc from "./modules/wci_cxp_cxc";
 import Rrhh from "./modules/wci_rrhh";
 import Roles from "./modules/wci_roles";
+import ActivoFijo from "./modules/wci_activo_fijo";
 
 const MODULES = [
   { path: "/inventario", name: "Inventario", icon: "📦", component: Inventario },
@@ -38,6 +39,7 @@ const MODULES = [
   { path: "/cxp-cxc", name: "CxP / CxC", icon: "💸", component: CxpCxc },
   { path: "/rrhh", name: "RRHH", icon: "👥", component: Rrhh },
   { path: "/roles", name: "Roles", icon: "🔐", component: Roles },
+  { path: "/activo-fijo", name: "Activo fijo", icon: "🏗️", component: ActivoFijo },
 ];
 
 function FloatingNav() {

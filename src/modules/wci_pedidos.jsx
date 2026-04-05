@@ -61,12 +61,12 @@ const ORDERS = [
 ];
 
 const ORDER_ITEMS_DETAIL = [
-  { name: "Queso mozzarella", qty: 15, unit: "kg", price: 6500, stockWci: 45, reserved: 20, available: 25, status: "ok" },
-  { name: "Pollo entero", qty: 20, unit: "kg", price: 3800, stockWci: 18, reserved: 10, available: 8, status: "short" },
-  { name: "Carne molida", qty: 15, unit: "kg", price: 5200, stockWci: 30, reserved: 5, available: 25, status: "ok" },
-  { name: "Pan hamburguesa", qty: 100, unit: "ud", price: 250, stockWci: 200, reserved: 80, available: 120, status: "ok" },
-  { name: "Harina", qty: 10, unit: "kg", price: 850, stockWci: 8, reserved: 0, available: 8, status: "short" },
-  { name: "Salsa BBQ WCI", qty: 5, unit: "lt", price: 4200, stockWci: 6, reserved: 3, available: 3, status: "short" },
+  { name: "Queso mozzarella", qty: 15, unit: "kg", price: 6500, stockWci: 45, reserved: 20, stockMinimo: 5, available: 45 - 20 - 5, status: "ok" },
+  { name: "Pollo entero", qty: 20, unit: "kg", price: 3800, stockWci: 18, reserved: 10, stockMinimo: 3, available: 18 - 10 - 3, status: "short" },
+  { name: "Carne molida", qty: 15, unit: "kg", price: 5200, stockWci: 30, reserved: 5, stockMinimo: 2, available: 30 - 5 - 2, status: "ok" },
+  { name: "Pan hamburguesa", qty: 100, unit: "ud", price: 250, stockWci: 200, reserved: 80, stockMinimo: 50, available: 200 - 80 - 50, status: "ok" },
+  { name: "Harina", qty: 10, unit: "kg", price: 850, stockWci: 8, reserved: 0, stockMinimo: 2, available: 8 - 0 - 2, status: "short" },
+  { name: "Salsa BBQ WCI", qty: 5, unit: "lt", price: 4200, stockWci: 6, reserved: 3, stockMinimo: 1, available: 6 - 3 - 1, status: "short" },
 ];
 
 const CATALOG_ITEMS = [
@@ -105,14 +105,14 @@ function PedidosPanel() {
         </Card>
 
         <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ padding: "10px 16px", background: "#FAFAF8", borderBottom: `1px solid ${B.border}`, fontSize: 12, fontWeight: 600, color: B.textMuted, display: "flex", justifyContent: "space-between" }}>
-            <span>Stock disponible = físico - reservado por otros pedidos</span>
+          <div style={{ padding: "10px 16px", background: "#FAFAF8", borderBottom: `1px solid ${B.border}`, fontSize: 12, fontWeight: 600, color: B.textMuted, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+            <span>Stock disponible = Físico − Reservado − Stock mínimo</span>
             <span style={{ color: B.danger }}>🔴 = no alcanza</span>
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
             <thead>
               <tr style={{ borderBottom: `1px solid ${B.border}` }}>
-                {["Item", "Pedido", "Stock WCI", "Reservado", "Disponible", "Acción", "Qty confirm.", "Motivo"].map(h =>
+                {["Item", "Pedido", "Stock WCI", "Reservado", "Mín.", "Disponible", "Acción", "Qty confirm.", "Motivo"].map(h =>
                   <th key={h} style={{ padding: "9px 12px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 11 }}>{h}</th>
                 )}
               </tr>
@@ -126,6 +126,7 @@ function PedidosPanel() {
                     <td style={{ padding: "9px 12px" }}>{item.qty} {item.unit}</td>
                     <td style={{ padding: "9px 12px", color: B.textMuted }}>{item.stockWci}</td>
                     <td style={{ padding: "9px 12px", color: B.purple }}>{item.reserved}</td>
+                    <td style={{ padding: "9px 12px", color: B.textMuted }}>{item.stockMinimo}</td>
                     <td style={{ padding: "9px 12px", fontWeight: 700, color: isShort ? B.danger : B.success }}>{item.available}</td>
                     <td style={{ padding: "9px 12px" }}>
                       <div style={{ display: "flex", gap: 3 }}>
@@ -730,7 +731,7 @@ export default function PedidosModule() {
       <main style={{ padding: isMobile ? 16 : "20px 32px", maxWidth: 1320, margin: "0 auto" }}>
         <div style={{ marginBottom: 16 }}>
           <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 800, color: B.text, fontFamily: serif }}>📋 Pedidos entrantes</h1>
-          <p style={{ fontSize: 13, color: B.textMuted, marginTop: 2 }}>{ORDERS.length} pedidos · {pendingCount} por confirmar · Próximo despacho: Sábado 05/04</p>
+          <p style={{ fontSize: 13, color: B.textMuted, marginTop: 2 }}>{ORDERS.length} pedidos · {pendingCount} por confirmar · Próximo despacho: Sábado 05/04 · Stock mínimo configurable por producto para evitar quiebres de stock</p>
         </div>
 
         <TabBar tabs={TABS} active={tab} onChange={setTab} />
