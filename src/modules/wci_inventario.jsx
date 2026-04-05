@@ -95,6 +95,81 @@ function Select({ value, onChange, options, style: sx = {} }) {
   );
 }
 
+function EditableMinStockCell({ itemId, min, unit, setStockItems, muted = true }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(min));
+
+  useEffect(() => {
+    if (!editing) setDraft(String(min));
+  }, [min, editing]);
+
+  function commit() {
+    const n = Math.max(0, Math.floor(Number(draft) || 0));
+    setStockItems(prev => prev.map(i => i.id === itemId ? { ...i, min: n } : i));
+    setEditing(false);
+  }
+
+  const inputStyle = {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "4px 8px",
+    border: `2px solid ${B.accent}`,
+    borderRadius: 6,
+    fontSize: 13,
+    fontFamily: font,
+    outline: "none",
+    background: B.surface,
+  };
+
+  if (editing) {
+    return (
+      <input
+        type="number"
+        min={0}
+        step={1}
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={e => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commit();
+          }
+        }}
+        onClick={e => e.stopPropagation()}
+        style={inputStyle}
+        autoFocus
+      />
+    );
+  }
+
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={e => { e.stopPropagation(); setEditing(true); setDraft(String(min)); }}
+      onKeyDown={e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          setEditing(true);
+          setDraft(String(min));
+        }
+      }}
+      style={{
+        cursor: "pointer",
+        color: muted ? B.textMuted : B.text,
+        borderRadius: 4,
+        display: "block",
+        width: "100%",
+      }}
+      title="Click para editar stock mínimo"
+    >
+      {min} {unit}
+    </span>
+  );
+}
+
 // ── Mock Data ──
 const ZONES = [
   { id: "seca", name: "Bodega seca", icon: "🏭" },
@@ -328,7 +403,9 @@ function StockView({ stockItems, setStockItems }) {
                 <td style={{ padding: "10px 14px", fontWeight: 600, color: B.text }}>{item.name}<br /><span style={{ fontSize: 11, fontWeight: 400, color: B.textMuted }}>{item.category}</span></td>
                 <td style={{ padding: "10px 14px", color: B.textMuted }}>{ZONES.find(z => z.id === item.zone)?.icon} {ZONES.find(z => z.id === item.zone)?.name}</td>
                 <td style={{ padding: "10px 14px", fontWeight: 700, color: item.qty === 0 ? B.danger : B.text }}>{item.qty} {item.unit}</td>
-                <td style={{ padding: "10px 14px", color: B.textMuted }}>{item.min} {item.unit}</td>
+                <td style={{ padding: "10px 14px", color: B.textMuted, verticalAlign: "middle", minWidth: 88 }} onClick={e => e.stopPropagation()}>
+                  <EditableMinStockCell itemId={item.id} min={item.min} unit={item.unit} setStockItems={setStockItems} muted />
+                </td>
                 <td style={{ padding: "10px 14px" }}><StatusBadge status={item.status} /></td>
                 <td style={{ padding: "10px 14px", color: B.textMuted }}>{item.weeklyUse} {item.unit}</td>
                 <td style={{ padding: "10px 14px", color: B.textMuted }}>${item.cost.toLocaleString()}</td>
@@ -847,7 +924,9 @@ function ConfigView({ stockItems, setStockItems }) {
                 <td style={{ padding: "8px 10px", color: B.textMuted }}>{row.category}</td>
                 <td style={{ padding: "8px 10px" }}>{row.unit}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted, whiteSpace: "nowrap" }}>{ZONES.find(z => z.id === row.zone)?.icon} {ZONES.find(z => z.id === row.zone)?.name}</td>
-                <td style={{ padding: "8px 10px" }}>{row.min}</td>
+                <td style={{ padding: "8px 10px", verticalAlign: "middle", minWidth: 72 }} onClick={e => e.stopPropagation()}>
+                  <EditableMinStockCell itemId={row.id} min={row.min} unit={row.unit} setStockItems={setStockItems} muted={false} />
+                </td>
                 <td style={{ padding: "8px 10px", color: B.textMuted }}>${row.cost.toLocaleString()}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted, maxWidth: 120 }}>{row.preferredSupplier || "—"}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted, fontStyle: row.glosaProveedor ? "italic" : "normal", maxWidth: 160 }} title={row.glosaProveedor || ""}>{row.glosaProveedor || "—"}</td>
