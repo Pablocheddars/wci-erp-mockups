@@ -91,6 +91,172 @@ const STATUS_MAP = {
   pagada: { label: "Pagada", color: B.success, bg: B.successBg },
 };
 
+const INSUMO_CATEGORIES_COMPRAS = ["Carnes", "Lácteos", "Secos", "Verduras", "Salsas", "Bebidas", "Envases", "Desechables", "Limpieza"];
+const INSUMO_UNITS_COMPRAS = ["kg", "lt", "ud", "caja", "botella"];
+const INV_ZONE_OPTS = [
+  { value: "seca", label: "🏭 Bodega seca" },
+  { value: "frio", label: "❄️ Cámara frío" },
+  { value: "cocina", label: "🍳 Cocina producción" },
+];
+
+const INSUMOS_MAESTRO = [
+  "Queso mozzarella", "Harina", "Aceite vegetal", "Pollo entero", "Tomate", "Salsa BBQ WCI", "Cebolla", "Pan hamburguesa", "Envase delivery 750ml", "Carne molida",
+];
+
+function createDemoFacturaLines() {
+  return [
+    { id: 1, glosa: "Qso Mozzarella Sta Rosa 5K", mappedName: null, qty: "30 kg", price: "$6.500", total: "$195.000" },
+    { id: 2, glosa: "Pllo Entero S/M", mappedName: "Pollo entero", qty: "40 kg", price: "$3.800", total: "$152.000" },
+    { id: 3, glosa: "HARINA SELECTA 25K", mappedName: "Harina", qty: "25 kg", price: "$850", total: "$21.250" },
+  ];
+}
+
+function MapBadge({ mappedName }) {
+  if (mappedName) {
+    return (
+      <span style={{ fontSize: 10, fontWeight: 650, color: B.success, background: B.successBg, padding: "2px 8px", borderRadius: 8, whiteSpace: "nowrap", display: "inline-block", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis" }}>
+        ✓ Mapeado → {mappedName}
+      </span>
+    );
+  }
+  return (
+    <span style={{ fontSize: 10, fontWeight: 650, color: B.warning, background: B.warningBg, padding: "2px 8px", borderRadius: 8, whiteSpace: "nowrap" }}>
+      ⚠️ No mapeado
+    </span>
+  );
+}
+
+function InvoiceLinesWithMapping({ lines, setLines }) {
+  const [mapRowId, setMapRowId] = useState(null);
+  const [createRowId, setCreateRowId] = useState(null);
+  const [mapPick, setMapPick] = useState("");
+  const [cName, setCName] = useState("");
+  const [cCat, setCCat] = useState("Lácteos");
+  const [cUnit, setCUnit] = useState("kg");
+  const [cZone, setCZone] = useState("frio");
+  const [cMin, setCMin] = useState("0");
+
+  function openMap(row) {
+    setCreateRowId(null);
+    setMapRowId(row.id);
+    setMapPick(row.mappedName || "");
+  }
+
+  function openCreate(row) {
+    setMapRowId(null);
+    setCreateRowId(row.id);
+    setCName(row.glosa);
+    setCCat("Lácteos");
+    setCUnit("kg");
+    setCZone("frio");
+    setCMin("0");
+  }
+
+  function applyMap(rowId) {
+    if (!mapPick) return;
+    setLines(prev => prev.map(l => l.id === rowId ? { ...l, mappedName: mapPick } : l));
+    setMapRowId(null);
+    setMapPick("");
+  }
+
+  function applyCreate(rowId) {
+    const n = cName.trim();
+    if (!n) return;
+    setLines(prev => prev.map(l => l.id === rowId ? { ...l, mappedName: n } : l));
+    setCreateRowId(null);
+  }
+
+  return (
+    <div>
+      <Card style={{ background: B.infoBg, border: `1px solid ${B.info}22`, marginBottom: 12 }}>
+        <div style={{ fontSize: 13, color: B.text, lineHeight: 1.55 }}>
+          Cada glosa de proveedor se mapea una sola vez a un insumo del sistema. Las próximas facturas del mismo proveedor con la misma glosa se mapean automáticamente.
+        </div>
+      </Card>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font, border: `1px solid ${B.border}`, borderRadius: 8, overflow: "hidden" }}>
+        <thead>
+          <tr style={{ background: "#FAFAF8", borderBottom: `1px solid ${B.border}` }}>
+            {["Glosa proveedor", "Mapeo a insumo", "Cantidad", "Precio", "Total"].map(h => (
+              <th key={h} style={{ padding: "8px 12px", textAlign: "left", fontSize: 12, color: B.textMuted, fontWeight: 600 }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {lines.map(row => {
+            const unmapped = !row.mappedName;
+            const rowBg = unmapped ? `${B.warning}0D` : "transparent";
+            return (
+              <tr key={row.id} style={{ borderBottom: `1px solid ${B.border}` }}>
+                <td style={{
+                  padding: "10px 12px", color: B.textMuted, fontStyle: "italic", verticalAlign: "top",
+                  background: rowBg, borderLeft: unmapped ? `3px solid ${B.warning}` : `3px solid transparent`,
+                }}>{row.glosa}</td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top", minWidth: 200, background: rowBg }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
+                    <MapBadge mappedName={row.mappedName} />
+                    {unmapped && mapRowId !== row.id && createRowId !== row.id && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        <Btn variant="default" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => openMap(row)}>Mapear a insumo existente</Btn>
+                        <Btn variant="default" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => openCreate(row)}>🆕 Crear insumo nuevo</Btn>
+                      </div>
+                    )}
+                    {mapRowId === row.id && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", maxWidth: 280 }}>
+                        <Select value={mapPick} onChange={setMapPick} options={[{ value: "", label: "Buscar insumo…" }, ...INSUMOS_MAESTRO.map(n => ({ value: n, label: n }))]} style={{ width: "100%" }} />
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          <Btn variant="primary" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => applyMap(row.id)}>Aplicar mapeo</Btn>
+                          <Btn variant="ghost" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => { setMapRowId(null); setMapPick(""); }}>Cancelar</Btn>
+                        </div>
+                      </div>
+                    )}
+                    {createRowId === row.id && (
+                      <div style={{
+                        width: "100%", maxWidth: 340, padding: 10, borderRadius: 8,
+                        border: `1px solid ${B.border}`, background: B.surfaceHover,
+                      }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: B.textMuted, marginBottom: 8 }}>Crear insumo y mapear glosa</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                          <div style={{ gridColumn: "1 / -1" }}>
+                            <label style={{ fontSize: 10, color: B.textMuted, display: "block", marginBottom: 2 }}>Nombre</label>
+                            <input value={cName} onChange={e => setCName(e.target.value)} style={{ width: "100%", padding: "6px 8px", border: `1px solid ${B.border}`, borderRadius: 6, fontSize: 12, fontFamily: font }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 10, color: B.textMuted, display: "block", marginBottom: 2 }}>Categoría</label>
+                            <Select value={cCat} onChange={setCCat} options={INSUMO_CATEGORIES_COMPRAS.map(c => ({ value: c, label: c }))} style={{ width: "100%", fontSize: 12 }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 10, color: B.textMuted, display: "block", marginBottom: 2 }}>Unidad</label>
+                            <Select value={cUnit} onChange={setCUnit} options={INSUMO_UNITS_COMPRAS.map(u => ({ value: u, label: u }))} style={{ width: "100%", fontSize: 12 }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 10, color: B.textMuted, display: "block", marginBottom: 2 }}>Zona</label>
+                            <Select value={cZone} onChange={setCZone} options={INV_ZONE_OPTS} style={{ width: "100%", fontSize: 12 }} />
+                          </div>
+                          <div>
+                            <label style={{ fontSize: 10, color: B.textMuted, display: "block", marginBottom: 2 }}>Stock mín.</label>
+                            <input type="number" min={0} value={cMin} onChange={e => setCMin(e.target.value)} style={{ width: "100%", padding: "6px 8px", border: `1px solid ${B.border}`, borderRadius: 6, fontSize: 12, fontFamily: font }} />
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                          <Btn variant="primary" style={{ fontSize: 11, padding: "5px 12px" }} onClick={() => applyCreate(row.id)}>Crear y mapear</Btn>
+                          <Btn variant="ghost" style={{ fontSize: 11, padding: "5px 10px" }} onClick={() => setCreateRowId(null)}>Cancelar</Btn>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top", background: rowBg }}>{row.qty}</td>
+                <td style={{ padding: "10px 12px", verticalAlign: "top", background: rowBg }}>{row.price}</td>
+                <td style={{ padding: "10px 12px", fontWeight: 600, verticalAlign: "top", background: rowBg }}>{row.total}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════════
 // P1: ÓRDENES DE COMPRA
 // ══════════════════════════════════════════════════════
@@ -228,7 +394,34 @@ function OrdenesCompra() {
 // ══════════════════════════════════════════════════════
 function FacturasIngreso() {
   const [mode, setMode] = useState(null);
+  const [pdfLines, setPdfLines] = useState(createDemoFacturaLines);
+  const [siiLines, setSiiLines] = useState(createDemoFacturaLines);
+  const [manualLines, setManualLines] = useState(createDemoFacturaLines);
   const pendingCount = INVOICES.filter(i => i.status === "por_recepcionar").length;
+
+  if (mode === "sii") {
+    return (
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+          <Btn variant="ghost" onClick={() => setMode(null)}>← Volver</Btn>
+          <h3 style={{ fontSize: 16, fontWeight: 700 }}>🔄 Factura importada desde SII — revisión de líneas</h3>
+        </div>
+        <Card>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+            <div><label style={{ fontSize: 11, color: B.textMuted }}>Proveedor</label><div style={{ fontSize: 13, fontWeight: 600, padding: "6px 0" }}>Distribuidora Lagos</div></div>
+            <div><label style={{ fontSize: 11, color: B.textMuted }}>RUT</label><div style={{ fontSize: 13, fontWeight: 600, padding: "6px 0" }}>76.543.210-1</div></div>
+            <div><label style={{ fontSize: 11, color: B.textMuted }}>Folio</label><div style={{ fontSize: 13, fontWeight: 600, padding: "6px 0" }}>4521</div></div>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: B.textMuted, marginBottom: 8 }}>Líneas de la factura (mapeo a insumos)</div>
+          <InvoiceLinesWithMapping lines={siiLines} setLines={setSiiLines} />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
+            <Btn variant="ghost">Descartar</Btn>
+            <Btn variant="primary">Confirmar factura</Btn>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (mode === "pdf") {
     return (
@@ -256,35 +449,7 @@ function FacturasIngreso() {
               <div><label style={{ fontSize: 11, color: B.textMuted }}>RUT</label><div style={{ fontSize: 13, fontWeight: 600, padding: "6px 0" }}>76.543.210-1</div></div>
               <div><label style={{ fontSize: 11, color: B.textMuted }}>Folio</label><div style={{ fontSize: 13, fontWeight: 600, padding: "6px 0" }}>4522</div></div>
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font, border: `1px solid ${B.border}`, borderRadius: 8 }}>
-              <thead>
-                <tr style={{ background: "#FAFAF8", borderBottom: `1px solid ${B.border}` }}>
-                  {["Glosa factura", "Match supply", "Qty", "Precio", "Total"].map(h =>
-                    <th key={h} style={{ padding: "8px 12px", textAlign: "left", fontSize: 12, color: B.textMuted, fontWeight: 600 }}>{h}</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { glosa: "QUESILLO MOZZ. 5KG", match: "Queso mozzarella", qty: "30 kg", price: "$6.500", total: "$195.000", confidence: "high" },
-                  { glosa: "HARINA SELECTA 25K", match: "Harina", qty: "25 kg", price: "$850", total: "$21.250", confidence: "high" },
-                  { glosa: "PAN HAMB. JUMBO X50", match: "Pan hamburguesa", qty: "150 ud", price: "$250", total: "$37.500", confidence: "medium" },
-                ].map((row, i) => (
-                  <tr key={i} style={{ borderBottom: `1px solid ${B.border}` }}>
-                    <td style={{ padding: "8px 12px", color: B.textMuted, fontStyle: "italic" }}>{row.glosa}</td>
-                    <td style={{ padding: "8px 12px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ fontWeight: 600 }}>{row.match}</span>
-                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: row.confidence === "high" ? B.success : B.warning }} />
-                      </div>
-                    </td>
-                    <td style={{ padding: "8px 12px" }}>{row.qty}</td>
-                    <td style={{ padding: "8px 12px" }}>{row.price}</td>
-                    <td style={{ padding: "8px 12px", fontWeight: 600 }}>{row.total}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <InvoiceLinesWithMapping lines={pdfLines} setLines={setPdfLines} />
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
               <Btn variant="ghost">Descartar</Btn>
               <Btn variant="primary">Confirmar factura</Btn>
@@ -319,29 +484,9 @@ function FacturasIngreso() {
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Líneas de la factura</div>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font, marginBottom: 12 }}>
-            <thead>
-              <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
-                {["Supply", "Cantidad", "Unidad compra", "Precio unit.", "Total", ""].map(h =>
-                  <th key={h} style={{ padding: "8px 10px", textAlign: "left", fontSize: 12, color: B.textMuted, fontWeight: 600 }}>{h}</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: `1px solid ${B.border}` }}>
-                {[
-                  <Select key="s" value="" onChange={() => { }} options={[{ value: "", label: "Seleccionar..." }]} style={{ width: "100%" }} />,
-                  <input key="q" type="number" placeholder="0" style={{ width: 70, padding: "6px 8px", border: `1px solid ${B.border}`, borderRadius: 6, fontSize: 13, fontFamily: font, textAlign: "center" }} />,
-                  <span key="u" style={{ color: B.textMuted }}>kg</span>,
-                  <input key="p" type="number" placeholder="$0" style={{ width: 90, padding: "6px 8px", border: `1px solid ${B.border}`, borderRadius: 6, fontSize: 13, fontFamily: font }} />,
-                  <span key="t" style={{ fontWeight: 600 }}>$0</span>,
-                  <Btn key="d" variant="ghost" style={{ color: B.danger, padding: 4 }}>✕</Btn>,
-                ].map((el, i) => <td key={i} style={{ padding: "8px 10px" }}>{el}</td>)}
-              </tr>
-            </tbody>
-          </table>
-          <Btn>+ Agregar línea</Btn>
+          <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Líneas de la factura (mapeo a insumos)</div>
+          <InvoiceLinesWithMapping lines={manualLines} setLines={setManualLines} />
+          <Btn style={{ marginTop: 12 }}>+ Agregar línea</Btn>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
             <Btn variant="ghost">Cancelar</Btn>
             <Btn variant="primary">Guardar factura</Btn>
@@ -357,7 +502,7 @@ function FacturasIngreso() {
       {/* 3 entry methods */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
         {[
-          { icon: "🔄", title: "SII Automático", desc: "Facturas se importan automáticamente desde el SII", action: "Configurar", color: B.success, enabled: true },
+          { icon: "🔄", title: "SII Automático", desc: "Facturas se importan automáticamente desde el SII", action: "Ver ejemplo líneas", color: B.success, onClick: () => setMode("sii") },
           { icon: "🤖", title: "PDF + IA", desc: "Sube el PDF y Claude extrae los datos", action: "Subir PDF", color: B.info, onClick: () => setMode("pdf") },
           { icon: "✏️", title: "Manual", desc: "Tipea los datos de la factura", action: "Ingresar", color: B.textMuted, onClick: () => setMode("manual") },
         ].map((m, i) => (
