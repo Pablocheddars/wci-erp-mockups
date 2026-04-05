@@ -55,8 +55,6 @@ const COMPLAINT_STATUS = {
   closed: { label: "Cerrado", color: B.textMuted, bg: B.surfaceHover },
 };
 
-const TOUCHPOINTS = ["Llegada", "Espera", "Pedido", "Preparación", "Entrega", "Consumo", "Pago", "Despedida"];
-
 const NPS_DATA = {
   overall: 42,
   promoters: 55, passives: 25, detractors: 20,
@@ -82,9 +80,124 @@ const RANKING = [
   { location: "Dark Kitchen (La Wera)", nps: 30, mystery: 70, reviews: 3.5, complaints: 6, score: 55, trend: "↓" },
 ];
 
-const MYSTERY_EVALUATIONS = [
-  { id: "MS-008", location: "Cheddar's Angol", date: "01/04", evaluator: "Enc. experiencia", overall: 82, touchpoints: { Llegada: 90, Espera: 70, Pedido: 85, Preparación: 88, Entrega: 80, Consumo: 85, Pago: 82, Despedida: 75 }, weakest: "Espera", kaizen: "Optimizar tiempos entre pedido y servicio. Causa raíz: cocina saturada en horario peak." },
-  { id: "MS-007", location: "Dark Kitchen", date: "25/03", evaluator: "Enc. experiencia", overall: 68, touchpoints: { Llegada: null, Espera: 60, Pedido: 75, Preparación: 72, Entrega: 55, Consumo: 70, Pago: 80, Despedida: null }, weakest: "Entrega", kaizen: "Packaging llega desordenado. Causa raíz: envases no adecuados para transporte. Acción: cambiar envases alitas." },
+// ── Customer Journey: touchpoints por tipo ──
+const JOURNEY_TOUCHPOINTS = {
+  mesa: [
+    { icon: "🏪", title: "Llegada al local", desc: "Primera impresión fachada, limpieza exterior" },
+    { icon: "👋", title: "Recepción / bienvenida", desc: "Saludo, tiempo de espera para ser atendido" },
+    { icon: "🪑", title: "Asignación de mesa", desc: "Limpieza mesa, menú disponible" },
+    { icon: "📝", title: "Toma de pedido", desc: "Conocimiento del menú, sugerencias, amabilidad" },
+    { icon: "⏱️", title: "Espera de preparación", desc: "Tiempo, comunicación si hay demora" },
+    { icon: "🍽️", title: "Entrega de platos", desc: "Presentación, temperatura, orden correcto" },
+    { icon: "😋", title: "Consumo", desc: "Sabor, porciones, consistencia con lo esperado" },
+    { icon: "💬", title: "Seguimiento durante comida", desc: "¿Preguntan si está todo bien?" },
+    { icon: "🧾", title: "Solicitud de cuenta", desc: "Rapidez, claridad del cobro" },
+    { icon: "💳", title: "Pago", desc: "Métodos disponibles, rapidez, propina" },
+    { icon: "👋", title: "Despedida", desc: "Agradecimiento, invitación a volver" },
+  ],
+  meson: [
+    { icon: "🏪", title: "Llegada al local", desc: "Fachada, señalización del mesón" },
+    { icon: "🚶", title: "Fila / espera", desc: "Orden, tiempo, señalización de menú visible" },
+    { icon: "🛒", title: "Pedido en caja", desc: "Amabilidad, conocimiento menú, velocidad" },
+    { icon: "💳", title: "Pago", desc: "Métodos, rapidez" },
+    { icon: "⏳", title: "Espera de preparación", desc: "Tiempo, hay número/pantalla?" },
+    { icon: "📦", title: "Retiro y verificación", desc: "Pedido completo, presentación, empaques" },
+    { icon: "🍔", title: "Consumo", desc: "Sabor, temperatura, porciones" },
+  ],
+  delivery: [
+    { icon: "📱", title: "Descubrimiento en app", desc: "Fotos, descripción, reviews" },
+    { icon: "📋", title: "Navegación del menú", desc: "Categorías claras, precios visibles, promos" },
+    { icon: "✅", title: "Pedido y checkout", desc: "Facilidad, métodos de pago" },
+    { icon: "🔔", title: "Confirmación", desc: "Notificación, tiempo estimado" },
+    { icon: "⏱️", title: "Espera", desc: "Actualizaciones de estado, tiempo real vs estimado" },
+    { icon: "🛵", title: "Entrega en puerta", desc: "Presentación del repartidor, puntualidad" },
+    { icon: "📦", title: "Unboxing", desc: "Empaques, temperatura, sellado, presentación" },
+    { icon: "😋", title: "Consumo", desc: "Sabor, porciones, fidelidad a las fotos" },
+    { icon: "⭐", title: "Post-consumo", desc: "Facilidad para dejar review, resolución si hay problema" },
+  ],
+};
+
+const CJ_LOCATIONS = [
+  { id: "angol", label: "Cheddar's Angol", journeys: [
+    { key: "mesa", name: "Mesa", touchCount: 11, lastEval: "15/03", avgScore: 78 },
+    { key: "meson", name: "Mesón", touchCount: 7, lastEval: "15/03", avgScore: 82 },
+    { key: "delivery", name: "Delivery", touchCount: 9, lastEval: "08/03", avgScore: 71 },
+  ]},
+  { id: "collao", label: "Cheddar's Collao", journeys: [
+    { key: "mesa", name: "Mesa", touchCount: 11, lastEval: "22/03", avgScore: 85 },
+    { key: "meson", name: "Mesón", touchCount: 7, lastEval: "28/03", avgScore: 80 },
+  ]},
+  { id: "barana", label: "Cheddar's B. Arana", journeys: [
+    { key: "mesa", name: "Mesa", touchCount: 11, lastEval: "01/04", avgScore: 74 },
+    { key: "delivery", name: "Delivery", touchCount: 9, lastEval: "01/04", avgScore: 68 },
+  ]},
+  { id: "dk_alley", label: "DK Alley Burger", journeys: [
+    { key: "delivery", name: "Delivery", touchCount: 9, lastEval: "05/04", avgScore: 76 },
+  ]},
+  { id: "dk_wera", label: "DK La Wera", journeys: [
+    { key: "delivery", name: "Delivery", touchCount: 9, lastEval: "12/04", avgScore: 72 },
+  ]},
+];
+
+const PAUTAS_SUMMARY = [
+  { id: "mesa", name: "Pauta Mesa — Estándar", sections: 11, criteria: 42, version: "v2" },
+  { id: "meson", name: "Pauta Mesón — Estándar", sections: 7, criteria: 28, version: "v1" },
+  { id: "delivery", name: "Pauta Delivery — Estándar", sections: 9, criteria: 35, version: "v1" },
+];
+
+/** Criterios mock por pauta: secciones = touchpoints del journey */
+function buildPautaEditorInitial(pautaId) {
+  const tps = JOURNEY_TOUCHPOINTS[pautaId] || [];
+  const mk = (sid, i, desc, type, weight, photoOnFail = false) => ({
+    id: `${sid}-c${i}`, desc, type, weight, photoOnFail,
+  });
+  return {
+    pautaId,
+    sections: tps.map((tp, si) => {
+      const sid = `sec-${pautaId}-${si}`;
+      let items = [];
+      if (pautaId === "mesa" && tp.title.includes("Recepción")) {
+        items = [
+          mk(sid, 1, "¿El personal saluda al cliente dentro de 30 segundos?", "boolean", 3),
+          mk(sid, 2, "¿Hay contacto visual y sonrisa?", "boolean", 2),
+          mk(sid, 3, "Tiempo de espera para ser atendido", "time", 4),
+          mk(sid, 4, "¿Ofrecen opciones si no hay mesa disponible?", "boolean", 1),
+        ];
+      } else if (pautaId === "delivery" && tp.title === "Unboxing") {
+        items = [
+          mk(sid, 1, "¿El empaque llegó sellado?", "boolean", 3),
+          mk(sid, 2, "¿La temperatura del plato es adecuada?", "scale", 4),
+          mk(sid, 3, "¿La presentación coincide con las fotos de la app?", "scale", 3),
+          { id: `${sid}-c4`, desc: "¿Todos los items del pedido están completos?", type: "boolean", weight: 5, photoOnFail: true },
+        ];
+      } else {
+        items = [
+          mk(sid, 1, `Cumplimiento estándar: ${tp.title}`, "boolean", 3, true),
+          mk(sid, 2, "Observaciones del evaluador (breve)", "text", 2),
+          mk(sid, 3, "Nivel percibido de calidad en este touchpoint", "scale", 4),
+        ];
+      }
+      return { id: sid, name: tp.title, expanded: si === 0 || (pautaId === "delivery" && tp.title === "Unboxing"), items };
+    }),
+  };
+}
+
+const CJ_EVALUATIONS = [
+  { id: "CJ-001", date: "15/03", location: "Cheddar's Angol", journey: "Mesa", journeyKey: "mesa", evaluator: "Enc. UX", score: 78, status: "completa", touchScores: [82, 72, 80, 75, 70, 78, 85, 76, 74, 80, 77] },
+  { id: "CJ-002", date: "15/03", location: "Cheddar's Angol", journey: "Mesón", journeyKey: "meson", evaluator: "Enc. UX", score: 82, status: "completa", touchScores: [88, 80, 85, 90, 78, 82, 79] },
+  { id: "CJ-003", date: "22/03", location: "Cheddar's Collao", journey: "Mesa", journeyKey: "mesa", evaluator: "Enc. UX", score: 85, status: "completa", touchScores: [90, 90, 88, 86, 82, 84, 88, 85, 83, 87, 86] },
+  { id: "CJ-004", date: "28/03", location: "Cheddar's Collao", journey: "Mesón", journeyKey: "meson", evaluator: "Enc. UX", score: 78, status: "parcial", touchScores: [85, 70, null, 80, 75, 78, 82] },
+  { id: "CJ-005", date: "01/04", location: "Cheddar's B. Arana", journey: "Mesa", journeyKey: "mesa", evaluator: "Enc. UX", score: 74, status: "completa", touchScores: [70, 65, 72, 78, 68, 75, 80, 74, 76, 73, 78] },
+  { id: "CJ-006", date: "01/04", location: "Cheddar's B. Arana", journey: "Delivery", journeyKey: "delivery", evaluator: "Enc. UX", score: 68, status: "completa", touchScores: [72, 65, 70, 68, 62, 66, 70, 68, 72] },
+  { id: "CJ-007", date: "05/04", location: "DK Alley Burger", journey: "Delivery", journeyKey: "delivery", evaluator: "Enc. UX", score: 76, status: "completa", touchScores: [80, 78, 82, 75, 74, 78, 72, 76, 74] },
+  { id: "CJ-008", date: "12/04", location: "DK La Wera", journey: "Delivery", journeyKey: "delivery", evaluator: "Enc. UX", score: 72, status: "completa", touchScores: [75, 72, 70, 74, 68, 70, 71, 73, 74] },
+];
+
+/** Comparación Mesa: scores por touchpoint (índice alineado con JOURNEY_TOUCHPOINTS.mesa) */
+const COMPARE_MESA_BY_LOCAL = [
+  { label: "Cheddar's Collao", color: B.success, scores: [88, 90, 86, 88, 84, 85, 87, 86, 88, 89, 87] },
+  { label: "Cheddar's Angol", color: B.info, scores: [80, 72, 78, 76, 70, 79, 82, 75, 74, 78, 80] },
+  { label: "Cheddar's B. Arana", color: B.warning, scores: [72, 65, 70, 74, 66, 73, 78, 72, 70, 71, 76] },
 ];
 
 // ══════════════════════════════════════════════════════
@@ -333,115 +446,417 @@ function NpsView() {
 }
 
 // ══════════════════════════════════════════════════════
-// MYSTERY SHOPPER + KAIZEN (P2)
+// CUSTOMER JOURNEY (journeys por local + pautas + evaluaciones)
 // ══════════════════════════════════════════════════════
-function MysteryView() {
-  const [selected, setSelected] = useState(null);
+function CustomerJourneyView() {
+  const [cjSub, setCjSub] = useState("journeys");
+  const [locId, setLocId] = useState(CJ_LOCATIONS[0].id);
+  const [expandedJourney, setExpandedJourney] = useState(null);
+  const [addJourneyOpen, setAddJourneyOpen] = useState(false);
+  const [selectedPauta, setSelectedPauta] = useState(null);
+  const [pautaSections, setPautaSections] = useState([]);
+  const [evalSelected, setEvalSelected] = useState(null);
+  const [newEvalOpen, setNewEvalOpen] = useState(false);
+  const [newEvalLoc, setNewEvalLoc] = useState(CJ_LOCATIONS[0].id);
+  const [newEvalJourney, setNewEvalJourney] = useState("mesa");
+  const [showCompareMesa, setShowCompareMesa] = useState(false);
 
-  if (selected) {
-    const m = selected;
-    return (
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <Btn variant="ghost" onClick={() => setSelected(null)}>← Volver</Btn>
-          <h3 style={{ fontSize: 16, fontWeight: 700 }}>{m.id} — {m.location}</h3>
-        </div>
+  const loc = CJ_LOCATIONS.find(l => l.id === locId) || CJ_LOCATIONS[0];
 
-        {/* Journey map */}
-        <Card style={{ marginBottom: 14 }}>
-          <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Journey del cliente — Touchpoints</h4>
-          <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
-            {TOUCHPOINTS.map(tp => {
-              const score = m.touchpoints[tp];
-              const color = score === null ? B.textLight : score >= 80 ? B.success : score >= 60 ? B.warning : B.danger;
-              const isWeakest = tp === m.weakest;
-              return (
-                <div key={tp} style={{ flex: 1, textAlign: "center", padding: "10px 4px", borderRadius: 8, background: score === null ? B.surfaceHover : `${color}10`, border: isWeakest ? `2px solid ${B.danger}` : `1px solid ${B.border}`, position: "relative" }}>
-                  {isWeakest && <div style={{ position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)", fontSize: 9, background: B.danger, color: "#fff", padding: "1px 6px", borderRadius: 4, fontWeight: 700 }}>MÁS DÉBIL</div>}
-                  <div style={{ fontSize: 10, color: B.textMuted, marginBottom: 4 }}>{tp}</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color }}>{score !== null ? score : "N/A"}</div>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
-            {TOUCHPOINTS.map((_, i) => (
-              <div key={i} style={{ flex: 1, height: 3, background: i < TOUCHPOINTS.length - 1 ? B.accent : "transparent", borderRadius: 2 }} />
-            ))}
-          </div>
-        </Card>
-
-        {/* Kaizen cycle */}
-        <Card style={{ marginBottom: 14, background: B.warningBg, border: `1px solid ${B.warning}25` }}>
-          <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>🔄 Ciclo Kaizen — Punto débil: {m.weakest}</h4>
-          <div style={{ fontSize: 13, color: B.text, lineHeight: 1.6, marginBottom: 10 }}>{m.kaizen}</div>
-          <div style={{ display: "flex", gap: 6 }}>
-            {["Observar", "Analizar causa raíz", "Planificar mejora", "Implementar", "Medir"].map((step, i) => (
-              <div key={i} style={{
-                flex: 1, padding: "8px 4px", borderRadius: 6, textAlign: "center",
-                background: i <= 2 ? B.accent : B.surface, color: i <= 2 ? B.primary : B.textMuted,
-                fontSize: 11, fontWeight: 650, border: `1px solid ${B.border}`,
-              }}>{step}</div>
-            ))}
-          </div>
-        </Card>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Card>
-            <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Datos de la evaluación</h4>
-            {[
-              { label: "Local", value: m.location },
-              { label: "Fecha", value: m.date },
-              { label: "Evaluador", value: m.evaluator },
-              { label: "Score general", value: `${m.overall}%` },
-            ].map(f => (
-              <div key={f.label} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: `1px solid ${B.border}`, fontSize: 13 }}>
-                <span style={{ color: B.textMuted }}>{f.label}</span>
-                <span style={{ fontWeight: 600 }}>{f.value}</span>
-              </div>
-            ))}
-          </Card>
-
-          <Card>
-            <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Mapa de madurez</h4>
-            <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 8 }}>Qué touchpoints están sólidos y cuáles débiles</div>
-            {Object.entries(m.touchpoints).filter(([_, v]) => v !== null).sort(([_, a], [__, b]) => b - a).map(([tp, score]) => (
-              <div key={tp} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 12, width: 80, color: B.textMuted }}>{tp}</span>
-                <div style={{ flex: 1, height: 8, background: B.surfaceHover, borderRadius: 4 }}>
-                  <div style={{ width: `${score}%`, height: "100%", background: score >= 80 ? B.success : score >= 60 ? B.warning : B.danger, borderRadius: 4 }} />
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 700, width: 30, textAlign: "right", color: score >= 80 ? B.success : score >= 60 ? B.warning : B.danger }}>{score}</span>
-              </div>
-            ))}
-          </Card>
-        </div>
-      </div>
-    );
+  function openPautaEditor(id) {
+    setSelectedPauta(id);
+    const data = buildPautaEditorInitial(id);
+    setPautaSections(data.sections);
   }
+
+  function togglePautaSection(secId) {
+    setPautaSections(prev => prev.map(s => s.id === secId ? { ...s, expanded: !s.expanded } : s));
+  }
+
+  function moveCriterion(secId, critId, dir) {
+    setPautaSections(prev => prev.map(s => {
+      if (s.id !== secId) return s;
+      const idx = s.items.findIndex(i => i.id === critId);
+      if ((dir === -1 && idx === 0) || (dir === 1 && idx === s.items.length - 1)) return s;
+      const items = [...s.items];
+      [items[idx], items[idx + dir]] = [items[idx + dir], items[idx]];
+      return { ...s, items };
+    }));
+  }
+
+  function removeCriterion(secId, critId) {
+    setPautaSections(prev => prev.map(s => s.id === secId ? { ...s, items: s.items.filter(i => i.id !== critId) } : s));
+  }
+
+  function addCriterion(secId) {
+    setPautaSections(prev => prev.map(s => {
+      if (s.id !== secId) return s;
+      return {
+        ...s,
+        items: [...s.items, { id: `${secId}-new-${Date.now()}`, desc: "Nuevo criterio de evaluación", type: "boolean", weight: 2, photoOnFail: false }],
+      };
+    }));
+  }
+
+  const pautaTotals = pautaSections.reduce(
+    (acc, s) => {
+      acc.criteria += s.items.length;
+      acc.weight += s.items.reduce((w, i) => w + (i.weight || 0), 0);
+      return acc;
+    },
+    { criteria: 0, weight: 0 }
+  );
+
+  const CJ_SUB_TABS = [
+    { id: "journeys", label: "Journeys por local", icon: "🗺️" },
+    { id: "pautas", label: "Pautas de evaluación", icon: "📋" },
+    { id: "evals", label: "Evaluaciones", icon: "📊" },
+  ];
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
-        <div style={{ fontSize: 13, color: B.textMuted }}>Evaluaciones mystery shopper con journey mapping + ciclo Kaizen</div>
-        <Btn variant="primary">+ Nueva evaluación</Btn>
-      </div>
+      <TabBar tabs={CJ_SUB_TABS.map(t => ({ id: t.id, label: `${t.icon} ${t.label}` }))} active={cjSub} onChange={setCjSub} />
 
-      {MYSTERY_EVALUATIONS.map(m => {
-        const color = m.overall >= 80 ? B.success : m.overall >= 60 ? B.warning : B.danger;
-        return (
-          <Card key={m.id} onClick={() => setSelected(m)} style={{ marginBottom: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, transition: "border-color 0.12s" }}>
-            <div style={{ width: 50, height: 50, borderRadius: 12, background: `${color}15`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <span style={{ fontSize: 20, fontWeight: 800, color }}>{m.overall}</span>
+      {cjSub === "journeys" && (
+        <div>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", gap: 12, marginBottom: 16 }}>
+            <div style={{ flex: "1 1 220px" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Local</div>
+              <select value={locId} onChange={e => { setLocId(e.target.value); setExpandedJourney(null); }} style={{ width: "100%", maxWidth: 360, padding: "9px 12px", border: `1px solid ${B.border}`, borderRadius: 8, fontSize: 13, fontFamily: font, background: B.surface }}>
+                {CJ_LOCATIONS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
+              </select>
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 700 }}>{m.location}</div>
-              <div style={{ fontSize: 12, color: B.textMuted }}>{m.id} · {m.date} · Por: {m.evaluator} · Punto débil: <span style={{ color: B.danger, fontWeight: 600 }}>{m.weakest}</span></div>
+            <Btn variant="primary" onClick={() => setAddJourneyOpen(true)}>+ Agregar journey</Btn>
+          </div>
+
+          <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, marginBottom: 8 }}>
+            {loc.journeys.map(j => {
+              const journeySlot = `${loc.id}:${j.key}`;
+              const expanded = expandedJourney === journeySlot;
+              const scoreColor = j.avgScore >= 80 ? B.success : j.avgScore >= 70 ? B.warning : B.danger;
+              return (
+                <Card
+                  key={j.key}
+                  onClick={() => setExpandedJourney(expanded ? null : journeySlot)}
+                  style={{
+                    minWidth: 200, flex: "0 0 auto", cursor: "pointer",
+                    border: expanded ? `2px solid ${B.accent}` : `1px solid ${B.border}`,
+                    background: expanded ? `${B.accent}06` : B.surface,
+                  }}
+                >
+                  <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 6 }}>{j.name}</div>
+                  <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 8 }}>{j.touchCount} touchpoints</div>
+                  <div style={{ fontSize: 11, color: B.textLight }}>Última evaluación: {j.lastEval}</div>
+                  <div style={{ marginTop: 10, display: "flex", alignItems: "baseline", gap: 6 }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Score prom.</span>
+                    <span style={{ fontSize: 22, fontWeight: 900, color: scoreColor }}>{j.avgScore}%</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: B.accent, fontWeight: 650, marginTop: 8 }}>{expanded ? "Ocultar timeline ▲" : "Ver timeline ▼"}</div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {expandedJourney && (() => {
+            const jKey = expandedJourney.split(":")[1];
+            const j = loc.journeys.find(x => x.key === jKey);
+            const points = JOURNEY_TOUCHPOINTS[jKey] || [];
+            return (
+              <Card style={{ marginTop: 4 }}>
+                <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{j?.name} ({points.length} touchpoints)</h4>
+                <p style={{ fontSize: 12, color: B.textMuted, marginBottom: 20 }}>Timeline del journey — {loc.label}</p>
+                <div style={{ position: "relative", paddingLeft: 28 }}>
+                  <div style={{ position: "absolute", left: 11, top: 8, bottom: 8, width: 2, background: B.border, borderRadius: 1 }} />
+                  {points.map((tp, i) => (
+                    <div key={i} style={{ position: "relative", paddingBottom: i < points.length - 1 ? 20 : 0 }}>
+                      <div style={{
+                        position: "absolute", left: -20, top: 2, width: 22, height: 22, borderRadius: "50%",
+                        background: B.surface, border: `3px solid ${B.accent}`, zIndex: 1,
+                      }} />
+                      <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 22, lineHeight: 1 }}>{tp.icon}</span>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 700 }}>{i + 1}. {tp.title}</div>
+                          <div style={{ fontSize: 12, color: B.textMuted, lineHeight: 1.45, marginTop: 4 }}>{tp.desc}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            );
+          })()}
+
+          {addJourneyOpen && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(26,26,26,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => setAddJourneyOpen(false)}>
+              <Card onClick={e => e.stopPropagation()} style={{ maxWidth: 400, width: "100%" }}>
+                <h4 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10 }}>Nuevo journey</h4>
+                <p style={{ fontSize: 12, color: B.textMuted, marginBottom: 12 }}>Mock: asocia un canal de atención al local seleccionado.</p>
+                <label style={{ fontSize: 11, color: B.textMuted, display: "block", marginBottom: 4 }}>Tipo</label>
+                <select style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: `1px solid ${B.border}`, fontFamily: font, marginBottom: 14 }}>
+                  <option>Mesa</option>
+                  <option>Mesón</option>
+                  <option>Delivery</option>
+                </select>
+                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                  <Btn variant="ghost" onClick={() => setAddJourneyOpen(false)}>Cancelar</Btn>
+                  <Btn variant="primary" onClick={() => setAddJourneyOpen(false)}>Crear (mock)</Btn>
+                </div>
+              </Card>
             </div>
-            <Btn variant="ghost" style={{ fontSize: 12 }}>Ver journey →</Btn>
+          )}
+        </div>
+      )}
+
+      {cjSub === "pautas" && !selectedPauta && (
+        <div>
+          <p style={{ fontSize: 13, color: B.textMuted, marginBottom: 14 }}>La Enc. UX define criterios por touchpoint; cada journey tiene su pauta versionada.</p>
+          {PAUTAS_SUMMARY.map(p => (
+            <Card key={p.id} onClick={() => openPautaEditor(p.id)} style={{ marginBottom: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, borderLeft: `4px solid ${B.accent}` }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>{p.name}</div>
+                <div style={{ fontSize: 12, color: B.textMuted, marginTop: 4 }}>
+                  <Badge>{p.sections} secciones</Badge>
+                  <span style={{ marginLeft: 8 }}>{p.criteria} criterios</span>
+                  <span style={{ marginLeft: 8 }}><Badge color={B.info} bg={B.infoBg}>{p.version}</Badge></span>
+                </div>
+              </div>
+              <Btn variant="ghost" style={{ fontSize: 12 }}>Editar →</Btn>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {cjSub === "pautas" && selectedPauta && (
+        <div>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <Btn variant="ghost" onClick={() => setSelectedPauta(null)}>← Volver a lista</Btn>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ fontSize: 16, fontWeight: 800 }}>{PAUTAS_SUMMARY.find(p => p.id === selectedPauta)?.name}</div>
+              <div style={{ fontSize: 12, color: B.textMuted }}>{PAUTAS_SUMMARY.find(p => p.id === selectedPauta)?.version} · {pautaTotals.criteria} criterios visibles · peso sumado: {pautaTotals.weight}</div>
+            </div>
+            <Btn variant="ghost">Vista previa</Btn>
+            <Btn variant="primary">Guardar</Btn>
+          </div>
+
+          {pautaSections.map(sec => (
+            <div key={sec.id} style={{ marginBottom: 10 }}>
+              <div
+                onClick={() => togglePautaSection(sec.id)}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "12px 16px", background: B.surface, border: `1px solid ${B.border}`,
+                  borderRadius: sec.expanded ? "12px 12px 0 0" : 12, cursor: "pointer",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 12, color: B.textLight, transform: sec.expanded ? "rotate(90deg)" : "none", display: "inline-block" }}>▶</span>
+                  <span style={{ fontSize: 14, fontWeight: 700 }}>Sección: {sec.name}</span>
+                  <Badge>{sec.items.length} criterios</Badge>
+                </div>
+              </div>
+              {sec.expanded && (
+                <div style={{ border: `1px solid ${B.border}`, borderTop: "none", borderRadius: "0 0 12px 12px", padding: "12px 14px", background: B.surfaceHover }}>
+                  {sec.items.map(crit => (
+                    <div key={crit.id} style={{ padding: "10px 0", borderBottom: `1px solid ${B.border}` }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "start" }}>
+                        <textarea
+                          value={crit.desc}
+                          onChange={e => setPautaSections(prev => prev.map(s => s.id !== sec.id ? s : { ...s, items: s.items.map(i => i.id === crit.id ? { ...i, desc: e.target.value } : i) }))}
+                          style={{ width: "100%", minHeight: 52, padding: "8px 10px", borderRadius: 8, border: `1px solid ${B.border}`, fontSize: 13, fontFamily: font, resize: "vertical" }}
+                        />
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                          <button type="button" onClick={() => moveCriterion(sec.id, crit.id, -1)} style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${B.border}`, background: B.surface, cursor: "pointer", fontFamily: font }}>▲</button>
+                          <button type="button" onClick={() => moveCriterion(sec.id, crit.id, 1)} style={{ padding: "4px 8px", fontSize: 11, borderRadius: 6, border: `1px solid ${B.border}`, background: B.surface, cursor: "pointer", fontFamily: font }}>▼</button>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8, alignItems: "center" }}>
+                        <div>
+                          <span style={{ fontSize: 10, color: B.textMuted, marginRight: 6 }}>Tipo</span>
+                          <select
+                            value={crit.type}
+                            onChange={e => setPautaSections(prev => prev.map(s => s.id !== sec.id ? s : { ...s, items: s.items.map(i => i.id === crit.id ? { ...i, type: e.target.value } : i) }))}
+                            style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${B.border}`, fontSize: 12, fontFamily: font }}
+                          >
+                            <option value="boolean">Sí / No</option>
+                            <option value="scale">Escala 1–5</option>
+                            <option value="time">Tiempo (seg/min)</option>
+                            <option value="text">Texto libre</option>
+                          </select>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: 10, color: B.textMuted, marginRight: 6 }}>Peso</span>
+                          <input
+                            type="number" min={1} max={10}
+                            value={crit.weight}
+                            onChange={e => setPautaSections(prev => prev.map(s => s.id !== sec.id ? s : { ...s, items: s.items.map(i => i.id === crit.id ? { ...i, weight: parseInt(e.target.value, 10) || 0 } : i) }))}
+                            style={{ width: 48, padding: "5px 6px", borderRadius: 6, border: `1px solid ${B.border}`, fontSize: 12, fontFamily: font, textAlign: "center" }}
+                          />
+                        </div>
+                        <label style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                          <input
+                            type="checkbox"
+                            checked={!!crit.photoOnFail}
+                            onChange={e => setPautaSections(prev => prev.map(s => s.id !== sec.id ? s : { ...s, items: s.items.map(i => i.id === crit.id ? { ...i, photoOnFail: e.target.checked } : i) }))}
+                          />
+                          Foto obligatoria si falla
+                        </label>
+                        <Btn variant="danger" style={{ fontSize: 11, padding: "4px 10px", marginLeft: "auto" }} onClick={() => removeCriterion(sec.id, crit.id)}>Eliminar</Btn>
+                      </div>
+                    </div>
+                  ))}
+                  <Btn style={{ marginTop: 10, fontSize: 12 }} onClick={() => addCriterion(sec.id)}>+ Agregar criterio</Btn>
+                </div>
+              )}
+            </div>
+          ))}
+
+          <Card style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, justifyContent: "space-between" }}>
+            <div style={{ fontSize: 13 }}>
+              <strong>Total:</strong> {pautaTotals.criteria} criterios · <strong>Peso total:</strong> {pautaTotals.weight}
+            </div>
+            <Btn variant="ghost">Duplicar pauta</Btn>
           </Card>
-        );
-      })}
+        </div>
+      )}
+
+      {cjSub === "evals" && !evalSelected && (
+        <div>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
+            <div style={{ fontSize: 13, color: B.textMuted }}>Historial de evaluaciones por local y journey</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <Btn variant={showCompareMesa ? "primary" : "default"} onClick={() => setShowCompareMesa(v => !v)}>
+                {showCompareMesa ? "Ocultar comparación Mesa" : "Comparar Mesa entre locales"}
+              </Btn>
+              <Btn variant="primary" onClick={() => setNewEvalOpen(true)}>+ Nueva evaluación</Btn>
+            </div>
+          </div>
+
+          {showCompareMesa && (
+            <Card style={{ marginBottom: 16 }}>
+              <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Mesa — mismo journey, distintos locales</h4>
+              <p style={{ fontSize: 12, color: B.textMuted, marginBottom: 14 }}>Barras por touchpoint; un color por local. Ej.: Collao lidera en Recepción (90%) vs Angol (72%) vs B. Arana (65%).</p>
+              {JOURNEY_TOUCHPOINTS.mesa.map((tp, ti) => (
+                <div key={tp.title} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{tp.title}</div>
+                  {COMPARE_MESA_BY_LOCAL.map(locRow => {
+                    const pct = locRow.scores[ti];
+                    return (
+                      <div key={locRow.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                        <span style={{ fontSize: 11, width: 140, flexShrink: 0, color: B.textMuted }}>{locRow.label}</span>
+                        <div style={{ flex: 1, height: 10, background: B.surfaceHover, borderRadius: 5, overflow: "hidden" }}>
+                          <div style={{ width: `${pct}%`, height: "100%", background: locRow.color, borderRadius: 5, transition: "width 0.2s" }} />
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, width: 36, textAlign: "right", color: locRow.color }}>{pct}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </Card>
+          )}
+
+          <Card style={{ padding: 0, overflow: "hidden" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+                  {["Fecha", "Local", "Journey", "Evaluador", "Score", "Estado", ""].map(h => (
+                    <th key={h} style={{ padding: "10px 12px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 11 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {CJ_EVALUATIONS.map(ev => {
+                  const sc = ev.score >= 80 ? B.success : ev.score >= 70 ? B.warning : B.danger;
+                  return (
+                    <tr key={ev.id} onClick={() => setEvalSelected(ev)} style={{ borderBottom: `1px solid ${B.border}`, cursor: "pointer" }}>
+                      <td style={{ padding: "10px 12px" }}>{ev.date}</td>
+                      <td style={{ padding: "10px 12px", fontWeight: 600 }}>{ev.location}</td>
+                      <td style={{ padding: "10px 12px" }}>{ev.journey}</td>
+                      <td style={{ padding: "10px 12px" }}>{ev.evaluator}</td>
+                      <td style={{ padding: "10px 12px", fontWeight: 800, color: sc }}>{ev.score}%</td>
+                      <td style={{ padding: "10px 12px" }}>
+                        <Badge color={ev.status === "completa" ? B.success : B.warning} bg={ev.status === "completa" ? B.successBg : B.warningBg}>
+                          {ev.status === "completa" ? "Completa" : "Parcial"}
+                        </Badge>
+                      </td>
+                      <td style={{ padding: "10px 12px" }}><span style={{ color: B.accent, fontWeight: 600, fontSize: 12 }}>Ver →</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Card>
+
+          {newEvalOpen && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(26,26,26,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => setNewEvalOpen(false)}>
+              <Card onClick={e => e.stopPropagation()} style={{ maxWidth: 420, width: "100%" }}>
+                <h4 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>Nueva evaluación</h4>
+                <label style={{ fontSize: 11, color: B.textMuted }}>Local</label>
+                <select value={newEvalLoc} onChange={e => setNewEvalLoc(e.target.value)} style={{ width: "100%", marginBottom: 10, padding: "8px 10px", borderRadius: 8, border: `1px solid ${B.border}`, fontFamily: font }}>
+                  {CJ_LOCATIONS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
+                </select>
+                <label style={{ fontSize: 11, color: B.textMuted }}>Journey</label>
+                <select value={newEvalJourney} onChange={e => setNewEvalJourney(e.target.value)} style={{ width: "100%", marginBottom: 14, padding: "8px 10px", borderRadius: 8, border: `1px solid ${B.border}`, fontFamily: font }}>
+                  <option value="mesa">Mesa</option>
+                  <option value="meson">Mesón</option>
+                  <option value="delivery">Delivery</option>
+                </select>
+                <p style={{ fontSize: 12, color: B.textMuted, marginBottom: 12 }}>Se abrirá la pauta correspondiente (mock).</p>
+                <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                  <Btn variant="ghost" onClick={() => setNewEvalOpen(false)}>Cancelar</Btn>
+                  <Btn variant="primary" onClick={() => setNewEvalOpen(false)}>Iniciar pauta</Btn>
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
+      )}
+
+      {cjSub === "evals" && evalSelected && (
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+            <Btn variant="ghost" onClick={() => setEvalSelected(null)}>← Volver</Btn>
+            <h3 style={{ fontSize: 16, fontWeight: 700 }}>{evalSelected.id} — {evalSelected.location} · {evalSelected.journey}</h3>
+            <Badge color={evalSelected.status === "completa" ? B.success : B.warning} bg={evalSelected.status === "completa" ? B.successBg : B.warningBg}>
+              {evalSelected.status === "completa" ? "Completa" : "Parcial"}
+            </Badge>
+          </div>
+          <Card style={{ marginBottom: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, fontSize: 13 }}>
+              {[
+                { label: "Fecha", value: evalSelected.date },
+                { label: "Evaluador", value: evalSelected.evaluator },
+                { label: "Score general", value: `${evalSelected.score}%` },
+                { label: "Pauta", value: `Pauta ${evalSelected.journey} — Estándar` },
+              ].map(r => (
+                <div key={r.label}>
+                  <div style={{ fontSize: 11, color: B.textMuted }}>{r.label}</div>
+                  <div style={{ fontWeight: 600 }}>{r.value}</div>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card>
+            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Resultados por touchpoint</h4>
+            {(JOURNEY_TOUCHPOINTS[evalSelected.journeyKey] || []).map((tp, i) => {
+              const raw = evalSelected.touchScores[i];
+              const score = raw == null ? null : raw;
+              const color = score == null ? B.textLight : score >= 80 ? B.success : score >= 65 ? B.warning : B.danger;
+              return (
+                <div key={tp.title} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <span style={{ fontSize: 12, width: 28 }}>{tp.icon}</span>
+                  <span style={{ fontSize: 12, width: 200, flexShrink: 0, fontWeight: 600 }}>{tp.title}</span>
+                  <div style={{ flex: 1, height: 12, background: B.surfaceHover, borderRadius: 6, overflow: "hidden" }}>
+                    {score != null && <div style={{ width: `${score}%`, height: "100%", background: color, borderRadius: 6 }} />}
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 800, width: 40, textAlign: "right", color }}>{score == null ? "—" : `${score}%`}</span>
+                </div>
+              );
+            })}
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
@@ -657,7 +1072,7 @@ export default function ExperienciaModule() {
   const TABS = [
     { id: "crm", label: "CRM Reclamos", icon: "📩", badge: openComplaints, badgeBg: B.dangerBg, badgeColor: B.danger },
     { id: "nps", label: "NPS", icon: "📊" },
-    { id: "mystery", label: "Mystery shopper", icon: "🕵️" },
+    { id: "journey", label: "Customer Journey", icon: "🗺️" },
     { id: "ranking", label: "Ranking + planes", icon: "🏆" },
     { id: "feedback", label: "Feedback + ManyChat", icon: "🤖" },
   ];
@@ -702,7 +1117,7 @@ export default function ExperienciaModule() {
 
         {tab === "crm" && <CrmView />}
         {tab === "nps" && <NpsView />}
-        {tab === "mystery" && <MysteryView />}
+        {tab === "journey" && <CustomerJourneyView />}
         {tab === "ranking" && <RankingView />}
         {tab === "feedback" && <FeedbackView />}
       </main>
