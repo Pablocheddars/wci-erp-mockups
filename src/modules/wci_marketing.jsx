@@ -33,9 +33,15 @@ const TEAM=[{id:"ashly",name:"Ashly Arias",role:"Coordinadora / Planner",short:"
 const NETWORKS=[{id:"ig",name:"Instagram",icon:"📸"},{id:"tiktok",name:"TikTok",icon:"🎵"}];
 const CONTENT_TYPES=[{id:"reel",name:"Reel"},{id:"carrusel",name:"Carrusel"},{id:"post",name:"Post"},{id:"historia",name:"Historia"}];
 
-const CAMPAIGNS=[{id:1,name:"Burger del Día Fatty Patty",brand:"fatty",origin:"joaquin",status:"publicada",idea:"Promocionar precios más bajos en burgers, generar engagement con conceposting",startDate:"01/04",endDate:"10/04",networks:["ig","tiktok"],pieces:6,piecesReady:6,piecesApproved:6},{id:2,name:"Lanzamiento Tori Sushi RRSS",brand:"tori",origin:"pablo",status:"en_produccion",idea:"Debut de Tori en redes, posicionar como sushi premium de Conce",startDate:"02/04",endDate:"30/04",networks:["ig","tiktok"],pieces:12,piecesReady:5,piecesApproved:3},{id:3,name:"Bingo Cheddar's Abril",brand:"cheddars",origin:"equipo",status:"en_produccion",idea:"Evento semanal domingos, generar comunidad presencial",startDate:"06/04",endDate:"27/04",networks:["ig"],pieces:8,piecesReady:2,piecesApproved:2},{id:4,name:"Martes de Amigas Cheddar's",brand:"cheddars",origin:"joaquin",status:"aprobada",idea:"Evento recurrente martes, target mujeres jóvenes, happy hour + animación",startDate:"08/04",endDate:"29/04",networks:["ig","tiktok"],pieces:8,piecesReady:0,piecesApproved:0},{id:5,name:"Puntos Fidelización Cross-Brand",brand:"cheddars",origin:"pablo",status:"propuesta",idea:"Promover programa de puntos válido en Cheddar's + Buffalo + Pork Shop",startDate:"15/04",endDate:"30/04",networks:["ig"],pieces:4,piecesReady:0,piecesApproved:0},{id:6,name:"Samai Lanzamiento Redes",brand:"samai",origin:"externo",status:"en_produccion",idea:"Posicionar clínica dental en IG, presentar equipo médico",startDate:"26/01",endDate:"28/02",networks:["ig"],pieces:10,piecesReady:7,piecesApproved:6}];
+const CAMPAIGNS=[{id:1,name:"Burger del Día Fatty Patty",brand:"fatty",origin:"joaquin",status:"publicada",idea:"Promocionar precios más bajos en burgers, generar engagement con conceposting",startDate:"01/04",endDate:"10/04",networks:["ig","tiktok"],pieces:6,piecesReady:6,piecesApproved:6},{id:2,name:"Lanzamiento Tori Sushi RRSS",brand:"tori",origin:"pablo",status:"en_produccion",idea:"Debut de Tori en redes, posicionar como sushi premium de Conce",startDate:"02/04",endDate:"30/04",networks:["ig","tiktok"],pieces:12,piecesReady:5,piecesApproved:3},{id:3,name:"Bingo Cheddar's Abril",brand:"cheddars",origin:"equipo",status:"en_produccion",idea:"Evento semanal domingos, generar comunidad presencial",startDate:"06/04",endDate:"27/04",networks:["ig"],pieces:8,piecesReady:2,piecesApproved:2},{id:4,name:"Martes de Amigas Cheddar's",brand:"cheddars",origin:"joaquin",status:"aprobada",idea:"Evento recurrente martes, target mujeres jóvenes, happy hour + animación",startDate:"08/04",endDate:"29/04",networks:["ig","tiktok"],pieces:8,piecesReady:0,piecesApproved:0},{id:5,name:"Puntos Fidelización Cross-Brand",brand:"cheddars",origin:"pablo",status:"propuesta",idea:"Promover programa de puntos válido en Cheddar's + Buffalo + Pork Shop",startDate:"15/04",endDate:"30/04",networks:["ig"],pieces:4,piecesReady:0,piecesApproved:0},{id:6,name:"Samai Lanzamiento Redes",brand:"samai",origin:"externo",status:"evaluada",idea:"Posicionar clínica dental en IG, presentar equipo médico",startDate:"26/01",endDate:"28/02",networks:["ig"],pieces:10,piecesReady:10,piecesApproved:10}];
 const CAMPAIGN_STATUS={propuesta:{label:"Propuesta",color:B.purple,bg:B.purpleBg},aprobada:{label:"Aprobada",color:B.info,bg:B.infoBg},en_produccion:{label:"En producción",color:B.warning,bg:B.warningBg},publicada:{label:"Publicada",color:B.success,bg:B.successBg},evaluada:{label:"Evaluada",color:B.textMuted,bg:B.surfaceHover}};
-const EFEMERIDES=[{date:"07/04",name:"Día Mundial de la Salud",brands:["samai"],hasCampaign:false},{date:"13/04",name:"Día del Beso",brands:["cheddars","fatty"],hasCampaign:false},{date:"22/04",name:"Día de la Tierra",brands:["smarteats","kiri"],hasCampaign:false},{date:"01/05",name:"Día del Trabajador",brands:["cheddars","tori","brown"],hasCampaign:false},{date:"10/05",name:"Día de la Madre",brands:["cheddars","tori","brown","samai"],hasCampaign:false}];
+const EFEMERIDES=[
+  { id: 1, date: "07/04", name: "Día Mundial de la Salud", brands: ["samai"], hasCampaign: false },
+  { id: 2, date: "13/04", name: "Día del Beso", brands: ["cheddars", "fatty"], hasCampaign: false },
+  { id: 3, date: "22/04", name: "Día de la Tierra", brands: ["smarteats", "kiri"], hasCampaign: false },
+  { id: 4, date: "01/05", name: "Día del Trabajador", brands: ["cheddars", "tori", "brown"], hasCampaign: false },
+  { id: 5, date: "10/05", name: "Día de la Madre", brands: ["cheddars", "tori", "brown", "samai"], hasCampaign: false },
+];
 
 const CALENDAR_ITEMS=[{id:1,date:"07/04",brand:"cheddars",network:"ig",type:"reel",title:"Bingo recap domingo",assignedTo:"marco",status:"en_progreso",campaign:3},{id:2,date:"07/04",brand:"tori",network:"ig",type:"carrusel",title:"Tartar Roll producto",assignedTo:"josef",status:"aprobada",campaign:2},{id:3,date:"07/04",brand:"tori",network:"tiktok",type:"reel",title:"Preparación sushi POV",assignedTo:"marco",status:"en_progreso",campaign:2},{id:4,date:"08/04",brand:"cheddars",network:"ig",type:"carrusel",title:"Martes de Amigas anuncio",assignedTo:"josef",status:"pendiente",campaign:4},{id:5,date:"08/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Martes de Amigas video",assignedTo:"marco",status:"pendiente",campaign:4},{id:6,date:"08/04",brand:"fatty",network:"ig",type:"post",title:"Burger del Día martes",assignedTo:"diego",status:"aprobada",campaign:1},{id:7,date:"09/04",brand:"tori",network:"ig",type:"post",title:"Curiosidad sushi miércoles",assignedTo:"diego",status:"pendiente",campaign:2},{id:8,date:"09/04",brand:"samai",network:"ig",type:"carrusel",title:"Dra. Daniela perfil",assignedTo:"josef",status:"en_revision",campaign:6},{id:9,date:"10/04",brand:"cheddars",network:"ig",type:"post",title:"Happy hour jueves",assignedTo:"diego",status:"pendiente",campaign:3},{id:10,date:"10/04",brand:"buffalo",network:"ig",type:"carrusel",title:"Wings 12u promo",assignedTo:"josef",status:"pendiente",campaign:null},{id:11,date:"11/04",brand:"tori",network:"ig",type:"carrusel",title:"Roll California viernes",assignedTo:"josef",status:"pendiente",campaign:2},{id:12,date:"11/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Stand up recap",assignedTo:"marco",status:"pendiente",campaign:null},{id:20,date:"01/04",brand:"cheddars",network:"ig",type:"post",title:"Abril llegó a Cheddar's",assignedTo:"diego",status:"publicada",campaign:null},{id:21,date:"02/04",brand:"fatty",network:"ig",type:"carrusel",title:"Burger del Día lanzamiento",assignedTo:"josef",status:"publicada",campaign:1},{id:22,date:"03/04",brand:"tori",network:"ig",type:"historia",title:"Coming soon Tori Sushi",assignedTo:"josef",status:"publicada",campaign:2},{id:23,date:"05/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Recap stand up viernes",assignedTo:"marco",status:"publicada",campaign:null},{id:30,date:"14/04",brand:"cheddars",network:"ig",type:"carrusel",title:"Puntos fidelización explicado",assignedTo:"josef",status:"pendiente",campaign:5},{id:31,date:"15/04",brand:"tori",network:"tiktok",type:"reel",title:"Sushi challenge TikTok",assignedTo:"marco",status:"pendiente",campaign:2},{id:32,date:"16/04",brand:"buffalo",network:"ig",type:"post",title:"Wings Wednesday promo",assignedTo:"diego",status:"pendiente",campaign:null},{id:33,date:"17/04",brand:"brown",network:"ig",type:"carrusel",title:"Brownie Box nueva presentación",assignedTo:"josef",status:"pendiente",campaign:null},{id:34,date:"18/04",brand:"cheddars",network:"ig",type:"reel",title:"Recap Martes Amigas 2",assignedTo:"marco",status:"pendiente",campaign:4},{id:40,date:"21/04",brand:"tori",network:"ig",type:"carrusel",title:"Menú ejecutivo lanzamiento",assignedTo:"josef",status:"pendiente",campaign:2},{id:41,date:"22/04",brand:"smarteats",network:"ig",type:"post",title:"Día de la Tierra Smart Eats",assignedTo:"diego",status:"pendiente",campaign:null},{id:42,date:"24/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Behind the scenes cocina",assignedTo:"marco",status:"pendiente",campaign:null},{id:50,date:"28/04",brand:"cheddars",network:"ig",type:"post",title:"Cierre de mes agradecimiento",assignedTo:"diego",status:"pendiente",campaign:null},{id:51,date:"29/04",brand:"tori",network:"ig",type:"carrusel",title:"Tori mayo preview",assignedTo:"josef",status:"pendiente",campaign:2},{id:52,date:"30/04",brand:"fatty",network:"tiktok",type:"reel",title:"Fatty Patty mayo teaser",assignedTo:"marco",status:"pendiente",campaign:null}];
 const CAL_STATUS={pendiente:{label:"Pendiente",color:B.textMuted,bg:B.surfaceHover},en_progreso:{label:"En progreso",color:B.info,bg:B.infoBg},en_revision:{label:"En revisión",color:B.warning,bg:B.warningBg},aprobada:{label:"Aprobada",color:B.success,bg:B.successBg},publicada:{label:"Publicada",color:B.textLight,bg:B.surfaceHover}};
@@ -221,7 +227,7 @@ const TOP_POSTS = [
 
 const CAMPAIGN_RESULTS = [
   { campaignId: 1, name: "Burger del Día Fatty Patty", brand: "fatty", totalReach: 28500, totalImpressions: 68000, totalEngagement: 1850, engagementRate: 5.2, newFollowers: 85, clicks: 320, salesAttributed: 1800000, newClients: 22, costHours: 18, pieces: 6 },
-  { campaignId: 6, name: "Samai Lanzamiento Redes", brand: "samai", totalReach: 12000, totalImpressions: 31000, totalEngagement: 920, engagementRate: 5.8, newFollowers: 320, clicks: 180, salesAttributed: 0, newClients: 0, costHours: 24, pieces: 7 },
+  { campaignId: 6, name: "Samai Lanzamiento Redes", brand: "samai", totalReach: 12000, totalImpressions: 31000, totalEngagement: 920, engagementRate: 5.8, newFollowers: 320, clicks: 180, salesAttributed: 0, newClients: 0, costHours: 24, pieces: 10 },
 ];
 
 const CONTENT_BENCHMARK = [
@@ -239,9 +245,15 @@ function computePendingApprovalsUnion(){const approvalPending=APPROVALS.filter(a
 const loadPct=(tasks,cap)=>cap>0?Math.round(tasks/cap*100):0;
 const loadColor=pct=>pct>100?B.danger:pct>=85?B.warning:B.success;
 
-function DashboardView(){const pendingApprovals=APPROVALS.filter(a=>a.status==="pendiente").length;const efemsNocamp=EFEMERIDES.filter(e=>!e.hasCampaign).length;return<div><div style={{display:"grid",gridTemplateColumns:"repeat(5, 1fr)",gap:10,marginBottom:16}}><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Piezas publicadas (mes)</div><div style={{fontSize:22,fontWeight:800,color:B.text}}>47</div><div style={{fontSize:11,color:B.success}}>+12 vs mes anterior</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>% a tiempo</div><div style={{fontSize:22,fontWeight:800,color:B.success}}>81%</div><div style={{fontSize:11,color:B.textMuted}}>38/47 entregas</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Aprobadas 1ra vez</div><div style={{fontSize:22,fontWeight:800,color:B.info}}>68%</div><div style={{fontSize:11,color:B.textMuted}}>32/47 piezas</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Marcas activas</div><div style={{fontSize:22,fontWeight:800,color:B.purple}}>{activeBrands.length}</div><div style={{fontSize:11,color:B.textMuted}}>+ 1 pausada</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Campañas activas</div><div style={{fontSize:22,fontWeight:800,color:B.warning}}>{CAMPAIGNS.filter(c=>["en_produccion","aprobada"].includes(c.status)).length}</div><div style={{fontSize:11,color:B.textMuted}}>+ {CAMPAIGNS.filter(c=>c.status==="propuesta").length} propuesta</div></Card></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}><Card><h3 style={{fontSize:14,fontWeight:700,marginBottom:12}}>Carga equipo esta semana</h3>{TEAM.map(t=>{const pct=loadPct(t.tasksWeek,t.capacityWeek);const c=loadColor(pct);return<div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:`1px solid ${B.border}`}}><div style={{width:28,height:28,borderRadius:"50%",background:t.color,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:10,color:"#fff",flexShrink:0}}>{t.short}</div><div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{t.name}</div><div style={{fontSize:11,color:B.textMuted}}>{t.role}{t.isExperience?" · Mod. 11":""}</div></div><div style={{width:60,height:6,background:B.surfaceHover,borderRadius:3,overflow:"hidden"}}><div style={{width:`${Math.min(pct,100)}%`,height:"100%",background:c,borderRadius:3}}/></div><div style={{fontSize:12,fontWeight:700,color:c,minWidth:55,textAlign:"right"}}>{t.tasksWeek}/{t.capacityWeek}</div></div>})}</Card><div><Card style={{marginBottom:14}}><h3 style={{fontSize:14,fontWeight:700,marginBottom:12}}>Próximas publicaciones</h3>{CALENDAR_ITEMS.filter(c=>["07/04","08/04"].includes(c.date)).slice(0,5).map(item=>{const br=getBrand(item.brand);const st=CAL_STATUS[item.status];return<div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${B.border}`}}><div style={{width:6,height:6,borderRadius:"50%",background:br.color,flexShrink:0}}/><div style={{flex:1,fontSize:12,fontWeight:600}}>{item.title}</div><Badge color={br.color} bg={`${br.color}15`}>{br.name}</Badge><span style={{fontSize:11,color:B.textMuted}}>{item.date}</span><Badge color={st.color} bg={st.bg}>{st.label}</Badge></div>})}</Card><Card style={{border:`1px solid ${B.danger}20`}}><h3 style={{fontSize:14,fontWeight:700,color:B.danger,marginBottom:10}}>Alertas</h3>{[{text:`${pendingApprovals} piezas esperando aprobación`,severity:"alta"},{text:"1 tarea vencida (Portada reel Bingo — Josef)",severity:"alta"},{text:`${efemsNocamp} efemérides próximas sin campaña`,severity:"media"},{text:"Marco al 100% de capacidad esta semana",severity:"media"},{text:"Kathya: 3 DMs negativos en Cheddar's IG",severity:"baja"}].map((a,i)=><div key={i} style={{display:"flex",gap:8,padding:"6px 0",borderBottom:`1px solid ${B.border}`,alignItems:"flex-start"}}><div style={{width:8,height:8,borderRadius:"50%",background:a.severity==="alta"?B.danger:a.severity==="media"?B.warning:B.info,marginTop:4,flexShrink:0}}/><div style={{fontSize:12,color:B.text,lineHeight:1.4}}>{a.text}</div></div>)}</Card></div></div></div>}
+function DashboardView({ efemerides, onNavigate }) {
+  const pendingApprovals = APPROVALS.filter((a) => a.status === "pendiente").length;
+  const efemsNocamp = efemerides.filter((e) => !e.hasCampaign).length;
+  return (
+<div><div style={{display:"grid",gridTemplateColumns:"repeat(5, 1fr)",gap:10,marginBottom:16}}><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Piezas publicadas (mes)</div><div style={{fontSize:22,fontWeight:800,color:B.text}}>47</div><div style={{fontSize:11,color:B.success}}>+12 vs mes anterior</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>% a tiempo</div><div style={{fontSize:22,fontWeight:800,color:B.success}}>81%</div><div style={{fontSize:11,color:B.textMuted}}>38/47 entregas</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Aprobadas 1ra vez</div><div style={{fontSize:22,fontWeight:800,color:B.info}}>68%</div><div style={{fontSize:11,color:B.textMuted}}>32/47 piezas</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Marcas activas</div><div style={{fontSize:22,fontWeight:800,color:B.purple}}>{activeBrands.length}</div><div style={{fontSize:11,color:B.textMuted}}>+ 1 pausada</div></Card><Card><div style={{fontSize:11,color:B.textMuted,fontWeight:600}}>Campañas activas</div><div style={{fontSize:22,fontWeight:800,color:B.warning}}>{CAMPAIGNS.filter(c=>["en_produccion","aprobada"].includes(c.status)).length}</div><div style={{fontSize:11,color:B.textMuted}}>+ {CAMPAIGNS.filter(c=>c.status==="propuesta").length} propuesta</div></Card></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}><Card><h3 style={{fontSize:14,fontWeight:700,marginBottom:12}}>Carga equipo esta semana</h3>{TEAM.map(t=>{const pct=loadPct(t.tasksWeek,t.capacityWeek);const c=loadColor(pct);return<div key={t.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:`1px solid ${B.border}`}}><div style={{width:28,height:28,borderRadius:"50%",background:t.color,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:10,color:"#fff",flexShrink:0}}>{t.short}</div><div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>{t.name}</div><div style={{fontSize:11,color:B.textMuted}}>{t.role}{t.isExperience?" · Mod. 11":""}</div></div><div style={{width:60,height:6,background:B.surfaceHover,borderRadius:3,overflow:"hidden"}}><div style={{width:`${Math.min(pct,100)}%`,height:"100%",background:c,borderRadius:3}}/></div><div style={{fontSize:12,fontWeight:700,color:c,minWidth:55,textAlign:"right"}}>{t.tasksWeek}/{t.capacityWeek}</div></div>})}</Card><div><Card style={{marginBottom:14}}><h3 style={{fontSize:14,fontWeight:700,marginBottom:12}}>Próximas publicaciones</h3>{CALENDAR_ITEMS.filter(c=>["07/04","08/04"].includes(c.date)).slice(0,5).map(item=>{const br=getBrand(item.brand);const st=CAL_STATUS[item.status];return<div key={item.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${B.border}`}}><div style={{width:6,height:6,borderRadius:"50%",background:br.color,flexShrink:0}}/><div style={{flex:1,fontSize:12,fontWeight:600}}>{item.title}</div><Badge color={br.color} bg={`${br.color}15`}>{br.name}</Badge><span style={{fontSize:11,color:B.textMuted}}>{item.date}</span><Badge color={st.color} bg={st.bg}>{st.label}</Badge></div>})}</Card><Card style={{border:`1px solid ${B.danger}20`}}><h3 style={{fontSize:14,fontWeight:700,color:B.danger,marginBottom:10}}>Alertas</h3>{[{text:`${pendingApprovals} piezas esperando aprobación`,severity:"alta"},{text:"1 tarea vencida (Portada reel Bingo — Josef)",severity:"alta"},{text:`${efemsNocamp} efemérides próximas sin campaña`,severity:"media",onClick:()=>onNavigate("calendario",{openEfemerides:true})},{text:"Marco al 100% de capacidad esta semana",severity:"media"},{text:"Kathya: 3 DMs negativos en Cheddar's IG",severity:"baja"}].map((a,i)=><div key={i} role={a.onClick?"button":undefined} tabIndex={a.onClick?0:undefined} onClick={()=>a.onClick?.()} onKeyDown={(e)=>{if(!a.onClick)return;if(e.key==="Enter"||e.key===" "){e.preventDefault();a.onClick();}}} onMouseEnter={(e)=>{if(a.onClick)e.currentTarget.style.background=B.surfaceHover}} onMouseLeave={(e)=>{e.currentTarget.style.background="transparent"}} style={{display:"flex",gap:8,padding:"6px 0",borderBottom:`1px solid ${B.border}`,alignItems:"flex-start",cursor:a.onClick?"pointer":"default",borderRadius:4}}><div style={{width:8,height:8,borderRadius:"50%",background:a.severity==="alta"?B.danger:a.severity==="media"?B.warning:B.info,marginTop:4,flexShrink:0}}/><div style={{fontSize:12,color:B.text,lineHeight:1.4}}>{a.text}</div></div>)}</Card></div></div></div>
+  );
+}
 
-function CalendarioView() {
+function CalendarioView({ efemerides, setEfemerides, efemeridesPanelOpen, setEfemeridesPanelOpen }) {
   const [brandFilter, setBrandFilter] = useState("todas");
   const [networkFilter, setNetworkFilter] = useState("todas");
   const [viewMode, setViewMode] = useState("mes");
@@ -249,6 +261,21 @@ function CalendarioView() {
   const [currentYear, setCurrentYear] = useState(2026);
   const [selectedDate, setSelectedDate] = useState(7);
   const [backFromView, setBackFromView] = useState("mes");
+  const [newEfeDate, setNewEfeDate] = useState("");
+  const [newEfeName, setNewEfeName] = useState("");
+  const [newEfeBrands, setNewEfeBrands] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editDate, setEditDate] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editBrands, setEditBrands] = useState([]);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [linkToast, setLinkToast] = useState(null);
+
+  useEffect(() => {
+    if (!linkToast) return undefined;
+    const t = setTimeout(() => setLinkToast(null), 2600);
+    return () => clearTimeout(t);
+  }, [linkToast]);
 
   const pad2 = (n) => String(n).padStart(2, "0");
   const toKeyFromDate = (dt) => `${pad2(dt.getDate())}/${pad2(dt.getMonth() + 1)}`;
@@ -346,7 +373,7 @@ function CalendarioView() {
   const dayFocus = new Date(currentYear, currentMonth, selectedDate);
   const dayKey = `${pad2(selectedDate)}/${pad2(currentMonth + 1)}`;
   const dayItems = itemsForKey(dayKey);
-  const dayEfem = EFEMERIDES.find((e) => e.date === dayKey);
+  const dayEfem = efemerides.find((e) => e.date === dayKey);
 
   const navArrow = (onClick, dir) => (
     <button
@@ -430,8 +457,60 @@ function CalendarioView() {
     );
   };
 
+  const efeSortValue = (d) => {
+    const p = String(d || "").split("/");
+    if (p.length < 2) return 0;
+    const day = Number(p[0]);
+    const mo = Number(p[1]);
+    if (!day || !mo) return 0;
+    return mo * 100 + day;
+  };
+  const efemeridesSorted = [...efemerides].sort((a, b) => efeSortValue(a.date) - efeSortValue(b.date));
+
+  const addEfemeride = () => {
+    if (!newEfeDate.trim() || !newEfeName.trim() || newEfeBrands.length === 0) return;
+    setEfemerides((prev) => {
+      const nid = prev.reduce((m, e) => Math.max(m, e.id || 0), 0) + 1;
+      return [
+        ...prev,
+        { id: nid, date: newEfeDate.trim(), name: newEfeName.trim(), brands: [...newEfeBrands], hasCampaign: false },
+      ];
+    });
+    setNewEfeDate("");
+    setNewEfeName("");
+    setNewEfeBrands([]);
+  };
+
+  const saveEditEfe = (id) => {
+    if (!editDate.trim() || !editName.trim()) return;
+    setEfemerides((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, date: editDate.trim(), name: editName.trim(), brands: [...editBrands] } : e))
+    );
+    setEditingId(null);
+  };
+
+  const removeEfe = (id) => {
+    setEfemerides((prev) => prev.filter((e) => e.id !== id));
+    setDeleteConfirmId(null);
+    if (editingId === id) setEditingId(null);
+  };
+
+  const linkCampaignMock = (id) => {
+    setEfemerides((prev) => prev.map((e) => (e.id === id ? { ...e, hasCampaign: true } : e)));
+    setLinkToast("Campaña vinculada");
+  };
+
+  const toggleNewBrand = (bid) => {
+    setNewEfeBrands((prev) => (prev.includes(bid) ? prev.filter((x) => x !== bid) : [...prev, bid]));
+  };
+
+  const toggleEditBrand = (bid) => {
+    setEditBrands((prev) => (prev.includes(bid) ? prev.filter((x) => x !== bid) : [...prev, bid]));
+  };
+
   return (
-    <div>
+    <div style={{ display: "flex", alignItems: "stretch", gap: 0 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ display: "flex", gap: 2, background: B.surfaceHover, borderRadius: 8, padding: 2 }}>
           {toggleBtn("mes", "Mes")}
@@ -448,6 +527,9 @@ function CalendarioView() {
           onChange={setNetworkFilter}
           options={[{ value: "todas", label: "Todas las redes" }, ...NETWORKS.map((n) => ({ value: n.id, label: `${n.icon} ${n.name}` }))]}
         />
+        <Btn variant="default" onClick={() => setEfemeridesPanelOpen((v) => !v)} style={{ fontSize: 12 }}>
+          📅 Efemérides ({efemerides.length})
+        </Btn>
         <div style={{ flex: 1 }} />
         {viewMode === "mes" && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -487,7 +569,7 @@ function CalendarioView() {
             {monthCells.map((cell, idx) => {
               const key = toKeyFromDate(cell);
               const dayItems = itemsForKey(key);
-              const efem = EFEMERIDES.find((e) => e.date === key);
+              const efem = efemerides.find((e) => e.date === key);
               const chips = [];
               if (efem) {
                 chips.push({
@@ -624,7 +706,7 @@ function CalendarioView() {
             {weekDays.map((dt, di) => {
               const k = toKeyFromDate(dt);
               const colItems = itemsForKey(k);
-              const efem = EFEMERIDES.find((e) => e.date === k);
+              const efem = efemerides.find((e) => e.date === k);
               return (
                 <div key={di} style={{ borderRight: di < 6 ? `1px solid ${B.border}` : "none", display: "flex", flexDirection: "column", minWidth: 0 }}>
                   <button
@@ -707,6 +789,235 @@ function CalendarioView() {
           )}
           {dayItems.map((item) => renderItemCard(item, { compact: false }))}
         </div>
+      )}
+      </div>
+      {efemeridesPanelOpen && (
+        <aside
+          style={{
+            width: 340,
+            flexShrink: 0,
+            background: B.surface,
+            borderLeft: `1px solid ${B.border}`,
+            padding: "14px 16px 20px",
+            overflowY: "auto",
+            maxHeight: "min(720px, calc(100vh - 140px))",
+            alignSelf: "flex-start",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12, gap: 8 }}>
+            <div style={{ fontSize: 14, fontWeight: 800, color: B.text }}>📅 Gestión Efemérides</div>
+            <Btn variant="ghost" onClick={() => setEfemeridesPanelOpen(false)} style={{ fontSize: 12 }}>
+              Cerrar
+            </Btn>
+          </div>
+          {linkToast && (
+            <div style={{ marginBottom: 10 }}>
+              <Badge color={B.success} bg={B.successBg}>
+                {linkToast}
+              </Badge>
+            </div>
+          )}
+          <Card style={{ marginBottom: 12, padding: "12px 14px" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: B.textMuted }}>Agregar efeméride</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Fecha (DD/MM)</div>
+            <input
+              value={newEfeDate}
+              onChange={(e) => setNewEfeDate(e.target.value)}
+              placeholder="07/04"
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "7px 10px",
+                borderRadius: 8,
+                border: `1px solid ${B.border}`,
+                fontFamily: font,
+                fontSize: 13,
+                marginBottom: 8,
+              }}
+            />
+            <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Nombre</div>
+            <input
+              value={newEfeName}
+              onChange={(e) => setNewEfeName(e.target.value)}
+              placeholder="Nombre del día"
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "7px 10px",
+                borderRadius: 8,
+                border: `1px solid ${B.border}`,
+                fontFamily: font,
+                fontSize: 13,
+                marginBottom: 8,
+              }}
+            />
+            <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 6 }}>Marcas</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10, maxHeight: 140, overflowY: "auto" }}>
+              {activeBrands.map((b) => (
+                <label key={b.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, cursor: "pointer" }}>
+                  <input type="checkbox" checked={newEfeBrands.includes(b.id)} onChange={() => toggleNewBrand(b.id)} />
+                  <span>{b.name}</span>
+                </label>
+              ))}
+            </div>
+            <Btn variant="primary" onClick={addEfemeride} style={{ fontSize: 12 }}>
+              Agregar
+            </Btn>
+          </Card>
+          <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 8 }}>Registro ({efemeridesSorted.length})</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {efemeridesSorted.map((e) => (
+              <Card key={e.id} style={{ padding: "10px 12px" }}>
+                {editingId === e.id ? (
+                  <div>
+                    <input
+                      value={editDate}
+                      onChange={(ev) => setEditDate(ev.target.value)}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "6px 8px",
+                        borderRadius: 6,
+                        border: `1px solid ${B.border}`,
+                        fontFamily: font,
+                        fontSize: 12,
+                        marginBottom: 6,
+                      }}
+                    />
+                    <input
+                      value={editName}
+                      onChange={(ev) => setEditName(ev.target.value)}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "6px 8px",
+                        borderRadius: 6,
+                        border: `1px solid ${B.border}`,
+                        fontFamily: font,
+                        fontSize: 12,
+                        marginBottom: 6,
+                      }}
+                    />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 8, maxHeight: 100, overflowY: "auto" }}>
+                      {activeBrands.map((b) => (
+                        <label key={b.id} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, cursor: "pointer" }}>
+                          <input type="checkbox" checked={editBrands.includes(b.id)} onChange={() => toggleEditBrand(b.id)} />
+                          {b.name}
+                        </label>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      <Btn variant="primary" style={{ fontSize: 11 }} onClick={() => saveEditEfe(e.id)}>
+                        Guardar
+                      </Btn>
+                      <Btn variant="default" style={{ fontSize: 11 }} onClick={() => setEditingId(null)}>
+                        Cancelar
+                      </Btn>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "flex-start" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: B.text }}>{e.date}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, marginTop: 2 }}>{e.name}</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
+                          {e.brands.map((bid) => {
+                            const br = getBrand(bid);
+                            return (
+                              <Badge key={bid} color={br.color} bg={`${br.color}12`}>
+                                {br.name}
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                        <div style={{ marginTop: 6 }}>
+                          {e.hasCampaign ? (
+                            <Badge color={B.success} bg={B.successBg}>
+                              Con campaña
+                            </Badge>
+                          ) : (
+                            <Badge color={B.danger} bg={B.dangerBg}>
+                              Sin campaña
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                        <button
+                          type="button"
+                          title="Editar"
+                          onClick={() => {
+                            setEditingId(e.id);
+                            setEditDate(e.date);
+                            setEditName(e.name);
+                            setEditBrands([...e.brands]);
+                          }}
+                          style={{
+                            border: `1px solid ${B.border}`,
+                            background: B.surfaceHover,
+                            borderRadius: 6,
+                            cursor: "pointer",
+                            padding: "4px 8px",
+                            fontSize: 12,
+                            fontFamily: font,
+                          }}
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          type="button"
+                          title="Eliminar"
+                          onClick={() => setDeleteConfirmId(e.id)}
+                          style={{
+                            border: `1px solid ${B.border}`,
+                            background: B.surfaceHover,
+                            borderRadius: 6,
+                            cursor: "pointer",
+                            padding: "4px 8px",
+                            fontSize: 12,
+                            fontFamily: font,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                    {deleteConfirmId === e.id && (
+                      <div
+                        style={{
+                          marginTop: 10,
+                          padding: 8,
+                          borderRadius: 8,
+                          background: B.dangerBg,
+                          border: `1px solid ${B.danger}33`,
+                          fontSize: 12,
+                        }}
+                      >
+                        ¿Eliminar esta efeméride?
+                        <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                          <Btn variant="danger" style={{ fontSize: 11 }} onClick={() => removeEfe(e.id)}>
+                            Sí, eliminar
+                          </Btn>
+                          <Btn variant="default" style={{ fontSize: 11 }} onClick={() => setDeleteConfirmId(null)}>
+                            No
+                          </Btn>
+                        </div>
+                      </div>
+                    )}
+                    {!e.hasCampaign && (
+                      <div style={{ marginTop: 10 }}>
+                        <Btn variant="default" style={{ fontSize: 11 }} onClick={() => linkCampaignMock(e.id)}>
+                          📣 Crear campaña
+                        </Btn>
+                      </div>
+                    )}
+                  </>
+                )}
+              </Card>
+            ))}
+          </div>
+        </aside>
       )}
     </div>
   );
@@ -797,10 +1108,11 @@ function CampanasView() {
                   </div>
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 6 }}>Pipeline</div>
-                    {["Propuesta", "Idea aprobada", "En producción", "Material aprobado", "Publicada"].map((step, si) => {
-                      const stepMap = { propuesta: 0, aprobada: 1, en_produccion: 2, publicada: 4, evaluada: 4 };
-                      const current = stepMap[c.status] || 0;
-                      const done = si <= current;
+                    {["Propuesta", "Idea aprobada", "En producción", "Material aprobado", "Programación", "Publicada"].map((step, si) => {
+                      const stepMap = { propuesta: 0, aprobada: 1, en_produccion: 2, publicada: 5, evaluada: 5 };
+                      const current = stepMap[c.status] ?? 0;
+                      const pubOrEval = c.status === "publicada" || c.status === "evaluada";
+                      const done = si <= 2 ? si <= current : si <= 4 ? pubOrEval : current >= 5;
                       return (
                         <div key={si} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0" }}>
                           <div
@@ -2435,4 +2747,4 @@ function MetricasView() {
   );
 }
 
-export default function MarketingModule(){const[tab,setTab]=useState("dashboard");const[isMobile,setIsMobile]=useState(false);useEffect(()=>{function check(){setIsMobile(window.innerWidth<900)}check();window.addEventListener("resize",check);return()=>window.removeEventListener("resize",check)},[]);const pendingApprovals=computePendingApprovalsUnion().pendingCount;const TABS=[{id:"dashboard",label:"Tablero",icon:"📊"},{id:"calendario",label:"Calendario",icon:"📅"},{id:"campanas",label:"Campañas",icon:"📣"},{id:"tareas",label:"Tareas",icon:"✅"},{id:"aprobaciones",label:"Aprobaciones",icon:"👁️",badge:pendingApprovals,badgeColor:B.dangerBg,badgeTextColor:B.danger},{id:"equipo",label:"Equipo",icon:"👥"},{id:"biblioteca",label:"Biblioteca",icon:"📂"},{id:"metricas",label:"Métricas",icon:"📈"}];return<div style={{fontFamily:font,background:"#F5F4F0",minHeight:"100vh"}}><style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus{outline:none;border-color:${B.accent} !important}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style><header style={{background:B.surface,borderBottom:`1px solid ${B.border}`,position:"sticky",top:0,zIndex:100}}><div style={{padding:"0 24px",height:52,display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:32,height:32,background:B.accent,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:16,color:B.primary,fontFamily:serif}}>C</div><div style={{lineHeight:1.1}}><div style={{fontFamily:serif,fontSize:14,fontWeight:700,color:B.text}}>Cheddar's</div><div style={{fontSize:9,color:B.textMuted,fontWeight:500,letterSpacing:1.5,textTransform:"uppercase"}}>West Coast</div></div></div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,cursor:"pointer"}}>🔔</span><div style={{width:30,height:30,borderRadius:"50%",background:B.accent,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:12,color:B.primary}}>PF</div></div></div>{!isMobile&&<div style={{padding:"0 24px",display:"flex",gap:2,borderTop:`1px solid ${B.border}`,height:40,alignItems:"center"}}>{["Dashboard","Inventario","Compras","Pedidos","Despacho","Producción","Calidad","Finanzas","Comercial","Marketing","Más"].map(n=><span key={n} style={{padding:"6px 11px",fontSize:13,fontWeight:n==="Marketing"?650:500,color:n==="Marketing"?B.text:B.textMuted,borderBottom:n==="Marketing"?`2px solid ${B.accent}`:"2px solid transparent",cursor:"pointer"}}>{n}</span>)}</div>}</header><main style={{padding:isMobile?16:"20px 32px",maxWidth:1320,margin:"0 auto"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}><div><h1 style={{fontSize:isMobile?20:24,fontWeight:800,color:B.text,fontFamily:serif}}>📣 Marketing Operativo</h1><p style={{fontSize:13,color:B.textMuted,marginTop:2}}>{activeBrands.length} cuentas activas · 5 personas · IG + TikTok</p></div></div><TabBar tabs={TABS} active={tab} onChange={setTab}/>{tab==="dashboard"&&<DashboardView/>}{tab==="calendario"&&<CalendarioView/>}{tab==="campanas"&&<CampanasView/>}{tab==="tareas"&&<TareasView/>}{tab==="aprobaciones"&&<AprobacionesView/>}{tab==="equipo"&&<EquipoView/>}{tab==="biblioteca"&&<BibliotecaView/>}{tab==="metricas"&&<MetricasView/>}</main></div>}
+export default function MarketingModule(){const[tab,setTab]=useState("dashboard");const[isMobile,setIsMobile]=useState(false);const[efemerides,setEfemerides]=useState(()=>EFEMERIDES.map((e)=>({...e,brands:[...e.brands]})));const[efemeridesPanelOpen,setEfemeridesPanelOpen]=useState(false);const onNavigate=(tid,opts)=>{setTab(tid);if(opts?.openEfemerides)setEfemeridesPanelOpen(true)};useEffect(()=>{if(tab!=="calendario")setEfemeridesPanelOpen(false)},[tab]);useEffect(()=>{function check(){setIsMobile(window.innerWidth<900)}check();window.addEventListener("resize",check);return()=>window.removeEventListener("resize",check)},[]);const pendingApprovals=computePendingApprovalsUnion().pendingCount;const TABS=[{id:"dashboard",label:"Tablero",icon:"📊"},{id:"calendario",label:"Calendario",icon:"📅"},{id:"campanas",label:"Campañas",icon:"📣"},{id:"tareas",label:"Tareas",icon:"✅"},{id:"aprobaciones",label:"Aprobaciones",icon:"👁️",badge:pendingApprovals,badgeColor:B.dangerBg,badgeTextColor:B.danger},{id:"equipo",label:"Equipo",icon:"👥"},{id:"biblioteca",label:"Biblioteca",icon:"📂"},{id:"metricas",label:"Métricas",icon:"📈"}];return<div style={{fontFamily:font,background:"#F5F4F0",minHeight:"100vh"}}><style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus{outline:none;border-color:${B.accent} !important}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style><header style={{background:B.surface,borderBottom:`1px solid ${B.border}`,position:"sticky",top:0,zIndex:100}}><div style={{padding:"0 24px",height:52,display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:32,height:32,background:B.accent,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:16,color:B.primary,fontFamily:serif}}>C</div><div style={{lineHeight:1.1}}><div style={{fontFamily:serif,fontSize:14,fontWeight:700,color:B.text}}>Cheddar's</div><div style={{fontSize:9,color:B.textMuted,fontWeight:500,letterSpacing:1.5,textTransform:"uppercase"}}>West Coast</div></div></div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,cursor:"pointer"}}>🔔</span><div style={{width:30,height:30,borderRadius:"50%",background:B.accent,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:12,color:B.primary}}>PF</div></div></div>{!isMobile&&<div style={{padding:"0 24px",display:"flex",gap:2,borderTop:`1px solid ${B.border}`,height:40,alignItems:"center"}}>{["Dashboard","Inventario","Compras","Pedidos","Despacho","Producción","Calidad","Finanzas","Comercial","Marketing","Más"].map(n=><span key={n} style={{padding:"6px 11px",fontSize:13,fontWeight:n==="Marketing"?650:500,color:n==="Marketing"?B.text:B.textMuted,borderBottom:n==="Marketing"?`2px solid ${B.accent}`:"2px solid transparent",cursor:"pointer"}}>{n}</span>)}</div>}</header><main style={{padding:isMobile?16:"20px 32px",maxWidth:1320,margin:"0 auto"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}><div><h1 style={{fontSize:isMobile?20:24,fontWeight:800,color:B.text,fontFamily:serif}}>📣 Marketing Operativo</h1><p style={{fontSize:13,color:B.textMuted,marginTop:2}}>{activeBrands.length} cuentas activas · 5 personas · IG + TikTok</p></div></div><TabBar tabs={TABS} active={tab} onChange={setTab}/>{tab==="dashboard"&&<DashboardView efemerides={efemerides} onNavigate={onNavigate} />}{tab==="calendario"&&<CalendarioView efemerides={efemerides} setEfemerides={setEfemerides} efemeridesPanelOpen={efemeridesPanelOpen} setEfemeridesPanelOpen={setEfemeridesPanelOpen} />}{tab==="campanas"&&<CampanasView/>}{tab==="tareas"&&<TareasView/>}{tab==="aprobaciones"&&<AprobacionesView/>}{tab==="equipo"&&<EquipoView/>}{tab==="biblioteca"&&<BibliotecaView/>}{tab==="metricas"&&<MetricasView/>}</main></div>}
