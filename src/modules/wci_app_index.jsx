@@ -38,6 +38,7 @@ const NOTES = {
   rrhh: { what: "RRHH centralizado: dotación, asistencia, turnos cross-location. Cada local registra vía Portal Trabajador.", poc: "Liquidaciones = placeholder honesto (Previred pendiente). Turnos son grilla editable.", validate: ["¿Cargos reflejan estructura real?", "¿Dotación presupuestada es correcta?", "¿Capacitaciones legales son las que exige la ley?", "¿Qué info falta de cada empleado?"], decision: "Empleados ya existen en Prep. WCI agrega vista cross-location.", roles: ["Gte. Operaciones (full)", "Gte. Admin/RRHH (full)", "Admin local (su local)"] },
   activo_fijo: { what: "Registro y control de equipos de operaciones (hornos, freidoras, cámaras, vehículos, etc.) asociados a responsables por local.", poc: "Módulo nuevo solicitado por Gte. Operaciones. Permite llevar la cuenta de activos, programar mantenciones, y asociar cada equipo a un responsable.", validate: ["¿Qué equipos son los más críticos de trackear?", "¿Las mantenciones son preventivas o solo correctivas?", "¿Necesitan depreciación contable o solo control operativo?", "¿Cada equipo se asocia a un local o a una persona?"], decision: "Activo fijo como módulo de Operaciones, no de Finanzas. Foco en control operativo, no contable.", roles: ["Gte. Operaciones (full)", "Admin local (ve equipos de su local)"] },
   roles: { what: "Quién ve qué. 9 roles WCI + Admin Local. Niveles: Full, Editar, Ver, Propio (RLS), Sin acceso.", poc: "Propuesta inicial — se ajusta según feedback de esta validación.", validate: ["¿9 roles cubren a todos?", "¿Falta o sobra alguno?", "¿Niveles de acceso por módulo son correctos?", "¿Admin Local ve suficiente?", "¿Enc. UX debería ver calidad?"], decision: "'Propio' = RLS filtra por organization_id.", roles: ["CEO (define)", "Todos (validan su acceso)"] },
+  comercial: { what: "Maximizar ingreso rentable de las 10 marcas. 3 unidades: Cheddar's (madre + Buffalo Chicken, The Pork Shop, Food Pxrn), Tori Sushi (madre + Shibuya Express, Kiri Pokes, Smart Eats), Sweet/Burger (Brown Sweet Factory + Fatty Patty). Foco en crecimiento de base de clientes, cross-brand, y evaluación por margen.", poc: "Mock data basada en schema real: orders, order_items, customer_brands, brands, products, bom_items, supply_cost_log, loyalty_config.", validate: ["¿Las 3 unidades de marca reflejan la estructura real?", "¿Los KPIs de salud de clientes son los correctos?", "¿La penetración cross-brand es medible con customer_brands?", "¿Evaluación por margen (no volumen) tiene sentido?", "¿Buffalo Chicken y Shibuya Express son las submarcas con mayor potencial?", "¿El funnel de onboarding 1ra→2da visita es prioridad?"], decision: "Función objetivo: maximizar utilidad. Comercial mueve Clientes × Frecuencia × Ticket × Margen. Alimenta al Agente CEO (Módulo 19).", roles: ["Gte. Comercial (full)", "CEO (estrategia)", "Enc. UX (experiencia)"] },
 };
 
 const GUIDES = {
@@ -91,6 +92,9 @@ const MODULES = [
   { cat: "Gestión", color: B.warning, items: [
     { id: "rrhh", icon: "👥", name: "RRHH", p: 8, tabs: ["Dotación", "Asistencia", "Turnos", "Liquidaciones", "Capacitaciones", "Reportes"] },
     { id: "roles", icon: "🔐", name: "Roles", p: 0, tabs: ["Matriz", "Por rol"] },
+  ]},
+  { cat: "Comercial", color: "#E74C3C", items: [
+    { id: "comercial", icon: "🤝", name: "Comercial", p: 18, tabs: ["Dashboard", "Clientes", "Cross-Brand", "Campañas", "Rentabilidad", "Reporte"] },
   ]},
 ];
 
@@ -427,7 +431,7 @@ export default function WciAppIndex() {
           </div>
           <div style={{ fontSize: 13, color: "#ffffffBB", lineHeight: 1.6, maxWidth: 550 }}>Maquetas interactivas para validación. Cada módulo tiene datos de ejemplo, botones funcionales, y preguntas para el reviewer.</div>
           <div style={{ display: "flex", gap: 20, marginTop: 16 }}>
-            {[{ l: "Módulos", v: allMods.length }, { l: "Procesos", v: allMods.reduce((s, m) => s + (m.p || 0), 0) }, { l: "Pendientes", v: 5 }].map(s => <div key={s.l}><div style={{ fontSize: 26, fontWeight: 900, color: B.accent }}>{s.v}</div><div style={{ fontSize: 11, color: "#ffffff70" }}>{s.l}</div></div>)}
+            {[{ l: "Módulos", v: allMods.length }, { l: "Procesos", v: allMods.reduce((s, m) => s + (m.p || 0), 0) }, { l: "Pendientes", v: 4 }].map(s => <div key={s.l}><div style={{ fontSize: 26, fontWeight: 900, color: B.accent }}>{s.v}</div><div style={{ fontSize: 11, color: "#ffffff70" }}>{s.l}</div></div>)}
           </div>
         </div>
       </header>
@@ -469,7 +473,7 @@ export default function WciAppIndex() {
         <Card style={{ opacity: 0.5, marginBottom: 20 }}>
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Pendientes (segunda tanda)</div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {["🏪 Portal franquiciado", "🤝 Comercial", "📣 Marketing", "🎯 Command Center", "📊 Dashboard"].map(p => <span key={p} style={{ padding: "4px 8px", background: B.surfaceHover, borderRadius: 6, fontSize: 12 }}>{p}</span>)}
+            {["🏪 Portal franquiciado", "📣 Marketing", "🎯 Command Center", "📊 Dashboard"].map(p => <span key={p} style={{ padding: "4px 8px", background: B.surfaceHover, borderRadius: 6, fontSize: 12 }}>{p}</span>)}
           </div>
         </Card>
         <div style={{ textAlign: "center", padding: "8px 0 16px", fontSize: 11, color: B.textLight }}>WCI ERP · Cheddar's Group · Prep · Abril 2026</div>
