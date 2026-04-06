@@ -40,7 +40,155 @@ const EFEMERIDES=[{date:"07/04",name:"Día Mundial de la Salud",brands:["samai"]
 const CALENDAR_ITEMS=[{id:1,date:"07/04",brand:"cheddars",network:"ig",type:"reel",title:"Bingo recap domingo",assignedTo:"marco",status:"en_progreso",campaign:3},{id:2,date:"07/04",brand:"tori",network:"ig",type:"carrusel",title:"Tartar Roll producto",assignedTo:"josef",status:"aprobada",campaign:2},{id:3,date:"07/04",brand:"tori",network:"tiktok",type:"reel",title:"Preparación sushi POV",assignedTo:"marco",status:"en_progreso",campaign:2},{id:4,date:"08/04",brand:"cheddars",network:"ig",type:"carrusel",title:"Martes de Amigas anuncio",assignedTo:"josef",status:"pendiente",campaign:4},{id:5,date:"08/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Martes de Amigas video",assignedTo:"marco",status:"pendiente",campaign:4},{id:6,date:"08/04",brand:"fatty",network:"ig",type:"post",title:"Burger del Día martes",assignedTo:"diego",status:"aprobada",campaign:1},{id:7,date:"09/04",brand:"tori",network:"ig",type:"post",title:"Curiosidad sushi miércoles",assignedTo:"diego",status:"pendiente",campaign:2},{id:8,date:"09/04",brand:"samai",network:"ig",type:"carrusel",title:"Dra. Daniela perfil",assignedTo:"josef",status:"en_revision",campaign:6},{id:9,date:"10/04",brand:"cheddars",network:"ig",type:"post",title:"Happy hour jueves",assignedTo:"diego",status:"pendiente",campaign:3},{id:10,date:"10/04",brand:"buffalo",network:"ig",type:"carrusel",title:"Wings 12u promo",assignedTo:"josef",status:"pendiente",campaign:null},{id:11,date:"11/04",brand:"tori",network:"ig",type:"carrusel",title:"Roll California viernes",assignedTo:"josef",status:"pendiente",campaign:2},{id:12,date:"11/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Stand up recap",assignedTo:"marco",status:"pendiente",campaign:null},{id:20,date:"01/04",brand:"cheddars",network:"ig",type:"post",title:"Abril llegó a Cheddar's",assignedTo:"diego",status:"publicada",campaign:null},{id:21,date:"02/04",brand:"fatty",network:"ig",type:"carrusel",title:"Burger del Día lanzamiento",assignedTo:"josef",status:"publicada",campaign:1},{id:22,date:"03/04",brand:"tori",network:"ig",type:"historia",title:"Coming soon Tori Sushi",assignedTo:"josef",status:"publicada",campaign:2},{id:23,date:"05/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Recap stand up viernes",assignedTo:"marco",status:"publicada",campaign:null},{id:30,date:"14/04",brand:"cheddars",network:"ig",type:"carrusel",title:"Puntos fidelización explicado",assignedTo:"josef",status:"pendiente",campaign:5},{id:31,date:"15/04",brand:"tori",network:"tiktok",type:"reel",title:"Sushi challenge TikTok",assignedTo:"marco",status:"pendiente",campaign:2},{id:32,date:"16/04",brand:"buffalo",network:"ig",type:"post",title:"Wings Wednesday promo",assignedTo:"diego",status:"pendiente",campaign:null},{id:33,date:"17/04",brand:"brown",network:"ig",type:"carrusel",title:"Brownie Box nueva presentación",assignedTo:"josef",status:"pendiente",campaign:null},{id:34,date:"18/04",brand:"cheddars",network:"ig",type:"reel",title:"Recap Martes Amigas 2",assignedTo:"marco",status:"pendiente",campaign:4},{id:40,date:"21/04",brand:"tori",network:"ig",type:"carrusel",title:"Menú ejecutivo lanzamiento",assignedTo:"josef",status:"pendiente",campaign:2},{id:41,date:"22/04",brand:"smarteats",network:"ig",type:"post",title:"Día de la Tierra Smart Eats",assignedTo:"diego",status:"pendiente",campaign:null},{id:42,date:"24/04",brand:"cheddars",network:"tiktok",type:"reel",title:"Behind the scenes cocina",assignedTo:"marco",status:"pendiente",campaign:null},{id:50,date:"28/04",brand:"cheddars",network:"ig",type:"post",title:"Cierre de mes agradecimiento",assignedTo:"diego",status:"pendiente",campaign:null},{id:51,date:"29/04",brand:"tori",network:"ig",type:"carrusel",title:"Tori mayo preview",assignedTo:"josef",status:"pendiente",campaign:2},{id:52,date:"30/04",brand:"fatty",network:"tiktok",type:"reel",title:"Fatty Patty mayo teaser",assignedTo:"marco",status:"pendiente",campaign:null}];
 const CAL_STATUS={pendiente:{label:"Pendiente",color:B.textMuted,bg:B.surfaceHover},en_progreso:{label:"En progreso",color:B.info,bg:B.infoBg},en_revision:{label:"En revisión",color:B.warning,bg:B.warningBg},aprobada:{label:"Aprobada",color:B.success,bg:B.successBg},publicada:{label:"Publicada",color:B.textLight,bg:B.surfaceHover}};
 
-const TASKS=[{id:1,title:"Caption Bingo recap",type:"Copy",brand:"cheddars",assignedTo:"diego",deadline:"06/04",priority:"alta",status:"completada",campaign:3},{id:2,title:"Diseño carrusel Tartar Roll",type:"Diseño",brand:"tori",assignedTo:"josef",deadline:"06/04",priority:"alta",status:"completada",campaign:2},{id:3,title:"Edición reel sushi POV",type:"Video",brand:"tori",assignedTo:"marco",deadline:"07/04",priority:"alta",status:"en_progreso",campaign:2},{id:4,title:"Caption Martes de Amigas",type:"Copy",brand:"cheddars",assignedTo:"diego",deadline:"07/04",priority:"alta",status:"en_progreso",campaign:4},{id:5,title:"Portada reel Bingo",type:"Diseño",brand:"cheddars",assignedTo:"josef",deadline:"07/04",priority:"media",status:"en_progreso",campaign:3},{id:6,title:"Coordinar DJ para Martes Amigas",type:"Coordinación",brand:"cheddars",assignedTo:"ashly",deadline:"07/04",priority:"alta",status:"en_progreso",campaign:4},{id:7,title:"Caption curiosidad sushi",type:"Copy",brand:"tori",assignedTo:"diego",deadline:"08/04",priority:"media",status:"por_hacer",campaign:2},{id:8,title:"Carrusel Dra. Daniela",type:"Diseño",brand:"samai",assignedTo:"josef",deadline:"08/04",priority:"media",status:"en_revision",campaign:6},{id:9,title:"Reel Martes de Amigas",type:"Video",brand:"cheddars",assignedTo:"marco",deadline:"08/04",priority:"alta",status:"por_hacer",campaign:4},{id:10,title:"Coordinar fotos producto Tori",type:"Coordinación",brand:"tori",assignedTo:"ashly",deadline:"09/04",priority:"media",status:"por_hacer",campaign:2},{id:11,title:"Carrusel Wings promo",type:"Diseño",brand:"buffalo",assignedTo:"josef",deadline:"09/04",priority:"baja",status:"por_hacer",campaign:null},{id:12,title:"Review DMs Cheddar's semana",type:"Experiencia",brand:"cheddars",assignedTo:"kathya",deadline:"11/04",priority:"media",status:"en_progreso",campaign:null},{id:13,title:"Caption promo puntos fidelización",type:"Copy",brand:"cheddars",assignedTo:"diego",deadline:"14/04",priority:"baja",status:"por_hacer",campaign:5},{id:14,title:"Diseño carrusel Martes Amigas",type:"Diseño",brand:"cheddars",assignedTo:"josef",deadline:"07/04",priority:"alta",status:"por_hacer",campaign:4}];
+const TASKS = [
+  {
+    id: 1,
+    title: "Campaña Martes de Amigas — Semana 1",
+    brand: "cheddars",
+    campaign: 4,
+    deadline: "08/04",
+    priority: "alta",
+    status: "en_progreso",
+    assignedTo: "josef",
+    type: "Diseño",
+    description: "Primera semana de la campaña Martes de Amigas. Necesitamos carrusel + reel + coordinación DJ.",
+    subtasks: [
+      { id: "1a", title: "Escribir caption Martes de Amigas", assignedTo: "diego", done: true, type: "Copy" },
+      { id: "1b", title: "Diseño carrusel Martes Amigas", assignedTo: "josef", done: false, type: "Diseño", attachments: [] },
+      { id: "1c", title: "Reel Martes de Amigas", assignedTo: "marco", done: false, type: "Video" },
+      { id: "1d", title: "Coordinar DJ con local", assignedTo: "ashly", done: true, type: "Coordinación" },
+    ],
+    attachments: [{ name: "brief_martes_amigas.pdf", size: "1.2 MB", icon: "📄" }],
+  },
+  {
+    id: 2,
+    title: "Lanzamiento Tori Sushi — Contenido semana 2",
+    brand: "tori",
+    campaign: 2,
+    deadline: "11/04",
+    priority: "alta",
+    status: "en_progreso",
+    assignedTo: "marco",
+    type: "Video",
+    description: "Segundo batch de contenido para posicionar Tori en redes.",
+    subtasks: [
+      { id: "2a", title: "Caption Tartar Roll", assignedTo: "diego", done: true, type: "Copy" },
+      { id: "2b", title: "Diseño carrusel Tartar Roll", assignedTo: "josef", done: true, type: "Diseño", attachments: [{ name: "tartar_roll_v2.psd", size: "12.4 MB", icon: "🖼️" }] },
+      { id: "2c", title: "Edición reel sushi POV", assignedTo: "marco", done: false, type: "Video" },
+      { id: "2d", title: "Caption curiosidad sushi", assignedTo: "diego", done: false, type: "Copy" },
+      { id: "2e", title: "Carrusel Roll California", assignedTo: "josef", done: false, type: "Diseño" },
+      { id: "2f", title: "Coordinar fotos producto en local", assignedTo: "ashly", done: false, type: "Coordinación" },
+    ],
+    attachments: [
+      { name: "tori_brand_guidelines.pdf", size: "3.8 MB", icon: "📄" },
+      { name: "fotos_producto_raw.zip", size: "45 MB", icon: "📦" },
+    ],
+  },
+  {
+    id: 3,
+    title: "Bingo Cheddar's — Recap domingo",
+    brand: "cheddars",
+    campaign: 3,
+    deadline: "07/04",
+    priority: "media",
+    status: "en_revision",
+    assignedTo: "marco",
+    type: "Video",
+    description: "Recap del bingo del domingo para publicar el lunes.",
+    subtasks: [
+      { id: "3a", title: "Caption Bingo recap", assignedTo: "diego", done: true, type: "Copy" },
+      { id: "3b", title: "Portada reel Bingo", assignedTo: "josef", done: true, type: "Diseño", attachments: [{ name: "portada_bingo_abril.png", size: "2.1 MB", icon: "🖼️" }] },
+      { id: "3c", title: "Edición video Bingo recap", assignedTo: "marco", done: true, type: "Video", attachments: [{ name: "bingo_recap_final.mp4", size: "28 MB", icon: "🎬" }] },
+    ],
+    attachments: [],
+  },
+  {
+    id: 4,
+    title: "Carrusel Dra. Daniela — Samai",
+    brand: "samai",
+    campaign: 6,
+    deadline: "09/04",
+    priority: "media",
+    status: "en_revision",
+    assignedTo: "josef",
+    type: "Diseño",
+    description: "Presentación de la Dra. Daniela para el IG de Clínica Samai.",
+    subtasks: [
+      { id: "4a", title: "Caption presentación doctora", assignedTo: "diego", done: true, type: "Copy" },
+      { id: "4b", title: "Diseño carrusel Dra. Daniela", assignedTo: "josef", done: true, type: "Diseño", attachments: [{ name: "daniela_carrusel_v2.psd", size: "8.5 MB", icon: "🖼️" }] },
+    ],
+    attachments: [{ name: "foto_dra_daniela.jpg", size: "4.2 MB", icon: "🖼️" }],
+  },
+  {
+    id: 5,
+    title: "Burger del Día Fatty Patty — Cierre",
+    brand: "fatty",
+    campaign: 1,
+    deadline: "10/04",
+    priority: "baja",
+    status: "completada",
+    assignedTo: "diego",
+    type: "Copy",
+    description: "Últimas piezas de la campaña Burger del Día.",
+    subtasks: [
+      { id: "5a", title: "Caption burger del día martes", assignedTo: "diego", done: true, type: "Copy" },
+      { id: "5b", title: "Diseño post burger martes", assignedTo: "josef", done: true, type: "Diseño" },
+      { id: "5c", title: "Edición reel conceposting", assignedTo: "marco", done: true, type: "Video" },
+    ],
+    attachments: [],
+  },
+  {
+    id: 6,
+    title: "Wings Wednesday — Buffalo Chicken",
+    brand: "buffalo",
+    campaign: null,
+    deadline: "09/04",
+    priority: "baja",
+    status: "por_hacer",
+    assignedTo: "josef",
+    type: "Diseño",
+    description: "Carrusel promocional de Wings 12u para el miércoles.",
+    subtasks: [
+      { id: "6a", title: "Caption Wings Wednesday", assignedTo: "diego", done: false, type: "Copy" },
+      { id: "6b", title: "Diseño carrusel Wings promo", assignedTo: "josef", done: false, type: "Diseño" },
+    ],
+    attachments: [],
+  },
+  {
+    id: 7,
+    title: "Review DMs Cheddar's — Semanal",
+    brand: "cheddars",
+    campaign: null,
+    deadline: "11/04",
+    priority: "media",
+    status: "en_progreso",
+    assignedTo: "kathya",
+    type: "Experiencia",
+    description: "Revisión semanal de DMs de Cheddar's IG. Reportar feedback relevante.",
+    subtasks: [
+      { id: "7a", title: "Revisar DMs y clasificar", assignedTo: "kathya", done: false, type: "Experiencia" },
+      { id: "7b", title: "Reportar feedback negativo al equipo", assignedTo: "kathya", done: false, type: "Experiencia" },
+    ],
+    attachments: [],
+  },
+  {
+    id: 8,
+    title: "Puntos Fidelización Cross-Brand",
+    brand: "cheddars",
+    campaign: 5,
+    deadline: "14/04",
+    priority: "baja",
+    status: "por_hacer",
+    assignedTo: "diego",
+    type: "Copy",
+    description: "Promover programa de puntos. Pendiente aprobación de idea en Campañas.",
+    subtasks: [
+      { id: "8a", title: "Caption puntos fidelización", assignedTo: "diego", done: false, type: "Copy" },
+      { id: "8b", title: "Diseño carrusel explicativo", assignedTo: "josef", done: false, type: "Diseño" },
+    ],
+    attachments: [],
+  },
+];
 const TASK_STATUS_ORDER=["por_hacer","en_progreso","en_revision","completada"];
 const TASK_STATUS={por_hacer:{label:"Por hacer",color:B.textMuted},en_progreso:{label:"En progreso",color:B.info},en_revision:{label:"En revisión",color:B.warning},completada:{label:"Completada",color:B.success}};
 const PRIORITY={alta:{label:"Alta",color:B.danger,bg:B.dangerBg},media:{label:"Media",color:B.warning,bg:B.warningBg},baja:{label:"Baja",color:B.textMuted,bg:B.surfaceHover}};
@@ -749,7 +897,853 @@ function CampanasView() {
   );
 }
 
-function TareasView(){const[view,setView]=useState("kanban");const[assignedFilter,setAssignedFilter]=useState("todos");let tasks=TASKS;if(assignedFilter!=="todos")tasks=tasks.filter(t=>t.assignedTo===assignedFilter);return<div><div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}><div style={{display:"flex",gap:2,background:B.surfaceHover,borderRadius:8,padding:2}}>{[{id:"kanban",label:"Kanban"},{id:"lista",label:"Lista"}].map(v=><button key={v.id} onClick={()=>setView(v.id)} style={{padding:"6px 14px",borderRadius:6,border:"none",fontSize:13,fontWeight:view===v.id?700:500,background:view===v.id?B.surface:"transparent",color:view===v.id?B.text:B.textMuted,cursor:"pointer",fontFamily:font,boxShadow:view===v.id?"0 1px 3px rgba(0,0,0,0.08)":"none"}}>{v.label}</button>)}</div><Select value={assignedFilter} onChange={setAssignedFilter} options={[{value:"todos",label:"Todo el equipo"},...TEAM.map(t=>({value:t.id,label:t.name}))]}/><div style={{flex:1}}/><Btn variant="primary">+ Nueva tarea</Btn></div>{view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:10}}>{TASK_STATUS_ORDER.map(status=>{const st=TASK_STATUS[status];const colTasks=tasks.filter(t=>t.status===status);return<div key={status} style={{background:B.surfaceHover,borderRadius:12,padding:10}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10,padding:"0 4px"}}><div style={{width:8,height:8,borderRadius:"50%",background:st.color}}/><span style={{fontSize:13,fontWeight:700}}>{st.label}</span><span style={{fontSize:11,color:B.textMuted,marginLeft:"auto"}}>{colTasks.length}</span></div>{status==="en_revision"&&<div style={{fontSize:10,color:B.textMuted,marginBottom:8,padding:"0 4px"}}>Visible en Aprobaciones</div>}{colTasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const pr=PRIORITY[task.priority];return<div key={task.id} style={{background:B.surface,border:`1px solid ${B.border}`,borderRadius:8,padding:"10px 12px",marginBottom:8}}><div style={{display:"flex",gap:4,alignItems:"center",marginBottom:6}}><div style={{width:6,height:6,borderRadius:"50%",background:br.color}}/><span style={{fontSize:10,color:br.color,fontWeight:600}}>{br.name}</span><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></div><div style={{fontSize:12,fontWeight:600,lineHeight:1.3,marginBottom:6,display:"flex",alignItems:"center",gap:6}}>{status==="en_revision"&&<span style={{fontSize:11,lineHeight:1,opacity:0.65}} aria-hidden="true">👁️</span>}<span style={{flex:1,minWidth:0}}>{task.title}</span></div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:10,color:B.textMuted}}>{task.type} · {task.deadline}</span><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div></div></div>})}</div>})}</div>}{view==="lista"&&<Card style={{padding:0,overflow:"hidden"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13,fontFamily:font}}><thead><tr style={{borderBottom:`1px solid ${B.border}`,background:"#FAFAF8"}}>{["Tarea","Tipo","Marca","Asignado","Deadline","Prioridad","Estado"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,color:B.textMuted,fontSize:12}}>{h}</th>)}</tr></thead><tbody>{tasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const st=TASK_STATUS[task.status];const pr=PRIORITY[task.priority];return<tr key={task.id} style={{borderBottom:`1px solid ${B.border}`}} onMouseEnter={e=>e.currentTarget.style.background=B.surfaceHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}><td style={{padding:"10px 14px",fontWeight:600}}>{task.title}</td><td style={{padding:"10px 14px",color:B.textMuted}}>{task.type}</td><td style={{padding:"10px 14px"}}><Badge color={br.color} bg={`${br.color}12`}>{br.name}</Badge></td><td style={{padding:"10px 14px"}}><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div><span style={{fontSize:12}}>{person.name.split(" ")[0]}</span></div></td><td style={{padding:"10px 14px",color:B.textMuted,fontSize:12}}>{task.deadline}</td><td style={{padding:"10px 14px"}}><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></td><td style={{padding:"10px 14px"}}><Badge color={st.color} bg={`${st.color}15`}>{st.label}</Badge></td></tr>})}</tbody></table></Card>}</div>}
+function TareasView() {
+  const TASK_SUBTYPES = ["Copy", "Diseño", "Video", "Coordinación", "Experiencia"];
+  const REF_YEAR = 2026;
+  const todayRef = new Date(REF_YEAR, 3, 6);
+
+  const parseDdMm = (s) => {
+    const p = String(s || "").split("/");
+    if (p.length < 2) return null;
+    const d = Number(p[0]);
+    const m = Number(p[1]);
+    if (!d || !m) return null;
+    return new Date(REF_YEAR, m - 1, d);
+  };
+
+  const startOfDay = (dt) => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+
+  const deadlineTone = (deadlineStr) => {
+    const dt = parseDdMm(deadlineStr);
+    if (!dt) return B.textMuted;
+    const t0 = startOfDay(todayRef).getTime();
+    const t1 = startOfDay(dt).getTime();
+    if (t1 < t0) return B.danger;
+    if (t1 === t0) return B.warning;
+    return B.textMuted;
+  };
+
+  const subtaskProgress = (task) => {
+    const list = task.subtasks || [];
+    const total = list.length;
+    const done = list.filter((s) => s.done).length;
+    return { done, total, pct: total ? done / total : 0 };
+  };
+
+  const progressFillColor = (pct) => {
+    if (pct >= 1) return B.success;
+    if (pct > 0.5) return B.info;
+    return B.warning;
+  };
+
+  const uniqueSubtaskAssignees = (task) => {
+    const seen = new Set();
+    const out = [];
+    for (const s of task.subtasks || []) {
+      if (!seen.has(s.assignedTo)) {
+        seen.add(s.assignedTo);
+        out.push(s.assignedTo);
+      }
+    }
+    return out;
+  };
+
+  const attachmentCount = (task) => {
+    let n = (task.attachments || []).length;
+    for (const s of task.subtasks || []) n += (s.attachments || []).length;
+    return n;
+  };
+
+  const taskMatchesPersonFilter = (task, fid) => {
+    if (fid === "todos") return true;
+    if (task.assignedTo === fid) return true;
+    return (task.subtasks || []).some((s) => s.assignedTo === fid);
+  };
+
+  const [tasks, setTasks] = useState(() => JSON.parse(JSON.stringify(TASKS)));
+  const [view, setView] = useState("kanban");
+  const [assignedFilter, setAssignedFilter] = useState("todos");
+  const [brandFilter, setBrandFilter] = useState("todas");
+  const [selectedId, setSelectedId] = useState(null);
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newBrand, setNewBrand] = useState(activeBrands[0]?.id || "cheddars");
+  const [newCampaign, setNewCampaign] = useState("");
+  const [newDeadline, setNewDeadline] = useState("");
+  const [newPriority, setNewPriority] = useState("media");
+  const [newDescription, setNewDescription] = useState("");
+  const [newSubtasks, setNewSubtasks] = useState([{ title: "", assignedTo: TEAM[0]?.id || "diego", type: "Copy" }]);
+
+  const activeCampaignOptions = CAMPAIGNS.filter((c) => ["en_produccion", "aprobada"].includes(c.status));
+
+  let filtered = tasks.filter((t) => taskMatchesPersonFilter(t, assignedFilter));
+  if (brandFilter !== "todas") filtered = filtered.filter((t) => t.brand === brandFilter);
+
+  const selectedTask = selectedId != null ? tasks.find((t) => t.id === selectedId) : null;
+
+  useEffect(() => {
+    if (selectedId == null) return;
+    const t = tasks.find((x) => x.id === selectedId);
+    if (!t) {
+      setSelectedId(null);
+      return;
+    }
+    const okPerson =
+      assignedFilter === "todos" ||
+      t.assignedTo === assignedFilter ||
+      (t.subtasks || []).some((s) => s.assignedTo === assignedFilter);
+    const okBrand = brandFilter === "todas" || t.brand === brandFilter;
+    if (!okPerson || !okBrand) setSelectedId(null);
+  }, [tasks, selectedId, assignedFilter, brandFilter]);
+
+  const openDetail = (id) => {
+    setSelectedId(id);
+  };
+
+  const toggleSubtaskDone = (taskId, subId) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t;
+        return {
+          ...t,
+          subtasks: (t.subtasks || []).map((s) => (s.id === subId ? { ...s, done: !s.done } : s)),
+        };
+      })
+    );
+  };
+
+  const resetNewForm = () => {
+    setNewTitle("");
+    setNewBrand(activeBrands[0]?.id || "cheddars");
+    setNewCampaign("");
+    setNewDeadline("");
+    setNewPriority("media");
+    setNewDescription("");
+    setNewSubtasks([{ title: "", assignedTo: TEAM[0]?.id || "diego", type: "Copy" }]);
+  };
+
+  const createTask = () => {
+    if (!newTitle.trim()) return;
+    const nextId = tasks.reduce((m, t) => Math.max(m, t.id), 0) + 1;
+    const validSubs = newSubtasks.filter((s) => s.title.trim());
+    const subtasks = validSubs.map((s, i) => ({
+      id: `${nextId}${String.fromCharCode(97 + i)}`,
+      title: s.title.trim(),
+      assignedTo: s.assignedTo,
+      done: false,
+      type: s.type,
+      attachments: [],
+    }));
+    const first = subtasks[0];
+    setTasks((prev) => [
+      ...prev,
+      {
+        id: nextId,
+        title: newTitle.trim(),
+        brand: newBrand,
+        campaign: newCampaign === "" ? null : Number(newCampaign),
+        deadline: newDeadline.trim() || "—",
+        priority: newPriority,
+        status: "por_hacer",
+        assignedTo: first?.assignedTo || "diego",
+        type: first?.type || "Copy",
+        description: newDescription.trim() || "",
+        subtasks,
+        attachments: [],
+      },
+    ]);
+    setShowNewForm(false);
+    resetNewForm();
+  };
+
+  const renderProgressBar = (done, total, styleWrap = {}) => {
+    const pct = total ? done / total : 0;
+    return (
+      <div style={{ marginTop: 6, ...styleWrap }}>
+        <div style={{ fontSize: 10, color: B.textMuted, marginBottom: 4, fontWeight: 600 }}>
+          {done}/{total} subtareas
+        </div>
+        <div style={{ height: 4, borderRadius: 2, background: B.surfaceHover, overflow: "hidden" }}>
+          <div style={{ width: `${Math.round(pct * 100)}%`, height: "100%", background: progressFillColor(pct), borderRadius: 2 }} />
+        </div>
+      </div>
+    );
+  };
+
+  const renderKanbanCard = (task, status) => {
+    const br = getBrand(task.brand);
+    const pr = PRIORITY[task.priority];
+    const { done, total } = subtaskProgress(task);
+    const attN = attachmentCount(task);
+    const assignees = uniqueSubtaskAssignees(task);
+    const dlColor = deadlineTone(task.deadline);
+    return (
+      <div
+        key={task.id}
+        role="button"
+        tabIndex={0}
+        onClick={() => openDetail(task.id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openDetail(task.id);
+          }
+        }}
+        style={{
+          background: B.surface,
+          border: `1px solid ${B.border}`,
+          borderLeft: `3px solid ${br.color}`,
+          borderRadius: 10,
+          padding: "12px 14px",
+          marginBottom: 8,
+          cursor: "pointer",
+          textAlign: "left",
+          fontFamily: font,
+        }}
+      >
+        <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.3, marginBottom: 8, display: "flex", alignItems: "flex-start", gap: 6 }}>
+          {status === "en_revision" && (
+            <span style={{ fontSize: 11, lineHeight: 1.3, opacity: 0.65 }} aria-hidden="true">
+              👁️
+            </span>
+          )}
+          <span style={{ flex: 1, minWidth: 0 }}>{task.title}</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: br.color, flexShrink: 0 }} />
+          <span style={{ fontSize: 11, color: br.color, fontWeight: 600 }}>{br.name}</span>
+        </div>
+        {renderProgressBar(done, total)}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+            {assignees.map((pid) => {
+              const p = getPerson(pid);
+              return (
+                <div
+                  key={pid}
+                  title={p.name}
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: "50%",
+                    background: p.color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 7,
+                    fontWeight: 800,
+                    color: "#fff",
+                  }}
+                >
+                  {p.short}
+                </div>
+              );
+            })}
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 600, color: dlColor }}>{task.deadline}</span>
+          <Badge color={pr.color} bg={pr.bg}>
+            {pr.label}
+          </Badge>
+          {attN > 0 && (
+            <span style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>
+              📎 {attN}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderDetailPanel = () => {
+    if (!selectedTask) return null;
+    const br = getBrand(selectedTask.brand);
+    const camp = selectedTask.campaign != null ? CAMPAIGNS.find((c) => c.id === selectedTask.campaign) : null;
+    const st = TASK_STATUS[selectedTask.status];
+    const pr = PRIORITY[selectedTask.priority];
+    const { done, total, pct } = subtaskProgress(selectedTask);
+
+    return (
+      <Card
+        style={{
+          marginTop: 14,
+          borderTop: `3px solid ${br.color}`,
+          padding: "18px 20px",
+        }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start", marginBottom: 14 }}>
+          <div style={{ flex: "1 1 220px", minWidth: 0 }}>
+            <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Título</div>
+            <input
+              disabled
+              value={selectedTask.title}
+              readOnly
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "8px 10px",
+                borderRadius: 8,
+                border: `1px solid ${B.border}`,
+                fontSize: 14,
+                fontWeight: 700,
+                fontFamily: font,
+                background: B.surfaceHover,
+                color: B.text,
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: br.color }} />
+              <Badge color={br.color} bg={`${br.color}12`}>
+                {br.name}
+              </Badge>
+            </div>
+            {camp && <Badge>{camp.name}</Badge>}
+            {!camp && <Badge color={B.textMuted} bg={B.surfaceHover}>Sin campaña</Badge>}
+            <Badge color={deadlineTone(selectedTask.deadline)} bg={B.surfaceHover}>
+              📅 {selectedTask.deadline}
+            </Badge>
+            <Badge color={pr.color} bg={pr.bg}>
+              {pr.label}
+            </Badge>
+            <Badge color={st.color} bg={`${st.color}15`}>
+              {st.label}
+            </Badge>
+          </div>
+          <div style={{ marginLeft: "auto" }}>
+            <Btn variant="default" onClick={() => setSelectedId(null)}>
+              Cerrar
+            </Btn>
+          </div>
+        </div>
+
+        <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 6 }}>Descripción</div>
+        <div
+          style={{
+            background: B.surfaceHover,
+            padding: 12,
+            borderRadius: 8,
+            fontSize: 13,
+            lineHeight: 1.5,
+            color: B.text,
+            marginBottom: 18,
+          }}
+        >
+          {selectedTask.description || "—"}
+        </div>
+
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>Subtareas</div>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 6, fontWeight: 600 }}>
+            {done} de {total} completadas
+          </div>
+          <div style={{ height: 4, borderRadius: 2, background: B.surfaceHover, overflow: "hidden", maxWidth: 280 }}>
+            <div style={{ width: `${Math.round(pct * 100)}%`, height: "100%", background: progressFillColor(pct), borderRadius: 2 }} />
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {(selectedTask.subtasks || []).map((s) => {
+            const p = getPerson(s.assignedTo);
+            return (
+              <div
+                key={s.id}
+                style={{
+                  border: `1px solid ${B.border}`,
+                  borderRadius: 8,
+                  padding: "10px 12px",
+                  background: B.surface,
+                }}
+              >
+                <label style={{ display: "flex", gap: 10, alignItems: "flex-start", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={!!s.done}
+                    onChange={() => toggleSubtaskDone(selectedTask.id, s.id)}
+                    style={{ marginTop: 3, width: 16, height: 16, flexShrink: 0 }}
+                  />
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        textDecoration: s.done ? "line-through" : "none",
+                        color: s.done ? B.textLight : B.text,
+                      }}
+                    >
+                      {s.done ? "✓ " : ""}
+                      {s.title}
+                    </span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6, alignItems: "center" }}>
+                      <Badge color={B.textMuted} bg={B.surfaceHover}>
+                        {s.type}
+                      </Badge>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div
+                          style={{
+                            width: 22,
+                            height: 22,
+                            borderRadius: "50%",
+                            background: p.color,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 9,
+                            fontWeight: 800,
+                            color: "#fff",
+                          }}
+                        >
+                          {p.short}
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: B.textMuted }}>{p.name.split(" ")[0]}</span>
+                      </div>
+                    </div>
+                    {(s.attachments || []).length > 0 && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                        {(s.attachments || []).map((f, fi) => (
+                          <span
+                            key={fi}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              padding: "4px 8px",
+                              borderRadius: 8,
+                              background: B.surfaceHover,
+                              fontSize: 11,
+                              border: `1px solid ${B.border}`,
+                            }}
+                          >
+                            <span>{f.icon}</span>
+                            <span style={{ fontWeight: 600 }}>{f.name}</span>
+                            <span style={{ color: B.textMuted }}>{f.size}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => e.preventDefault()}
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                                cursor: "pointer",
+                                color: B.textMuted,
+                                fontSize: 12,
+                                padding: "0 2px",
+                                fontFamily: font,
+                              }}
+                              aria-label="Quitar adjunto (mock)"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </span>
+                </label>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{ fontSize: 13, fontWeight: 700, marginTop: 20, marginBottom: 8 }}>Adjuntos</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+          {(selectedTask.attachments || []).map((f, fi) => (
+            <div key={fi} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12 }}>
+              <span style={{ fontSize: 16 }}>{f.icon}</span>
+              <span style={{ fontWeight: 600 }}>{f.name}</span>
+              <span style={{ color: B.textMuted }}>{f.size}</span>
+            </div>
+          ))}
+        </div>
+        <div
+          style={{
+            border: `2px dashed ${B.border}`,
+            borderRadius: 8,
+            padding: "14px 16px",
+            color: B.textMuted,
+            fontSize: 12,
+            textAlign: "center",
+            background: B.surface,
+          }}
+        >
+          📎 Adjuntar archivo
+        </div>
+      </Card>
+    );
+  };
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 14, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 2, background: B.surfaceHover, borderRadius: 8, padding: 2 }}>
+          {[
+            { id: "kanban", label: "Kanban" },
+            { id: "lista", label: "Lista" },
+          ].map((v) => (
+            <button
+              key={v.id}
+              type="button"
+              onClick={() => setView(v.id)}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 6,
+                border: "none",
+                fontSize: 13,
+                fontWeight: view === v.id ? 700 : 500,
+                background: view === v.id ? B.surface : "transparent",
+                color: view === v.id ? B.text : B.textMuted,
+                cursor: "pointer",
+                fontFamily: font,
+                boxShadow: view === v.id ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+              }}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+        <Select
+          value={assignedFilter}
+          onChange={setAssignedFilter}
+          options={[{ value: "todos", label: "Todo el equipo" }, ...TEAM.map((t) => ({ value: t.id, label: t.name }))]}
+        />
+        <Select
+          value={brandFilter}
+          onChange={setBrandFilter}
+          options={[{ value: "todas", label: "Todas las marcas" }, ...activeBrands.map((b) => ({ value: b.id, label: b.name }))]}
+        />
+        <div style={{ flex: 1 }} />
+        <Btn
+          variant="primary"
+          onClick={() => {
+            setShowNewForm((v) => !v);
+            setSelectedId(null);
+          }}
+        >
+          + Nueva tarea
+        </Btn>
+      </div>
+
+      {showNewForm && (
+        <Card
+          style={{
+            marginBottom: 16,
+            background: B.surfaceHover,
+            border: `2px dashed ${B.accent}`,
+            borderRadius: 12,
+            padding: "18px 20px",
+          }}
+        >
+          <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 14 }}>Nueva tarea</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Título *</div>
+              <input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Título de la tarjeta"
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "8px 10px",
+                  borderRadius: 8,
+                  border: `1px solid ${B.border}`,
+                  fontFamily: font,
+                  fontSize: 13,
+                }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Marca</div>
+              <Select
+                value={newBrand}
+                onChange={setNewBrand}
+                options={activeBrands.map((b) => ({ value: b.id, label: b.name }))}
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Campaña vinculada</div>
+              <Select
+                value={newCampaign}
+                onChange={setNewCampaign}
+                options={[{ value: "", label: "Sin campaña" }, ...activeCampaignOptions.map((c) => ({ value: String(c.id), label: c.name }))]}
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Fecha límite (DD/MM)</div>
+              <input
+                value={newDeadline}
+                onChange={(e) => setNewDeadline(e.target.value)}
+                placeholder="12/04"
+                style={{
+                  width: "100%",
+                  boxSizing: "border-box",
+                  padding: "8px 10px",
+                  borderRadius: 8,
+                  border: `1px solid ${B.border}`,
+                  fontFamily: font,
+                  fontSize: 13,
+                }}
+              />
+            </div>
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 6 }}>Prioridad</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {(["alta", "media", "baja"]).map((p) => {
+                const pr = PRIORITY[p];
+                return (
+                  <Btn
+                    key={p}
+                    variant={newPriority === p ? "primary" : "default"}
+                    onClick={() => setNewPriority(p)}
+                    style={{ fontSize: 12 }}
+                  >
+                    {pr.label}
+                  </Btn>
+                );
+              })}
+            </div>
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: B.textMuted, marginBottom: 4 }}>Descripción</div>
+            <textarea
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              rows={3}
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "8px 10px",
+                borderRadius: 8,
+                border: `1px solid ${B.border}`,
+                fontFamily: font,
+                fontSize: 13,
+                resize: "vertical",
+              }}
+            />
+          </div>
+          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Subtareas</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
+            {newSubtasks.map((row, idx) => (
+              <div key={idx} style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "flex-end" }}>
+                <input
+                  value={row.title}
+                  onChange={(e) => {
+                    const next = [...newSubtasks];
+                    next[idx] = { ...next[idx], title: e.target.value };
+                    setNewSubtasks(next);
+                  }}
+                  placeholder="Título subtarea"
+                  style={{
+                    flex: "1 1 180px",
+                    minWidth: 120,
+                    padding: "8px 10px",
+                    borderRadius: 8,
+                    border: `1px solid ${B.border}`,
+                    fontFamily: font,
+                    fontSize: 13,
+                  }}
+                />
+                <Select
+                  value={row.assignedTo}
+                  onChange={(v) => {
+                    const next = [...newSubtasks];
+                    next[idx] = { ...next[idx], assignedTo: v };
+                    setNewSubtasks(next);
+                  }}
+                  options={TEAM.map((t) => ({ value: t.id, label: t.name }))}
+                />
+                <Select
+                  value={row.type}
+                  onChange={(v) => {
+                    const next = [...newSubtasks];
+                    next[idx] = { ...next[idx], type: v };
+                    setNewSubtasks(next);
+                  }}
+                  options={TASK_SUBTYPES.map((t) => ({ value: t, label: t }))}
+                />
+                <Btn
+                  variant="ghost"
+                  onClick={() => setNewSubtasks((prev) => prev.filter((_, i) => i !== idx))}
+                  style={{ fontSize: 12 }}
+                  disabled={newSubtasks.length <= 1}
+                >
+                  ✕
+                </Btn>
+              </div>
+            ))}
+            <Btn
+              variant="default"
+              onClick={() => setNewSubtasks((prev) => [...prev, { title: "", assignedTo: TEAM[0]?.id || "diego", type: "Copy" }])}
+              style={{ fontSize: 12, alignSelf: "flex-start" }}
+            >
+              + Agregar subtarea
+            </Btn>
+          </div>
+          <div
+            style={{
+              border: `2px dashed ${B.border}`,
+              borderRadius: 8,
+              padding: "16px 18px",
+              color: B.textMuted,
+              fontSize: 12,
+              textAlign: "center",
+              marginBottom: 14,
+              background: B.surface,
+            }}
+          >
+            📎 Zona de adjuntos (mock)
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Btn variant="primary" onClick={createTask} disabled={!newTitle.trim()}>
+              Crear tarea
+            </Btn>
+            <Btn
+              variant="default"
+              onClick={() => {
+                setShowNewForm(false);
+                resetNewForm();
+              }}
+            >
+              Cancelar
+            </Btn>
+          </div>
+        </Card>
+      )}
+
+      {view === "kanban" && (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+            {TASK_STATUS_ORDER.map((status) => {
+              const st = TASK_STATUS[status];
+              const colTasks = filtered.filter((t) => t.status === status);
+              return (
+                <div key={status} style={{ background: B.surfaceHover, borderRadius: 12, padding: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, padding: "0 4px" }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: st.color }} />
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{st.label}</span>
+                    <span style={{ fontSize: 11, color: B.textMuted, marginLeft: "auto" }}>{colTasks.length}</span>
+                  </div>
+                  {status === "en_revision" && (
+                    <div style={{ fontSize: 10, color: B.textMuted, marginBottom: 8, padding: "0 4px" }}>Visible en Aprobaciones</div>
+                  )}
+                  {colTasks.map((task) => renderKanbanCard(task, status))}
+                </div>
+              );
+            })}
+          </div>
+          {renderDetailPanel()}
+        </div>
+      )}
+
+      {view === "lista" && (
+        <div>
+          <Card style={{ padding: 0, overflow: "hidden" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+                  {["Tarea", "Marca", "Subtareas", "Equipo", "Deadline", "Prioridad", "Estado"].map((h) => (
+                    <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 12 }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((task) => {
+                  const br = getBrand(task.brand);
+                  const st = TASK_STATUS[task.status];
+                  const pr = PRIORITY[task.priority];
+                  const { done, total } = subtaskProgress(task);
+                  const assignees = uniqueSubtaskAssignees(task);
+                  const active = selectedId === task.id;
+                  return (
+                    <tr
+                      key={task.id}
+                      onClick={() => openDetail(task.id)}
+                      style={{
+                        borderBottom: `1px solid ${B.border}`,
+                        cursor: "pointer",
+                        background: active ? B.surfaceHover : "transparent",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active) e.currentTarget.style.background = B.surfaceHover;
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) e.currentTarget.style.background = "transparent";
+                      }}
+                    >
+                      <td style={{ padding: "10px 14px", fontWeight: 600, borderLeft: `3px solid ${br.color}` }}>{task.title}</td>
+                      <td style={{ padding: "10px 14px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{ width: 6, height: 6, borderRadius: "50%", background: br.color }} />
+                          <span style={{ fontSize: 12, fontWeight: 600, color: br.color }}>{br.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 14px", minWidth: 140 }}>
+                        <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>
+                          {done}/{total}
+                        </div>
+                        <div style={{ height: 4, borderRadius: 2, background: B.surfaceHover, overflow: "hidden", maxWidth: 120 }}>
+                          <div
+                            style={{
+                              width: `${total ? Math.round((done / total) * 100) : 0}%`,
+                              height: "100%",
+                              background: progressFillColor(total ? done / total : 0),
+                              borderRadius: 2,
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 14px" }}>
+                        <div style={{ display: "flex", gap: 3 }}>
+                          {assignees.map((pid) => {
+                            const p = getPerson(pid);
+                            return (
+                              <div
+                                key={pid}
+                                style={{
+                                  width: 18,
+                                  height: 18,
+                                  borderRadius: "50%",
+                                  background: p.color,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: 7,
+                                  fontWeight: 800,
+                                  color: "#fff",
+                                }}
+                              >
+                                {p.short}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 14px", fontSize: 12, fontWeight: 600, color: deadlineTone(task.deadline) }}>{task.deadline}</td>
+                      <td style={{ padding: "10px 14px" }}>
+                        <Badge color={pr.color} bg={pr.bg}>
+                          {pr.label}
+                        </Badge>
+                      </td>
+                      <td style={{ padding: "10px 14px" }}>
+                        <Badge color={st.color} bg={`${st.color}15`}>
+                          {st.label}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Card>
+          {renderDetailPanel()}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function AprobacionesView() {
   const [subTab, setSubTab] = useState("pendientes");
