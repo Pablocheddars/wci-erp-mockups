@@ -267,6 +267,62 @@ function DashboardView() {
           ))}
         </Card>
       </div>
+
+      {/* Rentabilidad — integrado en dashboard */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginTop: 14 }}>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>Venta bruta {periodLabels[period]}</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: B.text }}>${(d.venta / 1e6).toFixed(1)}M</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>Ingreso neto</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: B.info }}>${(d.venta * 0.85 / 1e6).toFixed(1)}M</div>
+          <div style={{ fontSize: 11, color: B.textMuted }}>Post comisiones</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>Margen contribución</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: B.success }}>${(d.venta * 0.34 / 1e6).toFixed(1)}M</div>
+          <div style={{ fontSize: 11, color: B.textMuted }}>Lo que realmente queda</div>
+        </Card>
+      </div>
+
+      {/* Product mix matrix */}
+      <Card style={{ marginTop: 14, padding: 0, overflow: "hidden" }}>
+        <div style={{ padding: "12px 20px", borderBottom: `1px solid ${B.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700 }}>Mix de productos por rentabilidad</h3>
+          <div style={{ display: "flex", gap: 6 }}>
+            {Object.entries(QUADRANT_COLORS).map(([key, q]) => {
+              const count = PRODUCT_MIX.filter(p => p.quadrant === key).length;
+              return <span key={key} style={{ fontSize: 11, fontWeight: 600, color: q.color, background: q.bg, padding: "2px 8px", borderRadius: 10 }}>{q.label.split(" ")[0]} {count}</span>;
+            })}
+          </div>
+        </div>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
+          <thead>
+            <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+              {["Producto", "Marca", "Vol/mes", "Margen %", "Cuadrante"].map(h => (
+                <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 12 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[...PRODUCT_MIX].sort((a, b) => (b.volume * b.margin) - (a.volume * a.margin)).map((p, i) => {
+              const q = QUADRANT_COLORS[p.quadrant];
+              return (
+                <tr key={i} style={{ borderBottom: `1px solid ${B.border}` }}
+                  onMouseEnter={e => e.currentTarget.style.background = B.surfaceHover}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <td style={{ padding: "10px 14px", fontWeight: 600 }}>{p.name}</td>
+                  <td style={{ padding: "10px 14px", color: B.textMuted }}>{p.brand}</td>
+                  <td style={{ padding: "10px 14px", fontWeight: 700 }}>{p.volume}</td>
+                  <td style={{ padding: "10px 14px", fontWeight: 700, color: p.margin >= 35 ? B.success : p.margin >= 25 ? B.text : B.danger }}>{p.margin}%</td>
+                  <td style={{ padding: "10px 14px" }}><Badge color={q.color} bg={q.bg}>{q.label}</Badge></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </Card>
     </div>
   );
 }
@@ -363,7 +419,7 @@ export default function ComercialModule() {
   const [tab, setTab] = useState("dashboard");
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => { function check() { setIsMobile(window.innerWidth < 900); } check(); window.addEventListener("resize", check); return () => window.removeEventListener("resize", check); }, []);
-  const TABS = [{ id: "dashboard", label: "Dashboard", icon: "📊" },{ id: "clientes", label: "Clientes", icon: "👥", badge: CHURN_RISK.length, badgeColor: B.dangerBg, badgeTextColor: B.danger },{ id: "crossbrand", label: "Cross-Brand", icon: "🔗" },{ id: "campanas", label: "Campañas", icon: "📣" },{ id: "rentabilidad", label: "Rentabilidad", icon: "💎" },{ id: "reporte", label: "Reporte", icon: "📄" }];
+  const TABS = [{ id: "dashboard", label: "Dashboard", icon: "📊" },{ id: "clientes", label: "Clientes", icon: "👥", badge: CHURN_RISK.length, badgeColor: B.dangerBg, badgeTextColor: B.danger },{ id: "crossbrand", label: "Cross-Brand", icon: "🔗" },{ id: "campanas", label: "Campañas", icon: "📣" },{ id: "reporte", label: "Reporte", icon: "📄" }];
   return <div style={{ fontFamily: font, background: "#F5F4F0", minHeight: "100vh" }}>
     <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus{outline:none;border-color:${B.accent} !important}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style>
     <header style={{ background: B.surface, borderBottom: `1px solid ${B.border}`, position: "sticky", top: 0, zIndex: 100 }}>
@@ -377,7 +433,6 @@ export default function ComercialModule() {
       {tab === "clientes" && <ClientesView />}
       {tab === "crossbrand" && <CrossBrandView />}
       {tab === "campanas" && <CampanasView />}
-      {tab === "rentabilidad" && <RentabilidadView />}
       {tab === "reporte" && <ReporteView />}
     </main>
   </div>;
