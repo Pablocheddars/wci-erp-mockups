@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 
 const B = {
   primary: "#1A1A1A", accent: "#F5C518", accentHover: "#E0B315",
@@ -55,10 +55,35 @@ const CHURN_RISK = [
   { id: 5, name: "Luis Contreras", brand: "Brown Sweet", lastVisit: "25 días", pattern: "Quincenal", clv: 140000, signal: "Frecuencia", risk: 65 },
 ];
 const CAMPAIGNS = [
-  { id: 1, name: "2x1 Buffalo Chicken", brand: "Buffalo Chicken", type: "Promo precio", status: "activa", start: "01/04", end: "15/04", ventaBruta: 1800000, margen: -120000, newClients: 22 },
-  { id: 2, name: "Combo Familiar Cheddar's", brand: "Cheddar's", type: "Promo precio", status: "activa", start: "28/03", end: "10/04", ventaBruta: 3200000, margen: 640000, newClients: 15 },
-  { id: 3, name: "Shibuya Poke Day", brand: "Shibuya Express", type: "Evento", status: "evaluada", start: "22/03", end: "22/03", ventaBruta: 890000, margen: 210000, newClients: 35 },
-  { id: 4, name: "Puntos dobles Tori", brand: "Tori Sushi", type: "Fidelización", status: "planificada", start: "15/04", end: "30/04", ventaBruta: 0, margen: 0, newClients: 0 },
+  { id: 1, name: "2x1 Buffalo Chicken", brand: "Buffalo Chicken", type: "Promo precio", status: "activa", start: "01/04", end: "15/04", ventaBruta: 1800000, margen: -120000, newClients: 22,
+    locales: ["Angol", "San Pedro"],
+    canales: [
+      { name: "Salón", estado: "ok" },
+      { name: "UberEats", estado: "ok" },
+      { name: "Rappi", estado: "error", detalle: "Promo desactivada desde 03/04" },
+      { name: "Ecommerce", estado: "ok" },
+    ]},
+  { id: 2, name: "Combo Familiar Cheddar's", brand: "Cheddar's", type: "Promo precio", status: "activa", start: "28/03", end: "10/04", ventaBruta: 3200000, margen: 640000, newClients: 15,
+    locales: ["Angol", "San Pedro", "Chillán", "Chiguayante"],
+    canales: [
+      { name: "Salón", estado: "ok" },
+      { name: "Mesón", estado: "ok" },
+      { name: "UberEats", estado: "ok" },
+      { name: "Rappi", estado: "ok" },
+      { name: "Ecommerce", estado: "ok" },
+    ]},
+  { id: 3, name: "Shibuya Poke Day", brand: "Shibuya Express", type: "Evento", status: "evaluada", start: "22/03", end: "22/03", ventaBruta: 890000, margen: 210000, newClients: 35,
+    locales: ["Angol"],
+    canales: [
+      { name: "Salón", estado: "ok" },
+    ]},
+  { id: 4, name: "Puntos dobles Tori", brand: "Tori Sushi", type: "Fidelización", status: "planificada", start: "15/04", end: "30/04", ventaBruta: 0, margen: 0, newClients: 0,
+    locales: ["Angol", "San Pedro"],
+    canales: [
+      { name: "Salón", estado: "pendiente" },
+      { name: "Mesón", estado: "pendiente" },
+      { name: "Ecommerce", estado: "pendiente" },
+    ]},
 ];
 const PRODUCT_MIX = [
   { name: "Burger Clásica Cheddar's", brand: "Cheddar's", volume: 420, margin: 38, quadrant: "estrella" },
@@ -369,12 +394,125 @@ function CrossBrandView() {
 }
 
 function CampanasView() {
-  const SM = { activa: { color: B.success, bg: B.successBg }, evaluada: { color: B.info, bg: B.infoBg }, planificada: { color: B.purple, bg: B.purpleBg }, finalizada: { color: B.textMuted, bg: B.surfaceHover } };
-  return <div>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}><Select value="all" onChange={() => {}} options={[{ value: "all", label: "Todas las marcas" }, ...BRANDS.map(b => ({ value: b.id, label: b.name }))]} /><Btn variant="primary">+ Nueva campaña</Btn></div>
-    <Card style={{ padding: 0, overflow: "hidden" }}><table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}><thead><tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>{["Campaña","Marca","Tipo","Período","Estado","Venta bruta","Margen","Clientes nuevos"].map(h => <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 12 }}>{h}</th>)}</tr></thead><tbody>{CAMPAIGNS.map(c => { const st = SM[c.status]; return <tr key={c.id} style={{ borderBottom: `1px solid ${B.border}`, cursor: "pointer" }} onMouseEnter={e => e.currentTarget.style.background = B.surfaceHover} onMouseLeave={e => e.currentTarget.style.background = "transparent"}><td style={{ padding: "10px 14px", fontWeight: 600 }}>{c.name}</td><td style={{ padding: "10px 14px", color: B.textMuted }}>{c.brand}</td><td style={{ padding: "10px 14px" }}><Badge>{c.type}</Badge></td><td style={{ padding: "10px 14px", color: B.textMuted, fontSize: 12 }}>{c.start} — {c.end}</td><td style={{ padding: "10px 14px" }}><Badge color={st.color} bg={st.bg}>{c.status}</Badge></td><td style={{ padding: "10px 14px", fontWeight: 600 }}>{c.ventaBruta > 0 ? `$${(c.ventaBruta/1e6).toFixed(1)}M` : "—"}</td><td style={{ padding: "10px 14px", fontWeight: 700, color: c.margen > 0 ? B.success : c.margen < 0 ? B.danger : B.textMuted }}>{c.margen !== 0 ? `$${(c.margen/1000).toFixed(0)}k` : "—"}</td><td style={{ padding: "10px 14px", color: c.newClients > 0 ? B.success : B.textMuted, fontWeight: 600 }}>{c.newClients > 0 ? `+${c.newClients}` : "—"}</td></tr>; })}</tbody></table></Card>
-    <Card style={{ marginTop: 14, background: `${B.accent}08`, border: `1px solid ${B.accent}35` }}><div style={{ fontSize: 13, lineHeight: 1.6 }}><strong>Evaluación por margen, no por volumen.</strong> Cada campaña se mide por margen de contribución real. La campaña 2x1 Buffalo trae volumen pero destruye margen.</div></Card>
-  </div>;
+  const [expanded, setExpanded] = useState(null);
+
+  const STATUS_MAP = {
+    activa: { color: B.success, bg: B.successBg },
+    evaluada: { color: B.info, bg: B.infoBg },
+    planificada: { color: B.purple, bg: B.purpleBg },
+    finalizada: { color: B.textMuted, bg: B.surfaceHover },
+  };
+  const CANAL_STATUS = {
+    ok: { color: B.success, icon: "✓", label: "Verificado" },
+    error: { color: B.danger, icon: "✗", label: "Error" },
+    pendiente: { color: B.textMuted, icon: "○", label: "Pendiente" },
+    no_verificado: { color: B.warning, icon: "?", label: "Sin verificar" },
+  };
+
+  const alertCount = CAMPAIGNS.reduce((s, c) => s + (c.canales?.filter(ch => ch.estado === "error").length || 0), 0);
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <Select value="all" onChange={() => {}} options={[{ value: "all", label: "Todas las marcas" }, ...BRANDS.map(b => ({ value: b.id, label: b.name }))]} />
+          <Select value="all" onChange={() => {}} options={[{ value: "all", label: "Todos los locales" }, { value: "angol", label: "Angol" }, { value: "spedro", label: "San Pedro" }, { value: "chillan", label: "Chillán" }, { value: "chiguayante", label: "Chiguayante" }]} />
+          {alertCount > 0 && <Badge color={B.danger} bg={B.dangerBg}>⚠ {alertCount} canal{alertCount > 1 ? "es" : ""} con error</Badge>}
+        </div>
+        <Btn variant="primary">+ Nueva campaña</Btn>
+      </div>
+
+      <Card style={{ padding: 0, overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
+          <thead>
+            <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+              {["Campaña", "Marca", "Locales", "Canales", "Período", "Estado", "Venta bruta", "Margen", "Nuevos"].map(h => (
+                <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 12 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {CAMPAIGNS.map(c => {
+              const st = STATUS_MAP[c.status];
+              const hasError = c.canales?.some(ch => ch.estado === "error");
+              const isExpanded = expanded === c.id;
+              return (
+                <Fragment key={c.id}>
+                  <tr onClick={() => setExpanded(isExpanded ? null : c.id)}
+                    style={{ borderBottom: isExpanded ? "none" : `1px solid ${B.border}`, cursor: "pointer", background: hasError ? `${B.danger}04` : "transparent" }}
+                    onMouseEnter={e => { if (!isExpanded) e.currentTarget.style.background = hasError ? `${B.danger}08` : B.surfaceHover; }}
+                    onMouseLeave={e => { if (!isExpanded) e.currentTarget.style.background = hasError ? `${B.danger}04` : "transparent"; }}>
+                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>
+                      <span style={{ marginRight: 6, fontSize: 10, color: B.textMuted }}>{isExpanded ? "▼" : "▶"}</span>
+                      {c.name}
+                    </td>
+                    <td style={{ padding: "10px 14px", color: B.textMuted }}>{c.brand}</td>
+                    <td style={{ padding: "10px 14px" }}>
+                      <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                        {c.locales?.map((l, i) => <span key={i} style={{ fontSize: 10, padding: "1px 5px", background: B.surfaceHover, borderRadius: 3, color: B.textMuted }}>{l}</span>)}
+                      </div>
+                    </td>
+                    <td style={{ padding: "10px 14px" }}>
+                      <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+                        {c.canales?.map((ch, i) => {
+                          const cs = CANAL_STATUS[ch.estado];
+                          return <span key={i} title={`${ch.name}: ${cs.label}`} style={{ fontSize: 12, fontWeight: 700, color: cs.color, cursor: "help" }}>{cs.icon}</span>;
+                        })}
+                        {hasError && <span style={{ fontSize: 10, color: B.danger, fontWeight: 600, marginLeft: 4 }}>!</span>}
+                      </div>
+                    </td>
+                    <td style={{ padding: "10px 14px", color: B.textMuted, fontSize: 12 }}>{c.start} — {c.end}</td>
+                    <td style={{ padding: "10px 14px" }}><Badge color={st.color} bg={st.bg}>{c.status}</Badge></td>
+                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>{c.ventaBruta > 0 ? `$${(c.ventaBruta / 1e6).toFixed(1)}M` : "—"}</td>
+                    <td style={{ padding: "10px 14px", fontWeight: 700, color: c.margen > 0 ? B.success : c.margen < 0 ? B.danger : B.textMuted }}>
+                      {c.margen !== 0 ? `$${(c.margen / 1000).toFixed(0)}k` : "—"}
+                    </td>
+                    <td style={{ padding: "10px 14px", color: c.newClients > 0 ? B.success : B.textMuted, fontWeight: 600 }}>
+                      {c.newClients > 0 ? `+${c.newClients}` : "—"}
+                    </td>
+                  </tr>
+                  {isExpanded && (
+                    <tr style={{ borderBottom: `1px solid ${B.border}` }}>
+                      <td colSpan={9} style={{ padding: "0 14px 14px 36px", background: `${B.accent}04` }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 8 }}>Locales</div>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                              {c.locales?.map((l, i) => <Badge key={i} color={B.text} bg={B.surfaceHover}>{l}</Badge>)}
+                            </div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 8 }}>Estado por canal</div>
+                            {c.canales?.map((ch, i) => {
+                              const cs = CANAL_STATUS[ch.estado];
+                              return (
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0", borderBottom: `1px solid ${B.border}` }}>
+                                  <span style={{ fontSize: 13, fontWeight: 700, color: cs.color, minWidth: 14, textAlign: "center" }}>{cs.icon}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{ch.name}</span>
+                                  <Badge color={cs.color} bg={`${cs.color}15`}>{cs.label}</Badge>
+                                  {ch.detalle && <span style={{ fontSize: 11, color: B.danger }}>{ch.detalle}</span>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </Card>
+
+      <Card style={{ marginTop: 14, background: `${B.accent}08`, border: `1px solid ${B.accent}35` }}>
+        <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+          <strong>Monitoreo automático de canales:</strong> Un cron verifica periódicamente si las promos que deberían estar activas en UberEats, Rappi, y otras apps realmente lo están. Si una promo se desactiva sin aviso, aparece como <span style={{ color: B.danger, fontWeight: 700 }}>✗ Error</span> con detalle. Para apps sin API, el encargado del local marca manualmente vía checklist diario.
+        </div>
+      </Card>
+    </div>
+  );
 }
 
 function RentabilidadView() {
