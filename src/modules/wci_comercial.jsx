@@ -169,37 +169,46 @@ function DashboardView() {
         <span style={{ fontSize: 11, color: B.textMuted }}>Comparando: {d.compLabel}</span>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
+      {/* KPI row — full picture, no repetition */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 10, marginBottom: 16 }}>
         <Card>
-          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Venta {periodLabels[period]}</div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: B.text }}>${(d.venta / 1e6).toFixed(1)}M</div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: ventaDelta.color }}>{ventaDelta.text}</span>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Venta bruta {periodLabels[period]}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: B.text }}>${(d.venta / 1e6).toFixed(1)}M</div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: ventaDelta.color }}>{ventaDelta.text}</span>
           </div>
-          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+          <div style={{ fontSize: 10, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Ingreso neto</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: B.info }}>${(d.venta * 0.85 / 1e6).toFixed(1)}M</div>
+          <div style={{ fontSize: 10, color: B.textMuted, marginTop: 2 }}>Post comisiones</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Margen contribución</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: B.success }}>${(d.venta * 0.34 / 1e6).toFixed(1)}M</div>
+          <div style={{ fontSize: 10, color: B.textMuted, marginTop: 2 }}>Lo que queda</div>
         </Card>
         <Card>
           <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>vs meta</div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: d.venta / d.meta >= 0.9 ? B.success : B.warning }}>{Math.round(d.venta / d.meta * 100)}%</div>
-          </div>
-          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>Meta: ${(d.meta / 1e6).toFixed(0)}M</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: d.venta / d.meta >= 0.9 ? B.success : B.warning }}>{Math.round(d.venta / d.meta * 100)}%</div>
+          <div style={{ fontSize: 10, color: B.textMuted, marginTop: 2 }}>Meta: ${(d.meta / 1e6).toFixed(0)}M</div>
         </Card>
         <Card>
           <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Ticket promedio</div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: B.purple }}>${d.ticket.toLocaleString()}</div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: ticketDelta.color }}>{ticketDelta.text}</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: B.purple }}>${d.ticket.toLocaleString()}</div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: ticketDelta.color }}>{ticketDelta.text}</span>
           </div>
-          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+          <div style={{ fontSize: 10, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
         </Card>
         <Card>
           <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Transacciones</div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: B.info }}>{d.transacciones.toLocaleString()}</div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: transDelta.color }}>{transDelta.text}</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: B.info }}>{d.transacciones.toLocaleString()}</div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: transDelta.color }}>{transDelta.text}</span>
           </div>
-          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+          <div style={{ fontSize: 10, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
         </Card>
       </div>
 
@@ -265,24 +274,6 @@ function DashboardView() {
               <div style={{ fontSize: 12, color: B.text, lineHeight: 1.4 }}>{a.text}</div>
             </div>
           ))}
-        </Card>
-      </div>
-
-      {/* Rentabilidad — integrado en dashboard */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginTop: 14 }}>
-        <Card>
-          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>Venta bruta {periodLabels[period]}</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: B.text }}>${(d.venta / 1e6).toFixed(1)}M</div>
-        </Card>
-        <Card>
-          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>Ingreso neto</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: B.info }}>${(d.venta * 0.85 / 1e6).toFixed(1)}M</div>
-          <div style={{ fontSize: 11, color: B.textMuted }}>Post comisiones</div>
-        </Card>
-        <Card>
-          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600 }}>Margen contribución</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: B.success }}>${(d.venta * 0.34 / 1e6).toFixed(1)}M</div>
-          <div style={{ fontSize: 11, color: B.textMuted }}>Lo que realmente queda</div>
         </Card>
       </div>
 
