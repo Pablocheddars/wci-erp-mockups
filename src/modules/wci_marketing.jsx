@@ -30,8 +30,46 @@ function Select({ value, onChange, options, style: sx = {} }) {
 const BRANDS=[{id:"cheddars",name:"Cheddar's",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"buffalo",name:"Buffalo Chicken",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"porkshop",name:"The Pork Shop",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"foodpxrn",name:"Food Pxrn",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"tori",name:"Tori Sushi",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"shibuya",name:"Shibuya Express",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"kiri",name:"Kiri Pokes",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"smarteats",name:"Smart Eats",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"brown",name:"Brown Sweet Factory",unit:"Unidad Sweet/Burger",color:"#8E44AD",active:true,type:"propia"},{id:"fatty",name:"Fatty Patty",unit:"Unidad Sweet/Burger",color:"#8E44AD",active:true,type:"propia"},{id:"bigfat",name:"Big Fat",unit:"—",color:"#AEABA4",active:false,type:"propia"},{id:"samai",name:"Clínica Samai",unit:"—",color:"#28A745",active:true,type:"externo"}];
 const activeBrands=BRANDS.filter(b=>b.active);
 const TEAM=[
-  { id: "ashly", name: "Ashly Arias", accessRole: "planner", role: "Coordinadora / Planner", short: "AA", color: B.accent, tasksWeek: 4, capacityWeek: 6, completed: 28, onTime: 92, approvedFirst: 88, avgRounds: 1.2, campaigns: 12 },
-  { id: "diego", name: "Diego Vallejo", accessRole: "creativo", role: "Redactor creativo", short: "DV", color: B.info, tasksWeek: 7, capacityWeek: 8, completed: 42, onTime: 85, approvedFirst: 78, avgRounds: 1.5, campaigns: 12 },
+  {
+    id: "ashly",
+    name: "Ashly Arias",
+    accessRole: "planner",
+    role: "Coordinadora / Planner",
+    short: "AA",
+    color: B.accent,
+    tasksWeek: 4,
+    capacityWeek: 6,
+    completed: 28,
+    onTime: 92,
+    approvedFirst: 88,
+    avgRounds: 1.2,
+    campaigns: 12,
+    tasksDistributed: 32,
+    publicationsOnTime: 89,
+    avgIdeaToPublish: 4.2,
+    ephemerisCovered: 3,
+    teamLoadBalance: 85,
+  },
+  {
+    id: "diego",
+    name: "Diego Vallejo",
+    accessRole: "creativo",
+    role: "Redactor creativo",
+    short: "DV",
+    color: B.info,
+    tasksWeek: 7,
+    capacityWeek: 8,
+    completed: 42,
+    onTime: 85,
+    approvedFirst: 78,
+    avgRounds: 1.5,
+    campaigns: 12,
+    grillasPresented: 6,
+    ideasApproved: 38,
+    ideasApprovedFirst: 82,
+    avgIdeaRounds: 1.3,
+    campaignsProposed: 4,
+  },
   { id: "josef", name: "Josef Fuenmayor", accessRole: "disenador", role: "Diseño gráfico", short: "JF", color: B.purple, tasksWeek: 6, capacityWeek: 6, completed: 35, onTime: 80, approvedFirst: 82, avgRounds: 1.3, campaigns: 10 },
   { id: "marco", name: "Marco Bahamonde", accessRole: "audiovisual", role: "Audiovisual", short: "MB", color: "#E74C3C", tasksWeek: 5, capacityWeek: 5, completed: 22, onTime: 75, approvedFirst: 70, avgRounds: 1.8, campaigns: 8 },
   { id: "kathya", name: "Kathya Saavedra", accessRole: "ux", role: "Experiencia cliente", short: "KS", color: B.success, tasksWeek: 1, capacityWeek: 3, completed: 8, onTime: 95, approvedFirst: 100, avgRounds: 1.0, campaigns: 11, isExperience: true },
@@ -3473,6 +3511,54 @@ function EquipoView({ tasks = TASKS }) {
                     <Badge color={B.success} bg={B.successBg}>
                       Experiencia · Mod. 11
                     </Badge>
+                  </div>
+                </>
+              ) : t.accessRole === "creativo" ? (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Grillas presentadas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.grillasPresented}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Ideas aprobadas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.ideasApproved}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>% aprob. 1ra</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: t.ideasApprovedFirst >= 80 ? B.success : B.warning }}>{t.ideasApprovedFirst}%</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Rondas prom.</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.avgIdeaRounds}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Campañas propuestas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.campaignsProposed}</span>
+                  </div>
+                </>
+              ) : t.accessRole === "planner" ? (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Tareas distribuidas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.tasksDistributed}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>% publicaciones a tiempo</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: t.publicationsOnTime >= 85 ? B.success : B.warning }}>{t.publicationsOnTime}%</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Días idea→pub.</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.avgIdeaToPublish}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Efemérides cubiertas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>
+                      {t.ephemerisCovered}/5
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Balance carga</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: t.teamLoadBalance >= 80 ? B.success : B.warning }}>{t.teamLoadBalance}%</span>
                   </div>
                 </>
               ) : (
