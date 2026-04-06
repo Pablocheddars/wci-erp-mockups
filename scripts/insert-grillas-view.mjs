@@ -1,0 +1,12 @@
+import fs from "fs";
+const root = "c:/Users/pablo/OneDrive/Documentos/GitHub/wci-erp-mockups";
+const jsx = `${root}/src/modules/wci_marketing.jsx`;
+const view = `${root}/scripts/grillas-view-fragment.jsx`;
+let main = fs.readFileSync(jsx, "utf8");
+const frag = fs.readFileSync(view, "utf8");
+const marker = "function TareasView()";
+if (!main.includes(marker)) throw new Error("marker missing");
+if (main.includes("function GrillasView(")) throw new Error("already inserted");
+main = main.replace(marker, frag + "\n\n" + marker);
+fs.writeFileSync(jsx, main);
+console.log("inserted GrillasView");
