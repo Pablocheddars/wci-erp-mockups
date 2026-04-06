@@ -29,7 +29,40 @@ function Select({ value, onChange, options, style: sx = {} }) {
 
 const BRANDS=[{id:"cheddars",name:"Cheddar's",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"buffalo",name:"Buffalo Chicken",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"porkshop",name:"The Pork Shop",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"foodpxrn",name:"Food Pxrn",unit:"Unidad Cheddar's",color:"#E74C3C",active:true,type:"propia"},{id:"tori",name:"Tori Sushi",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"shibuya",name:"Shibuya Express",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"kiri",name:"Kiri Pokes",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"smarteats",name:"Smart Eats",unit:"Unidad Tori Sushi",color:"#2E86DE",active:true,type:"propia"},{id:"brown",name:"Brown Sweet Factory",unit:"Unidad Sweet/Burger",color:"#8E44AD",active:true,type:"propia"},{id:"fatty",name:"Fatty Patty",unit:"Unidad Sweet/Burger",color:"#8E44AD",active:true,type:"propia"},{id:"bigfat",name:"Big Fat",unit:"—",color:"#AEABA4",active:false,type:"propia"},{id:"samai",name:"Clínica Samai",unit:"—",color:"#28A745",active:true,type:"externo"}];
 const activeBrands=BRANDS.filter(b=>b.active);
-const TEAM=[{id:"ashly",name:"Ashly Arias",role:"Coordinadora / Planner",short:"AA",color:B.accent,tasksWeek:4,capacityWeek:6,completed:28,onTime:92,approvedFirst:88,avgRounds:1.2,campaigns:12},{id:"diego",name:"Diego Vallejo",role:"Redactor creativo",short:"DV",color:B.info,tasksWeek:7,capacityWeek:8,completed:42,onTime:85,approvedFirst:78,avgRounds:1.5,campaigns:12},{id:"josef",name:"Josef Fuenmayor",role:"Diseño gráfico",short:"JF",color:B.purple,tasksWeek:6,capacityWeek:6,completed:35,onTime:80,approvedFirst:82,avgRounds:1.3,campaigns:10},{id:"marco",name:"Marco Bahamonde",role:"Audiovisual",short:"MB",color:"#E74C3C",tasksWeek:5,capacityWeek:5,completed:22,onTime:75,approvedFirst:70,avgRounds:1.8,campaigns:8},{id:"kathya",name:"Kathya Saavedra",role:"Experiencia cliente",short:"KS",color:B.success,tasksWeek:1,capacityWeek:3,completed:8,onTime:95,approvedFirst:100,avgRounds:1.0,campaigns:11,isExperience:true}];
+const TEAM=[
+  { id: "ashly", name: "Ashly Arias", accessRole: "planner", role: "Coordinadora / Planner", short: "AA", color: B.accent, tasksWeek: 4, capacityWeek: 6, completed: 28, onTime: 92, approvedFirst: 88, avgRounds: 1.2, campaigns: 12 },
+  { id: "diego", name: "Diego Vallejo", accessRole: "creativo", role: "Redactor creativo", short: "DV", color: B.info, tasksWeek: 7, capacityWeek: 8, completed: 42, onTime: 85, approvedFirst: 78, avgRounds: 1.5, campaigns: 12 },
+  { id: "josef", name: "Josef Fuenmayor", accessRole: "disenador", role: "Diseño gráfico", short: "JF", color: B.purple, tasksWeek: 6, capacityWeek: 6, completed: 35, onTime: 80, approvedFirst: 82, avgRounds: 1.3, campaigns: 10 },
+  { id: "marco", name: "Marco Bahamonde", accessRole: "audiovisual", role: "Audiovisual", short: "MB", color: "#E74C3C", tasksWeek: 5, capacityWeek: 5, completed: 22, onTime: 75, approvedFirst: 70, avgRounds: 1.8, campaigns: 8 },
+  { id: "kathya", name: "Kathya Saavedra", accessRole: "ux", role: "Experiencia cliente", short: "KS", color: B.success, tasksWeek: 1, capacityWeek: 3, completed: 8, onTime: 95, approvedFirst: 100, avgRounds: 1.0, campaigns: 11, isExperience: true },
+];
+
+const ADMINS = [
+  { id: "pablo", name: "Pablo Fernández", short: "PF", color: B.accent },
+  { id: "joaquin", name: "Joaquín Fernández", short: "JQ", color: B.danger },
+];
+
+const ROLES_CONFIG = [
+  { id: "creativo", label: "Creativo", description: "Crea grillas, propone ideas, captions y campañas", color: B.info, permissions: ["crear_grilla", "editar_grilla", "enviar_aprobacion", "editar_caption", "crear_campana"] },
+  { id: "planner", label: "Planner", description: "Arma tareas, gestiona calendario y efemérides, programa publicaciones", color: B.accent, permissions: ["crear_tarea", "asignar_subtareas", "gestionar_calendario", "gestionar_efemerides", "programar_publicacion"] },
+  { id: "audiovisual", label: "Audiovisual", description: "Produce contenido de video, reels, edición", color: "#E74C3C", permissions: ["actualizar_subtarea", "subir_entregable", "marcar_completado"] },
+  { id: "disenador", label: "Diseñador", description: "Produce diseño gráfico, carruseles, posts, portadas", color: B.purple, permissions: ["actualizar_subtarea", "subir_entregable", "marcar_completado"] },
+  { id: "ux", label: "UX", description: "Gestiona experiencia cliente, DMs, feedback", color: B.success, permissions: ["actualizar_subtarea", "reportar_feedback"] },
+  { id: "admin", label: "Admin", description: "Acceso completo: aprueba, configura roles, gestiona todo", color: B.danger, permissions: ["todo"] },
+];
+
+/** full | read | own | none — matriz mock por tab y rol */
+const ACCESS_MATRIX = [
+  { tab: "Grillas", creativo: "full", planner: "read", disenador: "read", audiovisual: "read", ux: "none", admin: "full" },
+  { tab: "Aprobaciones", creativo: "read", planner: "read", disenador: "read", audiovisual: "read", ux: "none", admin: "full" },
+  { tab: "Tareas", creativo: "own", planner: "full", disenador: "own", audiovisual: "own", ux: "own", admin: "full" },
+  { tab: "Calendario", creativo: "read", planner: "full", disenador: "own", audiovisual: "own", ux: "none", admin: "full" },
+  { tab: "Campañas", creativo: "full", planner: "read", disenador: "none", audiovisual: "none", ux: "none", admin: "full" },
+  { tab: "Métricas", creativo: "read", planner: "read", disenador: "none", audiovisual: "none", ux: "none", admin: "full" },
+  { tab: "Equipo", creativo: "none", planner: "none", disenador: "none", audiovisual: "none", ux: "none", admin: "full" },
+  { tab: "Biblioteca", creativo: "read", planner: "full", disenador: "read", audiovisual: "read", ux: "none", admin: "full" },
+];
+
 const NETWORKS=[{id:"ig",name:"Instagram",icon:"📸"},{id:"tiktok",name:"TikTok",icon:"🎵"}];
 const CONTENT_TYPES=[{id:"reel",name:"Reel"},{id:"carrusel",name:"Carrusel"},{id:"post",name:"Post"},{id:"historia",name:"Historia"}];
 
@@ -1518,13 +1551,13 @@ function GrillasView({ grillas, setGrillas, efemerides, setEfemerides }) {
         />
         <Select value={monthSel} onChange={setMonthSel} options={[{ value: "04/2026", label: "Abril 2026" }]} />
         <Badge color={B.text} bg={B.surfaceHover}>
-          {counts.aprobado}/{counts.total} aprobados
+          {counts.aprobado}/{counts.total} posts aprobados
+        </Badge>
+        <Badge color={B.info} bg={B.infoBg}>
+          {counts.enviado} pendientes de aprobación
         </Badge>
         <Badge color={B.textMuted} bg={B.surfaceHover}>
           {counts.borrador} borrador
-        </Badge>
-        <Badge color={B.info} bg={B.infoBg}>
-          {counts.enviado} enviados
         </Badge>
         {counts.cambios > 0 && (
           <Badge color={B.warning} bg={B.warningBg}>
@@ -3345,7 +3378,393 @@ function AprobacionesView({ grillas, setGrillas, tasks }) {
   );
 }
 
-function EquipoView({ tasks = TASKS }){const[subTab,setSubTab]=useState("rendimiento");const brandUnits=[{name:"Unidad Cheddar's",color:"#E74C3C",brands:BRANDS.filter(b=>b.unit==="Unidad Cheddar's")},{name:"Unidad Tori Sushi",color:"#2E86DE",brands:BRANDS.filter(b=>b.unit==="Unidad Tori Sushi")},{name:"Unidad Sweet/Burger",color:"#8E44AD",brands:BRANDS.filter(b=>b.unit==="Unidad Sweet/Burger")}];const standalone=BRANDS.filter(b=>b.unit==="—");return<div><div style={{display:"flex",gap:6,marginBottom:16}}>{[{id:"rendimiento",label:"Rendimiento"},{id:"carga",label:"Carga semanal"},{id:"cuentas",label:"Cuentas"}].map(s=><Btn key={s.id} variant={subTab===s.id?"primary":"default"} onClick={()=>setSubTab(s.id)} style={{fontSize:12}}>{s.label}</Btn>)}</div>{subTab==="rendimiento"&&<div style={{display:"grid",gridTemplateColumns:"repeat(5, 1fr)",gap:10}}>{TEAM.map(t=><Card key={t.id} style={{textAlign:"center"}}><div style={{width:44,height:44,borderRadius:"50%",background:t.color,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:16,color:"#fff",margin:"0 auto 8px"}}>{t.short}</div><div style={{fontSize:14,fontWeight:700}}>{t.name.split(" ")[0]}</div><div style={{fontSize:11,color:B.textMuted,marginBottom:10}}>{t.role}</div>{t.isExperience?<><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Campañas</span><span style={{fontSize:13,fontWeight:700}}>{t.campaigns}</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Entregas</span><span style={{fontSize:13,fontWeight:700}}>{t.completed}</span></div><div style={{marginTop:6}}><Badge color={B.success} bg={B.successBg}>Experiencia · Mod. 11</Badge></div></>:<><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Completadas</span><span style={{fontSize:13,fontWeight:700}}>{t.completed}</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>% a tiempo</span><span style={{fontSize:13,fontWeight:700,color:t.onTime>=85?B.success:B.warning}}>{t.onTime}%</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Aprob. 1ra</span><span style={{fontSize:13,fontWeight:700,color:t.approvedFirst>=80?B.success:B.warning}}>{t.approvedFirst}%</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Rondas prom.</span><span style={{fontSize:13,fontWeight:700}}>{t.avgRounds}</span></div></>}</Card>)}</div>}{subTab==="carga"&&<Card><h3 style={{fontSize:14,fontWeight:700,marginBottom:14}}>Carga semanal — Semana 07-11 Abril</h3>{TEAM.map(t=>{const pct=loadPct(t.tasksWeek,t.capacityWeek);const c=loadColor(pct);const myTasks=tasks.filter(tk=>tk.assignedTo===t.id&&tk.status!=="completada");return<div key={t.id} style={{padding:"12px 0",borderBottom:`1px solid ${B.border}`}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><div style={{width:28,height:28,borderRadius:"50%",background:t.color,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:10,color:"#fff",flexShrink:0}}>{t.short}</div><div style={{flex:1}}><span style={{fontSize:13,fontWeight:700}}>{t.name}</span><span style={{fontSize:11,color:B.textMuted,marginLeft:8}}>{t.role}</span></div><div style={{width:100,height:8,background:B.surfaceHover,borderRadius:4,overflow:"hidden"}}><div style={{width:`${Math.min(pct,100)}%`,height:"100%",background:c,borderRadius:4}}/></div><Badge color={c} bg={`${c}15`}>{t.tasksWeek}/{t.capacityWeek} ({pct}%)</Badge></div>{myTasks.length>0&&<div style={{marginLeft:38,display:"flex",gap:4,flexWrap:"wrap"}}>{myTasks.map(tk=><span key={tk.id} style={{fontSize:10,padding:"2px 8px",borderRadius:6,background:`${getBrand(tk.brand).color}10`,color:getBrand(tk.brand).color,fontWeight:600}}>{tk.title}</span>)}</div>}</div>})}</Card>}{subTab==="cuentas"&&<div><div style={{fontSize:13,fontWeight:700,color:B.textMuted,marginBottom:10}}>Marcas propias — 3 unidades</div><div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:12,marginBottom:16}}>{brandUnits.map(unit=><Card key={unit.name} style={{borderLeft:`4px solid ${unit.color}`}}><div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{unit.name}</div>{unit.brands.map(br=><div key={br.id} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",borderTop:`1px solid ${B.border}`}}><div style={{width:8,height:8,borderRadius:"50%",background:br.active?br.color:B.textLight}}/><span style={{fontSize:12,fontWeight:600,flex:1,color:br.active?B.text:B.textLight}}>{br.name}</span>{!br.active&&<Badge color={B.textLight} bg={B.surfaceHover}>Pausada</Badge>}</div>)}</Card>)}</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{standalone.map(br=><Card key={br.id} style={{borderLeft:`4px solid ${br.color}`,opacity:br.active?1:0.6}}><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:14,fontWeight:700}}>{br.name}</span>{br.type==="externo"&&<Badge color={B.success} bg={B.successBg}>Cliente externo</Badge>}{!br.active&&<Badge color={B.textLight} bg={B.surfaceHover}>Pausada</Badge>}</div>{br.id==="samai"&&<div style={{fontSize:12,color:B.textMuted,marginTop:6}}>Clínica dental · IG · Gestión RRSS completa</div>}{br.id==="bigfat"&&<div style={{fontSize:12,color:B.textLight,marginTop:6}}>Marca shelveada — canales Slack creados, sin actividad</div>}</Card>)}</div></div>}</div>}
+function EquipoView({ tasks = TASKS }) {
+  const [subTab, setSubTab] = useState("rendimiento");
+  const [roleOverrides, setRoleOverrides] = useState({});
+
+  const brandUnits = [
+    { name: "Unidad Cheddar's", color: "#E74C3C", brands: BRANDS.filter((b) => b.unit === "Unidad Cheddar's") },
+    { name: "Unidad Tori Sushi", color: "#2E86DE", brands: BRANDS.filter((b) => b.unit === "Unidad Tori Sushi") },
+    { name: "Unidad Sweet/Burger", color: "#8E44AD", brands: BRANDS.filter((b) => b.unit === "Unidad Sweet/Burger") },
+  ];
+  const standalone = BRANDS.filter((b) => b.unit === "—");
+
+  const roleOf = (memberId, fallback) => roleOverrides[memberId] ?? fallback;
+  const setMemberRole = (memberId, roleId) => setRoleOverrides((prev) => ({ ...prev, [memberId]: roleId }));
+
+  const roleCfg = (id) => ROLES_CONFIG.find((r) => r.id === id);
+
+  const accessDot = (level) => {
+    const map = {
+      full: { c: B.success, t: "Acceso completo" },
+      read: { c: B.info, t: "Lectura / limitado" },
+      own: { c: B.accent, t: "Sobre sus ítems" },
+      none: { c: B.textLight, t: "Sin acceso" },
+    };
+    const x = map[level] || map.none;
+    return (
+      <span title={x.t} style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", background: x.c, flexShrink: 0 }} />
+    );
+  };
+
+  const matrixCols = [
+    { key: "creativo", label: "Creativo" },
+    { key: "planner", label: "Planner" },
+    { key: "disenador", label: "Diseñador" },
+    { key: "audiovisual", label: "Audiovisual" },
+    { key: "ux", label: "UX" },
+    { key: "admin", label: "Admin" },
+  ];
+
+  const subTabs = [
+    { id: "rendimiento", label: "Rendimiento" },
+    { id: "carga", label: "Carga semanal" },
+    { id: "cuentas", label: "Cuentas" },
+    { id: "roles", label: "Roles y acceso", adminOnly: true },
+  ];
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+        {subTabs.map((s) => (
+          <Btn key={s.id} variant={subTab === s.id ? "primary" : "default"} onClick={() => setSubTab(s.id)} style={{ fontSize: 12 }}>
+            {s.label}
+            {s.adminOnly && (
+              <span style={{ marginLeft: 6, fontSize: 9, fontWeight: 700, color: B.danger }}>(Solo Admin)</span>
+            )}
+          </Btn>
+        ))}
+      </div>
+
+      {subTab === "rendimiento" && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
+          {TEAM.map((t) => (
+            <Card key={t.id} style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  background: t.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 800,
+                  fontSize: 16,
+                  color: "#fff",
+                  margin: "0 auto 8px",
+                }}
+              >
+                {t.short}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>{t.name.split(" ")[0]}</div>
+              <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 10 }}>{t.role}</div>
+              {t.isExperience ? (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Campañas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.campaigns}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Entregas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.completed}</span>
+                  </div>
+                  <div style={{ marginTop: 6 }}>
+                    <Badge color={B.success} bg={B.successBg}>
+                      Experiencia · Mod. 11
+                    </Badge>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Completadas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.completed}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>% a tiempo</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: t.onTime >= 85 ? B.success : B.warning }}>{t.onTime}%</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Aprob. 1ra</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: t.approvedFirst >= 80 ? B.success : B.warning }}>{t.approvedFirst}%</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Rondas prom.</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.avgRounds}</span>
+                  </div>
+                </>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {subTab === "carga" && (
+        <Card>
+          <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>Carga semanal — Semana 07-11 Abril</h3>
+          {TEAM.map((t) => {
+            const pct = loadPct(t.tasksWeek, t.capacityWeek);
+            const c = loadColor(pct);
+            const myTasks = tasks.filter((tk) => tk.assignedTo === t.id && tk.status !== "completada");
+            return (
+              <div key={t.id} style={{ padding: "12px 0", borderBottom: `1px solid ${B.border}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                  <div
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: "50%",
+                      background: t.color,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 800,
+                      fontSize: 10,
+                      color: "#fff",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {t.short}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.name}</span>
+                    <span style={{ fontSize: 11, color: B.textMuted, marginLeft: 8 }}>{t.role}</span>
+                  </div>
+                  <div style={{ width: 100, height: 8, background: B.surfaceHover, borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ width: `${Math.min(pct, 100)}%`, height: "100%", background: c, borderRadius: 4 }} />
+                  </div>
+                  <Badge color={c} bg={`${c}15`}>
+                    {t.tasksWeek}/{t.capacityWeek} ({pct}%)
+                  </Badge>
+                </div>
+                {myTasks.length > 0 && (
+                  <div style={{ marginLeft: 38, display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {myTasks.map((tk) => (
+                      <span
+                        key={tk.id}
+                        style={{
+                          fontSize: 10,
+                          padding: "2px 8px",
+                          borderRadius: 6,
+                          background: `${getBrand(tk.brand).color}10`,
+                          color: getBrand(tk.brand).color,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {tk.title}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </Card>
+      )}
+
+      {subTab === "cuentas" && (
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: B.textMuted, marginBottom: 10 }}>Marcas propias — 3 unidades</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 16 }}>
+            {brandUnits.map((unit) => (
+              <Card key={unit.name} style={{ borderLeft: `4px solid ${unit.color}` }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>{unit.name}</div>
+                {unit.brands.map((br) => (
+                  <div key={br.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderTop: `1px solid ${B.border}` }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: br.active ? br.color : B.textLight }} />
+                    <span style={{ fontSize: 12, fontWeight: 600, flex: 1, color: br.active ? B.text : B.textLight }}>{br.name}</span>
+                    {!br.active && (
+                      <Badge color={B.textLight} bg={B.surfaceHover}>
+                        Pausada
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </Card>
+            ))}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {standalone.map((br) => (
+              <Card key={br.id} style={{ borderLeft: `4px solid ${br.color}`, opacity: br.active ? 1 : 0.6 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700 }}>{br.name}</span>
+                  {br.type === "externo" && (
+                    <Badge color={B.success} bg={B.successBg}>
+                      Cliente externo
+                    </Badge>
+                  )}
+                  {!br.active && (
+                    <Badge color={B.textLight} bg={B.surfaceHover}>
+                      Pausada
+                    </Badge>
+                  )}
+                </div>
+                {br.id === "samai" && <div style={{ fontSize: 12, color: B.textMuted, marginTop: 6 }}>Clínica dental · IG · Gestión RRSS completa</div>}
+                {br.id === "bigfat" && (
+                  <div style={{ fontSize: 12, color: B.textLight, marginTop: 6 }}>Marca shelveada — canales Slack creados, sin actividad</div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {subTab === "roles" && (
+        <div>
+          <Card style={{ marginBottom: 14, background: B.warningBg, border: `1px solid ${B.warning}28` }}>
+            <div style={{ fontSize: 13, color: B.text, lineHeight: 1.5 }}>
+              En producción, el subtab <strong>Roles y acceso</strong> solo sería visible para usuarios Admin. En esta maqueta se muestra siempre; el
+              botón indica <strong>Solo Admin</strong>. Diego (Creativo) puede proponer campañas nuevas desde Campañas; quedan en estado propuesta hasta
+              aprobación de un Admin.
+            </div>
+          </Card>
+
+          <div style={{ fontSize: 13, fontWeight: 800, color: B.text, marginBottom: 10 }}>Administradores</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginBottom: 22 }}>
+            {ADMINS.map((a) => (
+              <Card key={a.id} style={{ borderLeft: `4px solid ${a.color}` }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: "50%",
+                      background: a.color,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 800,
+                      fontSize: 14,
+                      color: "#fff",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {a.short}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700 }}>{a.name}</div>
+                    <div style={{ marginTop: 6 }}>
+                      <Badge color={B.danger} bg={B.dangerBg}>
+                        Admin
+                      </Badge>
+                    </div>
+                    <div style={{ fontSize: 12, color: B.textMuted, marginTop: 8, lineHeight: 1.45 }}>
+                      Acceso completo a todos los tabs y funcionalidades. Pueden aprobar ideas y material, gestionar campañas, configurar roles y ver
+                      métricas.
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div style={{ fontSize: 13, fontWeight: 800, color: B.text, marginBottom: 10 }}>Equipo operativo</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12, marginBottom: 22 }}>
+            {TEAM.map((t) => {
+              const rid = roleOf(t.id, t.accessRole);
+              const rc = roleCfg(rid);
+              return (
+                <Card key={t.id}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "50%",
+                        background: t.color,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: 800,
+                        fontSize: 12,
+                        color: "#fff",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {t.short}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>{t.name}</div>
+                      {rc && (
+                        <div style={{ marginTop: 6 }}>
+                          <Badge color={rc.color} bg={`${rc.color}18`}>
+                            {rc.label}
+                          </Badge>
+                        </div>
+                      )}
+                      <div style={{ fontSize: 11, color: B.textMuted, marginTop: 6, lineHeight: 1.4 }}>{rc?.description}</div>
+                      <ul style={{ margin: "10px 0 0", paddingLeft: 18, fontSize: 11, color: B.text, lineHeight: 1.5 }}>
+                        {(rc?.permissions || []).map((p) => (
+                          <li key={p}>✓ {p.replace(/_/g, " ")}</li>
+                        ))}
+                      </ul>
+                      <div style={{ marginTop: 10 }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: B.textMuted, marginBottom: 4 }}>Cambiar rol (mock)</div>
+                        <Select
+                          value={rid}
+                          onChange={(v) => setMemberRole(t.id, v)}
+                          options={ROLES_CONFIG.filter((r) => r.id !== "admin").map((r) => ({ value: r.id, label: r.label }))}
+                          style={{ width: "100%", fontSize: 12 }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          <Card style={{ padding: 0, overflow: "hidden" }}>
+            <div style={{ padding: "14px 16px", borderBottom: `1px solid ${B.border}` }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: B.text }}>Matriz de acceso por tab</div>
+              <div style={{ fontSize: 11, color: B.textMuted, marginTop: 4, display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  {accessDot("full")} Completo
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  {accessDot("read")} Lectura / limitado
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  {accessDot("own")} Sobre sus ítems
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  {accessDot("none")} Sin acceso
+                </span>
+              </div>
+            </div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: font, minWidth: 640 }}>
+                <thead>
+                  <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+                    <th style={{ padding: "10px 12px", textAlign: "left", fontWeight: 700, color: B.textMuted }}>Tab</th>
+                    {matrixCols.map((col) => (
+                      <th key={col.key} style={{ padding: "10px 8px", textAlign: "center", fontWeight: 700, color: B.textMuted, fontSize: 11 }}>
+                        {col.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {ACCESS_MATRIX.map((row) => (
+                    <tr key={row.tab} style={{ borderBottom: `1px solid ${B.border}` }}>
+                      <td style={{ padding: "10px 12px", fontWeight: 600, color: B.text }}>{row.tab}</td>
+                      {matrixCols.map((col) => (
+                        <td key={col.key} style={{ padding: "10px 8px", textAlign: "center" }}>
+                          <div style={{ display: "flex", justifyContent: "center" }}>{accessDot(row[col.key])}</div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function BibliotecaView() {
   const [typeFilter, setTypeFilter] = useState("todos");
