@@ -95,81 +95,6 @@ function Select({ value, onChange, options, style: sx = {} }) {
   );
 }
 
-function EditableMinStockCell({ itemId, min, unit, setStockItems, muted = true }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(String(min));
-
-  useEffect(() => {
-    if (!editing) setDraft(String(min));
-  }, [min, editing]);
-
-  function commit() {
-    const n = Math.max(0, Math.floor(Number(draft) || 0));
-    setStockItems(prev => prev.map(i => i.id === itemId ? { ...i, min: n } : i));
-    setEditing(false);
-  }
-
-  const inputStyle = {
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "4px 8px",
-    border: `2px solid ${B.accent}`,
-    borderRadius: 6,
-    fontSize: 13,
-    fontFamily: font,
-    outline: "none",
-    background: B.surface,
-  };
-
-  if (editing) {
-    return (
-      <input
-        type="number"
-        min={0}
-        step={1}
-        value={draft}
-        onChange={e => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={e => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            commit();
-          }
-        }}
-        onClick={e => e.stopPropagation()}
-        style={inputStyle}
-        autoFocus
-      />
-    );
-  }
-
-  return (
-    <span
-      role="button"
-      tabIndex={0}
-      onClick={e => { e.stopPropagation(); setEditing(true); setDraft(String(min)); }}
-      onKeyDown={e => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          e.stopPropagation();
-          setEditing(true);
-          setDraft(String(min));
-        }
-      }}
-      style={{
-        cursor: "pointer",
-        color: muted ? B.textMuted : B.text,
-        borderRadius: 4,
-        display: "block",
-        width: "100%",
-      }}
-      title="Click para editar stock mínimo"
-    >
-      {min} {unit}
-    </span>
-  );
-}
-
 // ── Mock Data ──
 const ZONES = [
   { id: "seca", name: "Bodega seca", icon: "🏭" },
@@ -299,6 +224,12 @@ function StockView({ stockItems, setStockItems }) {
   const [sort, setSort] = useState("status");
   const [selected, setSelected] = useState(null);
   const [showNuevoForm, setShowNuevoForm] = useState(false);
+  const [detailEditMode, setDetailEditMode] = useState(false);
+  const [detailDraft, setDetailDraft] = useState({ min: "", zone: "seca", category: "", preferredSupplier: "", cost: "" });
+
+  useEffect(() => {
+    setDetailEditMode(false);
+  }, [selected]);
 
   let items = [...stockItems];
   if (zone !== "all") items = items.filter(i => i.zone === zone);
@@ -403,9 +334,7 @@ function StockView({ stockItems, setStockItems }) {
                 <td style={{ padding: "10px 14px", fontWeight: 600, color: B.text }}>{item.name}<br /><span style={{ fontSize: 11, fontWeight: 400, color: B.textMuted }}>{item.category}</span></td>
                 <td style={{ padding: "10px 14px", color: B.textMuted }}>{ZONES.find(z => z.id === item.zone)?.icon} {ZONES.find(z => z.id === item.zone)?.name}</td>
                 <td style={{ padding: "10px 14px", fontWeight: 700, color: item.qty === 0 ? B.danger : B.text }}>{item.qty} {item.unit}</td>
-                <td style={{ padding: "10px 14px", color: B.textMuted, verticalAlign: "middle", minWidth: 88 }} onClick={e => e.stopPropagation()}>
-                  <EditableMinStockCell itemId={item.id} min={item.min} unit={item.unit} setStockItems={setStockItems} muted />
-                </td>
+                <td style={{ padding: "10px 14px", color: B.textMuted }}>{item.min} {item.unit}</td>
                 <td style={{ padding: "10px 14px" }}><StatusBadge status={item.status} /></td>
                 <td style={{ padding: "10px 14px", color: B.textMuted }}>{item.weeklyUse} {item.unit}</td>
                 <td style={{ padding: "10px 14px", color: B.textMuted }}>${item.cost.toLocaleString()}</td>
@@ -419,29 +348,127 @@ function StockView({ stockItems, setStockItems }) {
       {selected && (() => {
         const item = stockItems.find(i => i.id === selected);
         const daysLeft = item.weeklyUse > 0 ? Math.round((item.qty / item.weeklyUse) * 7) : "∞";
+        const zoneSelectOptions = ZONES.map(z => ({ value: z.id, label: z.name }));
+        const categoryOptions = INSUMO_CATEGORIES.map(c => ({ value: c, label: c }));
+
+        function openDetailEdit() {
+          setDetailDraft({
+            min: String(item.min),
+            zone: item.zone,
+            category: item.category,
+            preferredSupplier: item.preferredSupplier || "",
+            cost: String(item.cost),
+          });
+          setDetailEditMode(true);
+        }
+
+        function saveDetailEdit() {
+          const minN = Math.max(0, Math.floor(Number(detailDraft.min) || 0));
+          const costN = Math.max(0, Number(detailDraft.cost) || 0);
+          setStockItems(prev => prev.map(i => i.id === selected ? {
+            ...i,
+            min: minN,
+            zone: detailDraft.zone,
+            category: detailDraft.category,
+            preferredSupplier: detailDraft.preferredSupplier.trim(),
+            cost: costN,
+          } : i));
+          setDetailEditMode(false);
+        }
+
+        const cellBox = { padding: "10px 12px", background: B.surfaceHover, borderRadius: 8 };
+        const inputInCell = {
+          width: "100%", boxSizing: "border-box", marginTop: 4,
+          padding: "6px 10px", border: `1px solid ${B.border}`, borderRadius: 8,
+          fontSize: 14, fontWeight: 700, fontFamily: font, background: B.surface,
+        };
+
         return (
           <Card style={{ marginTop: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12, gap: 12 }}>
               <div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{item.name}</h3>
-                <span style={{ fontSize: 12, color: B.textMuted }}>{item.category} · {ZONES.find(z => z.id === item.zone)?.name}</span>
+                {!detailEditMode && (
+                  <span style={{ fontSize: 12, color: B.textMuted }}>{item.category} · {ZONES.find(z => z.id === item.zone)?.name}</span>
+                )}
               </div>
-              <StatusBadge status={item.status} />
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                <StatusBadge status={item.status} />
+                {!detailEditMode && (
+                  <Btn variant="ghost" style={{ fontSize: 12, padding: "6px 10px" }} onClick={e => { e.stopPropagation(); openDetailEdit(); }}>✏️ Editar</Btn>
+                )}
+              </div>
             </div>
+
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-              {[
-                { label: "Stock actual", value: `${item.qty} ${item.unit}` },
-                { label: "Stock mínimo", value: `${item.min} ${item.unit}` },
-                { label: "Consumo semanal", value: `${item.weeklyUse} ${item.unit}` },
-                { label: "Días restantes", value: daysLeft === "∞" ? "∞" : `${daysLeft} días` },
-              ].map(m => (
-                <div key={m.label} style={{ padding: "10px 12px", background: B.surfaceHover, borderRadius: 8 }}>
-                  <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>{m.label}</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{m.value}</div>
-                </div>
-              ))}
+              <div style={cellBox}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Stock actual</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{item.qty} {item.unit}</div>
+              </div>
+              <div style={cellBox} onClick={e => detailEditMode && e.stopPropagation()}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Stock mínimo</div>
+                {detailEditMode ? (
+                  <input type="number" min={0} step={1} value={detailDraft.min} onChange={e => setDetailDraft(d => ({ ...d, min: e.target.value }))} style={inputInCell} />
+                ) : (
+                  <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{item.min} {item.unit}</div>
+                )}
+              </div>
+              <div style={cellBox}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Consumo semanal</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{item.weeklyUse} {item.unit}</div>
+              </div>
+              <div style={cellBox}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Días restantes</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{daysLeft === "∞" ? "∞" : `${daysLeft} días`}</div>
+              </div>
             </div>
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 12 }}>
+              <div style={cellBox} onClick={e => detailEditMode && e.stopPropagation()}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Zona default</div>
+                {detailEditMode ? (
+                  <Select value={detailDraft.zone} onChange={v => setDetailDraft(d => ({ ...d, zone: v }))} options={zoneSelectOptions} style={{ ...inputInCell, marginTop: 4, fontWeight: 600 }} />
+                ) : (
+                  <div style={{ fontSize: 15, fontWeight: 650, color: B.text }}>{ZONES.find(z => z.id === item.zone)?.icon} {ZONES.find(z => z.id === item.zone)?.name}</div>
+                )}
+              </div>
+              <div style={cellBox} onClick={e => detailEditMode && e.stopPropagation()}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Categoría</div>
+                {detailEditMode ? (
+                  <Select value={detailDraft.category} onChange={v => setDetailDraft(d => ({ ...d, category: v }))} options={categoryOptions} style={{ ...inputInCell, marginTop: 4, fontWeight: 600 }} />
+                ) : (
+                  <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>{item.category}</div>
+                )}
+              </div>
+              <div style={cellBox} onClick={e => detailEditMode && e.stopPropagation()}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Proveedor preferido</div>
+                {detailEditMode ? (
+                  <input value={detailDraft.preferredSupplier} onChange={e => setDetailDraft(d => ({ ...d, preferredSupplier: e.target.value }))} placeholder="Opcional" style={{ ...inputInCell, fontWeight: 600 }} />
+                ) : (
+                  <div style={{ fontSize: 15, fontWeight: 600, color: item.preferredSupplier ? B.text : B.textMuted }}>{item.preferredSupplier || "—"}</div>
+                )}
+              </div>
+              <div style={cellBox} onClick={e => detailEditMode && e.stopPropagation()}>
+                <div style={{ fontSize: 11, color: B.textMuted, marginBottom: 2 }}>Costo unitario</div>
+                {detailEditMode ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                    <span style={{ fontWeight: 700, color: B.textMuted }}>$</span>
+                    <input type="number" min={0} value={detailDraft.cost} onChange={e => setDetailDraft(d => ({ ...d, cost: e.target.value }))} style={{ ...inputInCell, flex: 1, marginTop: 0 }} />
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 16, fontWeight: 700, color: B.text }}>${item.cost.toLocaleString()}</div>
+                )}
+              </div>
+            </div>
+
+            {detailEditMode && (
+              <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
+                <Btn variant="primary" onClick={saveDetailEdit}>Guardar</Btn>
+                <Btn variant="ghost" onClick={() => { setDetailEditMode(false); }}>Cancelar</Btn>
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
               <Btn variant="primary">Pedir a proveedor</Btn>
               <Btn>Transferir</Btn>
               <Btn>Registrar merma</Btn>
@@ -924,9 +951,7 @@ function ConfigView({ stockItems, setStockItems }) {
                 <td style={{ padding: "8px 10px", color: B.textMuted }}>{row.category}</td>
                 <td style={{ padding: "8px 10px" }}>{row.unit}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted, whiteSpace: "nowrap" }}>{ZONES.find(z => z.id === row.zone)?.icon} {ZONES.find(z => z.id === row.zone)?.name}</td>
-                <td style={{ padding: "8px 10px", verticalAlign: "middle", minWidth: 72 }} onClick={e => e.stopPropagation()}>
-                  <EditableMinStockCell itemId={row.id} min={row.min} unit={row.unit} setStockItems={setStockItems} muted={false} />
-                </td>
+                <td style={{ padding: "8px 10px", color: B.textMuted }}>{row.min} {row.unit}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted }}>${row.cost.toLocaleString()}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted, maxWidth: 120 }}>{row.preferredSupplier || "—"}</td>
                 <td style={{ padding: "8px 10px", color: B.textMuted, fontStyle: row.glosaProveedor ? "italic" : "normal", maxWidth: 160 }} title={row.glosaProveedor || ""}>{row.glosaProveedor || "—"}</td>
