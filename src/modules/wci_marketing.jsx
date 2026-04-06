@@ -46,9 +46,9 @@ const TEAM=[
     campaigns: 12,
     tasksDistributed: 32,
     publicationsOnTime: 89,
-    avgIdeaToPublish: 4.2,
-    ephemerisCovered: 3,
-    teamLoadBalance: 85,
+    avgApprovalToTask: 1.4,
+    ephemerisProposed: 8,
+    ephemerisApproved: 5,
   },
   {
     id: "diego",
@@ -3543,22 +3543,20 @@ function EquipoView({ tasks = TASKS }) {
                     <span style={{ fontSize: 13, fontWeight: 700 }}>{t.tasksDistributed}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
-                    <span style={{ fontSize: 11, color: B.textMuted }}>% publicaciones a tiempo</span>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>% pub. a tiempo</span>
                     <span style={{ fontSize: 13, fontWeight: 700, color: t.publicationsOnTime >= 85 ? B.success : B.warning }}>{t.publicationsOnTime}%</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
-                    <span style={{ fontSize: 11, color: B.textMuted }}>Días idea→pub.</span>
-                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.avgIdeaToPublish}</span>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Días aprob.→tarea</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: t.avgApprovalToTask <= 2 ? B.success : B.warning }}>{t.avgApprovalToTask}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
-                    <span style={{ fontSize: 11, color: B.textMuted }}>Efemérides cubiertas</span>
-                    <span style={{ fontSize: 13, fontWeight: 700 }}>
-                      {t.ephemerisCovered}/5
-                    </span>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Efemérides propuestas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.ephemerisProposed}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderTop: `1px solid ${B.border}` }}>
-                    <span style={{ fontSize: 11, color: B.textMuted }}>Balance carga</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: t.teamLoadBalance >= 80 ? B.success : B.warning }}>{t.teamLoadBalance}%</span>
+                    <span style={{ fontSize: 11, color: B.textMuted }}>Efemérides aprobadas</span>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>{t.ephemerisApproved}</span>
                   </div>
                 </>
               ) : (
