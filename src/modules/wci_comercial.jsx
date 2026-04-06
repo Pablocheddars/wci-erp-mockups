@@ -80,19 +80,195 @@ const QUADRANT_COLORS = {
 };
 
 function DashboardView() {
-  const ventaHoy = 4250000; const ventaAyer = 3980000; const metaDia = 4600000;
-  const channels = [{ name: "Salón", pct: 38, amount: 1615000 },{ name: "Delivery", pct: 34, amount: 1445000 },{ name: "Mesón", pct: 18, amount: 765000 },{ name: "Ecommerce", pct: 10, amount: 425000 }];
-  return <div>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
-      {[{ label: "Venta hoy (red)", value: `$${(ventaHoy/1e6).toFixed(1)}M`, sub: `vs $${(ventaAyer/1e6).toFixed(1)}M ayer`, color: B.success },{ label: "vs meta diaria", value: `${Math.round(ventaHoy/metaDia*100)}%`, sub: `Meta: $${(metaDia/1e6).toFixed(1)}M`, color: ventaHoy/metaDia > 0.9 ? B.success : B.warning },{ label: "Clientes activos", value: totalActive.toLocaleString(), sub: `+${totalNew-totalChurned} neto este mes`, color: B.info },{ label: "Ticket promedio", value: "$9.200", sub: "Ponderado todas las marcas", color: B.purple }].map((k,i) => <Card key={i}><div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>{k.label}</div><div style={{ fontSize: 22, fontWeight: 800, color: k.color }}>{k.value}</div><div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{k.sub}</div></Card>)}
+  const [period, setPeriod] = useState("hoy");
+  const [local, setLocal] = useState("todos");
+  const [brand, setBrand] = useState("todas");
+
+  const LOCALES = [
+    { value: "todos", label: "Todos los locales" },
+    { value: "angol", label: "Angol" },
+    { value: "spedro", label: "San Pedro" },
+    { value: "chillan", label: "Chillán" },
+    { value: "chiguayante", label: "Chiguayante" },
+  ];
+
+  const now = new Date();
+  const dayName = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"][now.getDay()];
+  const hora = now.getHours();
+  const diaDelMes = now.getDate();
+
+  const DATA_BY_PERIOD = {
+    hoy: {
+      venta: 4250000, ventaComp: 3890000, compLabel: `vs ${dayName} pasado a las ${hora}:00`,
+      meta: 4600000, metaComp: 4600000,
+      ticket: 9200, ticketComp: 8800,
+      transacciones: 462, transComp: 442,
+      channels: [
+        { name: "Salón", pct: 38, amount: 1615000 },
+        { name: "Delivery", pct: 34, amount: 1445000 },
+        { name: "Mesón", pct: 18, amount: 765000 },
+        { name: "Ecommerce", pct: 10, amount: 425000 },
+      ],
+    },
+    semana: {
+      venta: 28500000, ventaComp: 26200000, compLabel: `vs sem. pasada al día ${now.getDay()} ${hora}:00`,
+      meta: 32000000, metaComp: 32000000,
+      ticket: 9400, ticketComp: 9100,
+      transacciones: 3032, transComp: 2878,
+      channels: [
+        { name: "Salón", pct: 36, amount: 10260000 },
+        { name: "Delivery", pct: 35, amount: 9975000 },
+        { name: "Mesón", pct: 17, amount: 4845000 },
+        { name: "Ecommerce", pct: 12, amount: 3420000 },
+      ],
+    },
+    mes: {
+      venta: 92000000, ventaComp: 84500000, compLabel: `vs mes pasado al día ${diaDelMes} ${hora}:00`,
+      meta: 85000000, metaComp: 85000000,
+      ticket: 9200, ticketComp: 8950,
+      transacciones: 10000, transComp: 9441,
+      channels: [
+        { name: "Salón", pct: 37, amount: 34040000 },
+        { name: "Delivery", pct: 34, amount: 31280000 },
+        { name: "Mesón", pct: 17, amount: 15640000 },
+        { name: "Ecommerce", pct: 12, amount: 11040000 },
+      ],
+    },
+  };
+
+  const d = DATA_BY_PERIOD[period];
+  const pctChange = (curr, prev) => prev > 0 ? Math.round((curr - prev) / prev * 100) : 0;
+  const deltaLabel = (curr, prev) => {
+    const pct = pctChange(curr, prev);
+    const arrow = pct >= 0 ? "↑" : "↓";
+    const color = pct >= 0 ? B.success : B.danger;
+    return { pct, arrow, color, text: `${arrow} ${Math.abs(pct)}%` };
+  };
+
+  const ventaDelta = deltaLabel(d.venta, d.ventaComp);
+  const ticketDelta = deltaLabel(d.ticket, d.ticketComp);
+  const transDelta = deltaLabel(d.transacciones, d.transComp);
+
+  const periodLabels = { hoy: "hoy", semana: "esta semana", mes: "este mes" };
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 2, background: B.surfaceHover, borderRadius: 8, padding: 2 }}>
+          {[{ id: "hoy", label: "Hoy" }, { id: "semana", label: "Semana" }, { id: "mes", label: "Mes" }].map(p => (
+            <button key={p.id} onClick={() => setPeriod(p.id)} style={{
+              padding: "6px 14px", borderRadius: 6, border: "none", fontSize: 13, fontWeight: period === p.id ? 700 : 500,
+              background: period === p.id ? B.surface : "transparent", color: period === p.id ? B.text : B.textMuted,
+              cursor: "pointer", fontFamily: font, boxShadow: period === p.id ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+            }}>{p.label}</button>
+          ))}
+        </div>
+        <Select value={local} onChange={setLocal} options={LOCALES} />
+        <Select value={brand} onChange={setBrand} options={[{ value: "todas", label: "Todas las marcas" }, ...BRANDS.map(b => ({ value: b.id, label: b.name }))]} />
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 11, color: B.textMuted }}>Comparando: {d.compLabel}</span>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Venta {periodLabels[period]}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: B.text }}>${(d.venta / 1e6).toFixed(1)}M</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: ventaDelta.color }}>{ventaDelta.text}</span>
+          </div>
+          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>vs meta</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: d.venta / d.meta >= 0.9 ? B.success : B.warning }}>{Math.round(d.venta / d.meta * 100)}%</div>
+          </div>
+          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>Meta: ${(d.meta / 1e6).toFixed(0)}M</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Ticket promedio</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: B.purple }}>${d.ticket.toLocaleString()}</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: ticketDelta.color }}>{ticketDelta.text}</span>
+          </div>
+          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted, fontWeight: 600, marginBottom: 4 }}>Transacciones</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: B.info }}>{d.transacciones.toLocaleString()}</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: transDelta.color }}>{transDelta.text}</span>
+          </div>
+          <div style={{ fontSize: 11, color: B.textMuted, marginTop: 2 }}>{d.compLabel}</div>
+        </Card>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <Card>
+          <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Venta por canal {periodLabels[period]}</h3>
+          {d.channels.map(ch => (
+            <div key={ch.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: `1px solid ${B.border}` }}>
+              <div style={{ width: 80, fontSize: 13, fontWeight: 600 }}>{ch.name}</div>
+              <div style={{ flex: 1, height: 8, background: B.surfaceHover, borderRadius: 4, overflow: "hidden" }}>
+                <div style={{ width: `${ch.pct}%`, height: "100%", background: B.accent, borderRadius: 4 }} />
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, minWidth: 70, textAlign: "right" }}>${(ch.amount / 1e6).toFixed(1)}M</div>
+              <div style={{ fontSize: 11, color: B.textMuted, minWidth: 35 }}>{ch.pct}%</div>
+            </div>
+          ))}
+        </Card>
+
+        <Card>
+          <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Campañas activas</h3>
+          {CAMPAIGNS.filter(c => c.status === "activa").map(c => (
+            <div key={c.id} style={{ padding: "10px 0", borderBottom: `1px solid ${B.border}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</div>
+                  <div style={{ fontSize: 11, color: B.textMuted }}>{c.brand} · {c.start} — {c.end}</div>
+                </div>
+                <Badge color={c.margen >= 0 ? B.success : B.danger} bg={c.margen >= 0 ? B.successBg : B.dangerBg}>
+                  Margen: ${(c.margen / 1000).toFixed(0)}k
+                </Badge>
+              </div>
+            </div>
+          ))}
+        </Card>
+
+        <Card>
+          <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Ranking marcas ({period === "hoy" ? "hoy" : period === "semana" ? "semana" : "mes"})</h3>
+          {[...BRANDS].sort((a, b) => (b.activeClients * b.avgTicket * b.freqMonth) - (a.activeClients * a.avgTicket * a.freqMonth)).slice(0, 6).map((br, i) => {
+            const ingreso = br.activeClients * br.avgTicket * br.freqMonth;
+            return (
+              <div key={br.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: `1px solid ${B.border}` }}>
+                <span style={{ fontSize: 12, fontWeight: 800, color: B.accent, background: B.primary, padding: "2px 7px", borderRadius: 4, minWidth: 22, textAlign: "center" }}>{i + 1}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{br.name}</div>
+                  <div style={{ fontSize: 11, color: B.textMuted }}>{br.activeClients} clientes · ${br.avgTicket.toLocaleString()} ticket</div>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>${(ingreso / 1e6).toFixed(1)}M</div>
+              </div>
+            );
+          })}
+        </Card>
+
+        <Card style={{ border: `1px solid ${B.danger}20` }}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: B.danger, marginBottom: 12 }}>⚠️ Alertas</h3>
+          {[
+            { text: "Smart Eats: más clientes perdidos que ganados (-1 neto)", severity: "alta" },
+            { text: "Campaña 2x1 Buffalo: margen negativo -$120k", severity: "alta" },
+            { text: "Tori Sushi: 15 clientes perdidos este mes (mayor churn del grupo)", severity: "media" },
+            { text: "Food Pxrn: penetración sobre Cheddar's solo 4%", severity: "baja" },
+          ].map((a, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, padding: "8px 0", borderBottom: `1px solid ${B.border}`, alignItems: "flex-start" }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: a.severity === "alta" ? B.danger : a.severity === "media" ? B.warning : B.info, marginTop: 4, flexShrink: 0 }} />
+              <div style={{ fontSize: 12, color: B.text, lineHeight: 1.4 }}>{a.text}</div>
+            </div>
+          ))}
+        </Card>
+      </div>
     </div>
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-      <Card><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Venta por canal hoy</h3>{channels.map(ch => <div key={ch.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: `1px solid ${B.border}` }}><div style={{ width: 80, fontSize: 13, fontWeight: 600 }}>{ch.name}</div><div style={{ flex: 1, height: 8, background: B.surfaceHover, borderRadius: 4, overflow: "hidden" }}><div style={{ width: `${ch.pct}%`, height: "100%", background: B.accent, borderRadius: 4 }} /></div><div style={{ fontSize: 13, fontWeight: 700, minWidth: 70, textAlign: "right" }}>${(ch.amount/1e6).toFixed(1)}M</div><div style={{ fontSize: 11, color: B.textMuted, minWidth: 35 }}>{ch.pct}%</div></div>)}</Card>
-      <Card><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Campañas activas</h3>{CAMPAIGNS.filter(c => c.status === "activa").map(c => <div key={c.id} style={{ padding: "10px 0", borderBottom: `1px solid ${B.border}` }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</div><div style={{ fontSize: 11, color: B.textMuted }}>{c.brand} · {c.start} — {c.end}</div></div><Badge color={c.margen >= 0 ? B.success : B.danger} bg={c.margen >= 0 ? B.successBg : B.dangerBg}>Margen: ${(c.margen/1000).toFixed(0)}k</Badge></div></div>)}</Card>
-      <Card><h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Ranking marcas (mes)</h3>{[...BRANDS].sort((a,b) => (b.activeClients*b.avgTicket*b.freqMonth)-(a.activeClients*a.avgTicket*a.freqMonth)).slice(0,6).map((br,i) => { const ingreso = br.activeClients*br.avgTicket*br.freqMonth; return <div key={br.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "7px 0", borderBottom: `1px solid ${B.border}` }}><span style={{ fontSize: 12, fontWeight: 800, color: B.accent, background: B.primary, padding: "2px 7px", borderRadius: 4, minWidth: 22, textAlign: "center" }}>{i+1}</span><div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{br.name}</div><div style={{ fontSize: 11, color: B.textMuted }}>{br.activeClients} clientes · ${br.avgTicket.toLocaleString()} ticket</div></div><div style={{ fontSize: 13, fontWeight: 700 }}>${(ingreso/1e6).toFixed(1)}M</div></div>; })}</Card>
-      <Card style={{ border: `1px solid ${B.danger}20` }}><h3 style={{ fontSize: 14, fontWeight: 700, color: B.danger, marginBottom: 12 }}>⚠️ Alertas</h3>{[{ text: "Smart Eats: más clientes perdidos que ganados (-1 neto)", severity: "alta" },{ text: "Campaña 2x1 Buffalo: margen negativo -$120k", severity: "alta" },{ text: "Tori Sushi: 15 clientes perdidos este mes (mayor churn del grupo)", severity: "media" },{ text: "Food Pxrn: penetración sobre Cheddar's solo 4%", severity: "baja" }].map((a,i) => <div key={i} style={{ display: "flex", gap: 8, padding: "8px 0", borderBottom: `1px solid ${B.border}`, alignItems: "flex-start" }}><div style={{ width: 8, height: 8, borderRadius: "50%", background: a.severity === "alta" ? B.danger : a.severity === "media" ? B.warning : B.info, marginTop: 4, flexShrink: 0 }} /><div style={{ fontSize: 12, color: B.text, lineHeight: 1.4 }}>{a.text}</div></div>)}</Card>
-    </div>
-  </div>;
+  );
 }
 
 function ClientesView() {
