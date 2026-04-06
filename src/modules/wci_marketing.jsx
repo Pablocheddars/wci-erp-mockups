@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 
 const B = {
   primary: "#1A1A1A", accent: "#F5C518", accentHover: "#E0B315",
@@ -86,6 +86,8 @@ const CONTENT_BENCHMARK = [
 
 const getBrand=id=>BRANDS.find(b=>b.id===id)||{name:id,color:B.textMuted};
 const getPerson=id=>TEAM.find(t=>t.id===id)||{name:id,short:"?",color:B.textMuted};
+function approvalMatchesTask(a,t){if(a.taskId!=null&&Number(a.taskId)===t.id)return true;return a.title===t.title;}
+function computePendingApprovalsUnion(){const approvalPending=APPROVALS.filter(a=>a.status==="pendiente"||a.status==="cambios");const enRev=TASKS.filter(t=>t.status==="en_revision");const orphanApprovals=approvalPending.filter(a=>!enRev.some(t=>approvalMatchesTask(a,t)));return{approvalPending,enRev,orphanApprovals,pendingCount:enRev.length+orphanApprovals.length};}
 const loadPct=(tasks,cap)=>cap>0?Math.round(tasks/cap*100):0;
 const loadColor=pct=>pct>100?B.danger:pct>=85?B.warning:B.success;
 
@@ -747,9 +749,259 @@ function CampanasView() {
   );
 }
 
-function TareasView(){const[view,setView]=useState("kanban");const[assignedFilter,setAssignedFilter]=useState("todos");let tasks=TASKS;if(assignedFilter!=="todos")tasks=tasks.filter(t=>t.assignedTo===assignedFilter);return<div><div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}><div style={{display:"flex",gap:2,background:B.surfaceHover,borderRadius:8,padding:2}}>{[{id:"kanban",label:"Kanban"},{id:"lista",label:"Lista"}].map(v=><button key={v.id} onClick={()=>setView(v.id)} style={{padding:"6px 14px",borderRadius:6,border:"none",fontSize:13,fontWeight:view===v.id?700:500,background:view===v.id?B.surface:"transparent",color:view===v.id?B.text:B.textMuted,cursor:"pointer",fontFamily:font,boxShadow:view===v.id?"0 1px 3px rgba(0,0,0,0.08)":"none"}}>{v.label}</button>)}</div><Select value={assignedFilter} onChange={setAssignedFilter} options={[{value:"todos",label:"Todo el equipo"},...TEAM.map(t=>({value:t.id,label:t.name}))]}/><div style={{flex:1}}/><Btn variant="primary">+ Nueva tarea</Btn></div>{view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:10}}>{TASK_STATUS_ORDER.map(status=>{const st=TASK_STATUS[status];const colTasks=tasks.filter(t=>t.status===status);return<div key={status} style={{background:B.surfaceHover,borderRadius:12,padding:10}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10,padding:"0 4px"}}><div style={{width:8,height:8,borderRadius:"50%",background:st.color}}/><span style={{fontSize:13,fontWeight:700}}>{st.label}</span><span style={{fontSize:11,color:B.textMuted,marginLeft:"auto"}}>{colTasks.length}</span></div>{colTasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const pr=PRIORITY[task.priority];return<div key={task.id} style={{background:B.surface,border:`1px solid ${B.border}`,borderRadius:8,padding:"10px 12px",marginBottom:8}}><div style={{display:"flex",gap:4,alignItems:"center",marginBottom:6}}><div style={{width:6,height:6,borderRadius:"50%",background:br.color}}/><span style={{fontSize:10,color:br.color,fontWeight:600}}>{br.name}</span><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></div><div style={{fontSize:12,fontWeight:600,lineHeight:1.3,marginBottom:6}}>{task.title}</div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:10,color:B.textMuted}}>{task.type} · {task.deadline}</span><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div></div></div>})}</div>})}</div>}{view==="lista"&&<Card style={{padding:0,overflow:"hidden"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13,fontFamily:font}}><thead><tr style={{borderBottom:`1px solid ${B.border}`,background:"#FAFAF8"}}>{["Tarea","Tipo","Marca","Asignado","Deadline","Prioridad","Estado"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,color:B.textMuted,fontSize:12}}>{h}</th>)}</tr></thead><tbody>{tasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const st=TASK_STATUS[task.status];const pr=PRIORITY[task.priority];return<tr key={task.id} style={{borderBottom:`1px solid ${B.border}`}} onMouseEnter={e=>e.currentTarget.style.background=B.surfaceHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}><td style={{padding:"10px 14px",fontWeight:600}}>{task.title}</td><td style={{padding:"10px 14px",color:B.textMuted}}>{task.type}</td><td style={{padding:"10px 14px"}}><Badge color={br.color} bg={`${br.color}12`}>{br.name}</Badge></td><td style={{padding:"10px 14px"}}><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div><span style={{fontSize:12}}>{person.name.split(" ")[0]}</span></div></td><td style={{padding:"10px 14px",color:B.textMuted,fontSize:12}}>{task.deadline}</td><td style={{padding:"10px 14px"}}><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></td><td style={{padding:"10px 14px"}}><Badge color={st.color} bg={`${st.color}15`}>{st.label}</Badge></td></tr>})}</tbody></table></Card>}</div>}
+function TareasView(){const[view,setView]=useState("kanban");const[assignedFilter,setAssignedFilter]=useState("todos");let tasks=TASKS;if(assignedFilter!=="todos")tasks=tasks.filter(t=>t.assignedTo===assignedFilter);return<div><div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}><div style={{display:"flex",gap:2,background:B.surfaceHover,borderRadius:8,padding:2}}>{[{id:"kanban",label:"Kanban"},{id:"lista",label:"Lista"}].map(v=><button key={v.id} onClick={()=>setView(v.id)} style={{padding:"6px 14px",borderRadius:6,border:"none",fontSize:13,fontWeight:view===v.id?700:500,background:view===v.id?B.surface:"transparent",color:view===v.id?B.text:B.textMuted,cursor:"pointer",fontFamily:font,boxShadow:view===v.id?"0 1px 3px rgba(0,0,0,0.08)":"none"}}>{v.label}</button>)}</div><Select value={assignedFilter} onChange={setAssignedFilter} options={[{value:"todos",label:"Todo el equipo"},...TEAM.map(t=>({value:t.id,label:t.name}))]}/><div style={{flex:1}}/><Btn variant="primary">+ Nueva tarea</Btn></div>{view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:10}}>{TASK_STATUS_ORDER.map(status=>{const st=TASK_STATUS[status];const colTasks=tasks.filter(t=>t.status===status);return<div key={status} style={{background:B.surfaceHover,borderRadius:12,padding:10}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10,padding:"0 4px"}}><div style={{width:8,height:8,borderRadius:"50%",background:st.color}}/><span style={{fontSize:13,fontWeight:700}}>{st.label}</span><span style={{fontSize:11,color:B.textMuted,marginLeft:"auto"}}>{colTasks.length}</span></div>{status==="en_revision"&&<div style={{fontSize:10,color:B.textMuted,marginBottom:8,padding:"0 4px"}}>Visible en Aprobaciones</div>}{colTasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const pr=PRIORITY[task.priority];return<div key={task.id} style={{background:B.surface,border:`1px solid ${B.border}`,borderRadius:8,padding:"10px 12px",marginBottom:8}}><div style={{display:"flex",gap:4,alignItems:"center",marginBottom:6}}><div style={{width:6,height:6,borderRadius:"50%",background:br.color}}/><span style={{fontSize:10,color:br.color,fontWeight:600}}>{br.name}</span><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></div><div style={{fontSize:12,fontWeight:600,lineHeight:1.3,marginBottom:6,display:"flex",alignItems:"center",gap:6}}>{status==="en_revision"&&<span style={{fontSize:11,lineHeight:1,opacity:0.65}} aria-hidden="true">👁️</span>}<span style={{flex:1,minWidth:0}}>{task.title}</span></div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:10,color:B.textMuted}}>{task.type} · {task.deadline}</span><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div></div></div>})}</div>})}</div>}{view==="lista"&&<Card style={{padding:0,overflow:"hidden"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13,fontFamily:font}}><thead><tr style={{borderBottom:`1px solid ${B.border}`,background:"#FAFAF8"}}>{["Tarea","Tipo","Marca","Asignado","Deadline","Prioridad","Estado"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,color:B.textMuted,fontSize:12}}>{h}</th>)}</tr></thead><tbody>{tasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const st=TASK_STATUS[task.status];const pr=PRIORITY[task.priority];return<tr key={task.id} style={{borderBottom:`1px solid ${B.border}`}} onMouseEnter={e=>e.currentTarget.style.background=B.surfaceHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}><td style={{padding:"10px 14px",fontWeight:600}}>{task.title}</td><td style={{padding:"10px 14px",color:B.textMuted}}>{task.type}</td><td style={{padding:"10px 14px"}}><Badge color={br.color} bg={`${br.color}12`}>{br.name}</Badge></td><td style={{padding:"10px 14px"}}><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div><span style={{fontSize:12}}>{person.name.split(" ")[0]}</span></div></td><td style={{padding:"10px 14px",color:B.textMuted,fontSize:12}}>{task.deadline}</td><td style={{padding:"10px 14px"}}><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></td><td style={{padding:"10px 14px"}}><Badge color={st.color} bg={`${st.color}15`}>{st.label}</Badge></td></tr>})}</tbody></table></Card>}</div>}
 
-function AprobacionesView(){const[subTab,setSubTab]=useState("pendientes");const pendingCount=APPROVALS.filter(a=>a.status==="pendiente"||a.status==="cambios").length;const totalH=APPROVAL_HISTORY.length;const firstTimeRate=Math.round(APPROVAL_HISTORY.filter(h=>h.round===1).length/totalH*100);return<div><div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:10,marginBottom:16}}><Card><div style={{fontSize:11,color:B.textMuted}}>Pendientes</div><div style={{fontSize:22,fontWeight:800,color:pendingCount>0?B.danger:B.success}}>{pendingCount}</div></Card><Card><div style={{fontSize:11,color:B.textMuted}}>Aprobadas 1ra vez</div><div style={{fontSize:22,fontWeight:800,color:B.info}}>{firstTimeRate}%</div></Card><Card><div style={{fontSize:11,color:B.textMuted}}>Total aprobadas (mes)</div><div style={{fontSize:22,fontWeight:800,color:B.success}}>{totalH}</div></Card></div><div style={{display:"flex",gap:6,marginBottom:16}}><Btn variant={subTab==="pendientes"?"primary":"default"} onClick={()=>setSubTab("pendientes")} style={{fontSize:12}}>Pendientes ({pendingCount})</Btn><Btn variant={subTab==="historial"?"primary":"default"} onClick={()=>setSubTab("historial")} style={{fontSize:12}}>Historial</Btn></div>{subTab==="pendientes"&&<div>{APPROVALS.map(a=>{const br=getBrand(a.brand);const net=NETWORKS.find(n=>n.id===a.network);const person=getPerson(a.assignedTo);return<Card key={a.id} style={{marginBottom:12,borderLeft:a.status==="cambios"?`4px solid ${B.warning}`:`4px solid ${B.info}`}}><div style={{display:"flex",gap:16}}><div style={{width:120,height:120,borderRadius:8,background:a.thumbnail.bg,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:`1px solid ${B.border}`}}><div style={{textAlign:"center"}}><div style={{fontSize:24,marginBottom:4}}>{a.type==="reel"?"🎬":a.type==="carrusel"?"📸":"📄"}</div><div style={{fontSize:10,color:B.textMuted,fontWeight:600}}>{a.thumbnail.label}</div></div></div><div style={{flex:1}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}><span style={{fontSize:15,fontWeight:700}}>{a.title}</span>{a.status==="cambios"&&<Badge color={B.warning} bg={B.warningBg}>Cambios pedidos</Badge>}{a.status==="pendiente"&&<Badge color={B.info} bg={B.infoBg}>Pendiente</Badge>}<span style={{fontSize:11,color:B.textMuted}}>Ronda {a.round}</span></div><div style={{display:"flex",gap:6,marginBottom:8}}><Badge color={br.color} bg={`${br.color}12`}>{br.name}</Badge><Badge>{net?.icon} {net?.name}</Badge><Badge>{a.type}</Badge><Badge>📅 {a.date}</Badge></div><div style={{fontSize:12,color:B.textMuted,marginBottom:4}}>Campaña: {a.campaign}</div><div style={{background:B.surfaceHover,borderRadius:8,padding:"10px 12px",marginBottom:8}}><div style={{fontSize:11,fontWeight:700,color:B.textMuted,marginBottom:4}}>Caption</div><div style={{fontSize:12,lineHeight:1.5,whiteSpace:"pre-line"}}>{a.caption}</div></div>{a.feedback&&<div style={{background:B.warningBg,borderRadius:8,padding:"8px 12px",marginBottom:8,border:`1px solid ${B.warning}20`}}><div style={{fontSize:11,fontWeight:700,color:B.warning,marginBottom:2}}>Feedback anterior</div><div style={{fontSize:12,color:B.text}}>{a.feedback}</div></div>}<div style={{display:"flex",gap:8,alignItems:"center"}}><Btn variant="success">Aprobar</Btn><Btn variant="default">Pedir cambios</Btn><Btn variant="danger">Rechazar</Btn><div style={{flex:1}}/><div style={{fontSize:11,color:B.textMuted}}>Enviado por {a.submittedBy} · Diseño: {person.name.split(" ")[0]}</div></div></div></div></Card>})}</div>}{subTab==="historial"&&<Card style={{padding:0,overflow:"hidden"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13,fontFamily:font}}><thead><tr style={{borderBottom:`1px solid ${B.border}`,background:"#FAFAF8"}}>{["Pieza","Marca","Resultado","Ronda","Fecha","Aprobado por"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,color:B.textMuted,fontSize:12}}>{h}</th>)}</tr></thead><tbody>{APPROVAL_HISTORY.map(h=>{const br=getBrand(h.brand);return<tr key={h.id} style={{borderBottom:`1px solid ${B.border}`}}><td style={{padding:"10px 14px",fontWeight:600}}>{h.title}</td><td style={{padding:"10px 14px"}}><Badge color={br.color} bg={`${br.color}12`}>{br.name}</Badge></td><td style={{padding:"10px 14px"}}><Badge color={B.success} bg={B.successBg}>{h.result}</Badge></td><td style={{padding:"10px 14px"}}>{h.round===1?<Badge color={B.info} bg={B.infoBg}>1ra vez</Badge>:<span style={{color:B.textMuted}}>Ronda {h.round}</span>}</td><td style={{padding:"10px 14px",color:B.textMuted}}>{h.date}</td><td style={{padding:"10px 14px"}}>{h.approvedBy}</td></tr>})}</tbody></table></Card>}</div>}
+function AprobacionesView() {
+  const [subTab, setSubTab] = useState("pendientes");
+  const { approvalPending, enRev, orphanApprovals, pendingCount } = computePendingApprovalsUnion();
+  const totalH = APPROVAL_HISTORY.length;
+  const firstTimeRate = Math.round((APPROVAL_HISTORY.filter((h) => h.round === 1).length / totalH) * 100);
+  const enRevSorted = [...enRev].sort((a, b) => a.id - b.id);
+
+  const fullApprovalCard = (a) => {
+    const br = getBrand(a.brand);
+    const net = NETWORKS.find((n) => n.id === a.network);
+    const person = getPerson(a.assignedTo);
+    return (
+      <Card key={`apv-${a.id}`} style={{ marginBottom: 12, borderLeft: a.status === "cambios" ? `4px solid ${B.warning}` : `4px solid ${B.info}` }}>
+        <div style={{ display: "flex", gap: 16 }}>
+          <div
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 8,
+              background: a.thumbnail.bg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              border: `1px solid ${B.border}`,
+            }}
+          >
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>{a.type === "reel" ? "🎬" : a.type === "carrusel" ? "📸" : "📄"}</div>
+              <div style={{ fontSize: 10, color: B.textMuted, fontWeight: 600 }}>{a.thumbnail.label}</div>
+            </div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 15, fontWeight: 700 }}>{a.title}</span>
+              {a.status === "cambios" && (
+                <Badge color={B.warning} bg={B.warningBg}>
+                  Cambios pedidos
+                </Badge>
+              )}
+              {a.status === "pendiente" && (
+                <Badge color={B.info} bg={B.infoBg}>
+                  Pendiente
+                </Badge>
+              )}
+              <span style={{ fontSize: 11, color: B.textMuted }}>Ronda {a.round}</span>
+            </div>
+            <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: br.color, flexShrink: 0, marginTop: 4 }} />
+              <Badge color={br.color} bg={`${br.color}12`}>
+                {br.name}
+              </Badge>
+              <Badge>
+                {net?.icon} {net?.name}
+              </Badge>
+              <Badge>{a.type}</Badge>
+              <Badge>📅 {a.date}</Badge>
+            </div>
+            <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 4 }}>Campaña: {a.campaign}</div>
+            <div style={{ background: B.surfaceHover, borderRadius: 8, padding: "10px 12px", marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: B.textMuted, marginBottom: 4 }}>Caption</div>
+              <div style={{ fontSize: 12, lineHeight: 1.5, whiteSpace: "pre-line" }}>{a.caption}</div>
+            </div>
+            {a.feedback && (
+              <div style={{ background: B.warningBg, borderRadius: 8, padding: "8px 12px", marginBottom: 8, border: `1px solid ${B.warning}20` }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: B.warning, marginBottom: 2 }}>Feedback anterior</div>
+                <div style={{ fontSize: 12, color: B.text }}>{a.feedback}</div>
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <Btn variant="success">Aprobar</Btn>
+              <Btn variant="default">Pedir cambios</Btn>
+              <Btn variant="danger">Rechazar</Btn>
+              <div style={{ flex: 1 }} />
+              <div style={{ fontSize: 11, color: B.textMuted }}>
+                Enviado por {a.submittedBy} · Diseño: {person.name.split(" ")[0]}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  };
+
+  const simplifiedFromTaskCard = (task) => {
+    const br = getBrand(task.brand);
+    const person = getPerson(task.assignedTo);
+    const camp = task.campaign != null ? CAMPAIGNS.find((c) => c.id === task.campaign) : null;
+    return (
+      <Card key={`tsk-apr-${task.id}`} style={{ marginBottom: 12, borderLeft: `4px solid ${B.warning}` }}>
+        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{task.title}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: br.color, flexShrink: 0 }} />
+          <Badge color={br.color} bg={`${br.color}12`}>
+            {br.name}
+          </Badge>
+          <Badge>{task.type}</Badge>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: "50%",
+              background: person.color,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#fff",
+              flexShrink: 0,
+            }}
+          >
+            {person.short}
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 600 }}>{person.name}</span>
+        </div>
+        {camp && <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 6 }}>Campaña vinculada: {camp.name}</div>}
+        <div style={{ fontSize: 12, color: B.textMuted, marginBottom: 12 }}>Deadline: {task.deadline}</div>
+        <div
+          style={{
+            border: `1px dashed ${B.border}`,
+            borderRadius: 8,
+            padding: "14px 16px",
+            marginBottom: 12,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            color: B.textMuted,
+            fontSize: 12,
+            background: B.surfaceHover,
+          }}
+        >
+          <span style={{ fontSize: 16 }} aria-hidden="true">
+            📎
+          </span>
+          <span>El equipo puede adjuntar archivos aquí</span>
+        </div>
+        <textarea
+          placeholder="Caption pendiente — Diego puede agregarlo aquí"
+          rows={4}
+          style={{
+            width: "100%",
+            boxSizing: "border-box",
+            border: `1px solid ${B.border}`,
+            borderRadius: 8,
+            padding: "10px 12px",
+            fontSize: 12,
+            fontFamily: font,
+            marginBottom: 12,
+            resize: "vertical",
+            background: B.surface,
+          }}
+        />
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Btn variant="success">Aprobar</Btn>
+          <Btn variant="default">Pedir cambios</Btn>
+          <Btn variant="danger">Rechazar</Btn>
+        </div>
+      </Card>
+    );
+  };
+
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 16 }}>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted }}>Pendientes</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: pendingCount > 0 ? B.danger : B.success }}>{pendingCount}</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted }}>Aprobadas 1ra vez</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: B.info }}>{firstTimeRate}%</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 11, color: B.textMuted }}>Total aprobadas (mes)</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: B.success }}>{totalH}</div>
+        </Card>
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+        <Btn variant={subTab === "pendientes" ? "primary" : "default"} onClick={() => setSubTab("pendientes")} style={{ fontSize: 12 }}>
+          Pendientes ({pendingCount})
+        </Btn>
+        <Btn variant={subTab === "historial" ? "primary" : "default"} onClick={() => setSubTab("historial")} style={{ fontSize: 12 }}>
+          Historial
+        </Btn>
+      </div>
+      {subTab === "pendientes" && (
+        <div>
+          {enRevSorted.map((task) => {
+            const matched = approvalPending.find((a) => approvalMatchesTask(a, task));
+            return matched ? fullApprovalCard(matched) : simplifiedFromTaskCard(task);
+          })}
+          {orphanApprovals.map((a) => fullApprovalCard(a))}
+          <Card style={{ marginTop: 4, background: B.infoBg, border: `1px solid ${B.info}25` }}>
+            <div style={{ fontSize: 13, color: B.text, lineHeight: 1.55 }}>
+              {`💡 Las tareas aparecen aquí automáticamente cuando el equipo las mueve a 'En revisión' en el tablero de Tareas. Joaquín o Pablo aprueban, piden cambios, o rechazan. Si se piden cambios, la tarea vuelve a 'En progreso'.`}
+            </div>
+          </Card>
+        </div>
+      )}
+      {subTab === "historial" && (
+        <Card style={{ padding: 0, overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, fontFamily: font }}>
+            <thead>
+              <tr style={{ borderBottom: `1px solid ${B.border}`, background: "#FAFAF8" }}>
+                {["Pieza", "Marca", "Resultado", "Ronda", "Fecha", "Aprobado por"].map((h) => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: B.textMuted, fontSize: 12 }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {APPROVAL_HISTORY.map((h) => {
+                const br = getBrand(h.brand);
+                return (
+                  <tr key={h.id} style={{ borderBottom: `1px solid ${B.border}` }}>
+                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>{h.title}</td>
+                    <td style={{ padding: "10px 14px" }}>
+                      <Badge color={br.color} bg={`${br.color}12`}>
+                        {br.name}
+                      </Badge>
+                    </td>
+                    <td style={{ padding: "10px 14px" }}>
+                      <Badge color={B.success} bg={B.successBg}>
+                        {h.result}
+                      </Badge>
+                    </td>
+                    <td style={{ padding: "10px 14px" }}>
+                      {h.round === 1 ? (
+                        <Badge color={B.info} bg={B.infoBg}>
+                          1ra vez
+                        </Badge>
+                      ) : (
+                        <span style={{ color: B.textMuted }}>Ronda {h.round}</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "10px 14px", color: B.textMuted }}>{h.date}</td>
+                    <td style={{ padding: "10px 14px" }}>{h.approvedBy}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Card>
+      )}
+    </div>
+  );
+}
 
 function EquipoView(){const[subTab,setSubTab]=useState("rendimiento");const brandUnits=[{name:"Unidad Cheddar's",color:"#E74C3C",brands:BRANDS.filter(b=>b.unit==="Unidad Cheddar's")},{name:"Unidad Tori Sushi",color:"#2E86DE",brands:BRANDS.filter(b=>b.unit==="Unidad Tori Sushi")},{name:"Unidad Sweet/Burger",color:"#8E44AD",brands:BRANDS.filter(b=>b.unit==="Unidad Sweet/Burger")}];const standalone=BRANDS.filter(b=>b.unit==="—");return<div><div style={{display:"flex",gap:6,marginBottom:16}}>{[{id:"rendimiento",label:"Rendimiento"},{id:"carga",label:"Carga semanal"},{id:"cuentas",label:"Cuentas"}].map(s=><Btn key={s.id} variant={subTab===s.id?"primary":"default"} onClick={()=>setSubTab(s.id)} style={{fontSize:12}}>{s.label}</Btn>)}</div>{subTab==="rendimiento"&&<div style={{display:"grid",gridTemplateColumns:"repeat(5, 1fr)",gap:10}}>{TEAM.map(t=><Card key={t.id} style={{textAlign:"center"}}><div style={{width:44,height:44,borderRadius:"50%",background:t.color,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:16,color:"#fff",margin:"0 auto 8px"}}>{t.short}</div><div style={{fontSize:14,fontWeight:700}}>{t.name.split(" ")[0]}</div><div style={{fontSize:11,color:B.textMuted,marginBottom:10}}>{t.role}</div>{t.isExperience?<><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Campañas</span><span style={{fontSize:13,fontWeight:700}}>{t.campaigns}</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Entregas</span><span style={{fontSize:13,fontWeight:700}}>{t.completed}</span></div><div style={{marginTop:6}}><Badge color={B.success} bg={B.successBg}>Experiencia · Mod. 11</Badge></div></>:<><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Completadas</span><span style={{fontSize:13,fontWeight:700}}>{t.completed}</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>% a tiempo</span><span style={{fontSize:13,fontWeight:700,color:t.onTime>=85?B.success:B.warning}}>{t.onTime}%</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Aprob. 1ra</span><span style={{fontSize:13,fontWeight:700,color:t.approvedFirst>=80?B.success:B.warning}}>{t.approvedFirst}%</span></div><div style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderTop:`1px solid ${B.border}`}}><span style={{fontSize:11,color:B.textMuted}}>Rondas prom.</span><span style={{fontSize:13,fontWeight:700}}>{t.avgRounds}</span></div></>}</Card>)}</div>}{subTab==="carga"&&<Card><h3 style={{fontSize:14,fontWeight:700,marginBottom:14}}>Carga semanal — Semana 07-11 Abril</h3>{TEAM.map(t=>{const pct=loadPct(t.tasksWeek,t.capacityWeek);const c=loadColor(pct);const myTasks=TASKS.filter(tk=>tk.assignedTo===t.id&&tk.status!=="completada");return<div key={t.id} style={{padding:"12px 0",borderBottom:`1px solid ${B.border}`}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><div style={{width:28,height:28,borderRadius:"50%",background:t.color,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:10,color:"#fff",flexShrink:0}}>{t.short}</div><div style={{flex:1}}><span style={{fontSize:13,fontWeight:700}}>{t.name}</span><span style={{fontSize:11,color:B.textMuted,marginLeft:8}}>{t.role}</span></div><div style={{width:100,height:8,background:B.surfaceHover,borderRadius:4,overflow:"hidden"}}><div style={{width:`${Math.min(pct,100)}%`,height:"100%",background:c,borderRadius:4}}/></div><Badge color={c} bg={`${c}15`}>{t.tasksWeek}/{t.capacityWeek} ({pct}%)</Badge></div>{myTasks.length>0&&<div style={{marginLeft:38,display:"flex",gap:4,flexWrap:"wrap"}}>{myTasks.map(tk=><span key={tk.id} style={{fontSize:10,padding:"2px 8px",borderRadius:6,background:`${getBrand(tk.brand).color}10`,color:getBrand(tk.brand).color,fontWeight:600}}>{tk.title}</span>)}</div>}</div>})}</Card>}{subTab==="cuentas"&&<div><div style={{fontSize:13,fontWeight:700,color:B.textMuted,marginBottom:10}}>Marcas propias — 3 unidades</div><div style={{display:"grid",gridTemplateColumns:"repeat(3, 1fr)",gap:12,marginBottom:16}}>{brandUnits.map(unit=><Card key={unit.name} style={{borderLeft:`4px solid ${unit.color}`}}><div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{unit.name}</div>{unit.brands.map(br=><div key={br.id} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",borderTop:`1px solid ${B.border}`}}><div style={{width:8,height:8,borderRadius:"50%",background:br.active?br.color:B.textLight}}/><span style={{fontSize:12,fontWeight:600,flex:1,color:br.active?B.text:B.textLight}}>{br.name}</span>{!br.active&&<Badge color={B.textLight} bg={B.surfaceHover}>Pausada</Badge>}</div>)}</Card>)}</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{standalone.map(br=><Card key={br.id} style={{borderLeft:`4px solid ${br.color}`,opacity:br.active?1:0.6}}><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:14,fontWeight:700}}>{br.name}</span>{br.type==="externo"&&<Badge color={B.success} bg={B.successBg}>Cliente externo</Badge>}{!br.active&&<Badge color={B.textLight} bg={B.surfaceHover}>Pausada</Badge>}</div>{br.id==="samai"&&<div style={{fontSize:12,color:B.textMuted,marginTop:6}}>Clínica dental · IG · Gestión RRSS completa</div>}{br.id==="bigfat"&&<div style={{fontSize:12,color:B.textLight,marginTop:6}}>Marca shelveada — canales Slack creados, sin actividad</div>}</Card>)}</div></div>}</div>}
 
@@ -1189,4 +1441,4 @@ function MetricasView() {
   );
 }
 
-export default function MarketingModule(){const[tab,setTab]=useState("dashboard");const[isMobile,setIsMobile]=useState(false);useEffect(()=>{function check(){setIsMobile(window.innerWidth<900)}check();window.addEventListener("resize",check);return()=>window.removeEventListener("resize",check)},[]);const pendingApprovals=APPROVALS.filter(a=>a.status==="pendiente"||a.status==="cambios").length;const TABS=[{id:"dashboard",label:"Tablero",icon:"📊"},{id:"calendario",label:"Calendario",icon:"📅"},{id:"campanas",label:"Campañas",icon:"📣"},{id:"tareas",label:"Tareas",icon:"✅"},{id:"aprobaciones",label:"Aprobaciones",icon:"👁️",badge:pendingApprovals,badgeColor:B.dangerBg,badgeTextColor:B.danger},{id:"equipo",label:"Equipo",icon:"👥"},{id:"biblioteca",label:"Biblioteca",icon:"📂"},{id:"metricas",label:"Métricas",icon:"📈"}];return<div style={{fontFamily:font,background:"#F5F4F0",minHeight:"100vh"}}><style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus{outline:none;border-color:${B.accent} !important}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style><header style={{background:B.surface,borderBottom:`1px solid ${B.border}`,position:"sticky",top:0,zIndex:100}}><div style={{padding:"0 24px",height:52,display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:32,height:32,background:B.accent,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:16,color:B.primary,fontFamily:serif}}>C</div><div style={{lineHeight:1.1}}><div style={{fontFamily:serif,fontSize:14,fontWeight:700,color:B.text}}>Cheddar's</div><div style={{fontSize:9,color:B.textMuted,fontWeight:500,letterSpacing:1.5,textTransform:"uppercase"}}>West Coast</div></div></div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,cursor:"pointer"}}>🔔</span><div style={{width:30,height:30,borderRadius:"50%",background:B.accent,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:12,color:B.primary}}>PF</div></div></div>{!isMobile&&<div style={{padding:"0 24px",display:"flex",gap:2,borderTop:`1px solid ${B.border}`,height:40,alignItems:"center"}}>{["Dashboard","Inventario","Compras","Pedidos","Despacho","Producción","Calidad","Finanzas","Comercial","Marketing","Más"].map(n=><span key={n} style={{padding:"6px 11px",fontSize:13,fontWeight:n==="Marketing"?650:500,color:n==="Marketing"?B.text:B.textMuted,borderBottom:n==="Marketing"?`2px solid ${B.accent}`:"2px solid transparent",cursor:"pointer"}}>{n}</span>)}</div>}</header><main style={{padding:isMobile?16:"20px 32px",maxWidth:1320,margin:"0 auto"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}><div><h1 style={{fontSize:isMobile?20:24,fontWeight:800,color:B.text,fontFamily:serif}}>📣 Marketing Operativo</h1><p style={{fontSize:13,color:B.textMuted,marginTop:2}}>{activeBrands.length} cuentas activas · 5 personas · IG + TikTok</p></div></div><TabBar tabs={TABS} active={tab} onChange={setTab}/>{tab==="dashboard"&&<DashboardView/>}{tab==="calendario"&&<CalendarioView/>}{tab==="campanas"&&<CampanasView/>}{tab==="tareas"&&<TareasView/>}{tab==="aprobaciones"&&<AprobacionesView/>}{tab==="equipo"&&<EquipoView/>}{tab==="biblioteca"&&<BibliotecaView/>}{tab==="metricas"&&<MetricasView/>}</main></div>}
+export default function MarketingModule(){const[tab,setTab]=useState("dashboard");const[isMobile,setIsMobile]=useState(false);useEffect(()=>{function check(){setIsMobile(window.innerWidth<900)}check();window.addEventListener("resize",check);return()=>window.removeEventListener("resize",check)},[]);const pendingApprovals=computePendingApprovalsUnion().pendingCount;const TABS=[{id:"dashboard",label:"Tablero",icon:"📊"},{id:"calendario",label:"Calendario",icon:"📅"},{id:"campanas",label:"Campañas",icon:"📣"},{id:"tareas",label:"Tareas",icon:"✅"},{id:"aprobaciones",label:"Aprobaciones",icon:"👁️",badge:pendingApprovals,badgeColor:B.dangerBg,badgeTextColor:B.danger},{id:"equipo",label:"Equipo",icon:"👥"},{id:"biblioteca",label:"Biblioteca",icon:"📂"},{id:"metricas",label:"Métricas",icon:"📈"}];return<div style={{fontFamily:font,background:"#F5F4F0",minHeight:"100vh"}}><style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Serif+Display&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus{outline:none;border-color:${B.accent} !important}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#d4d2cd;border-radius:3px}`}</style><header style={{background:B.surface,borderBottom:`1px solid ${B.border}`,position:"sticky",top:0,zIndex:100}}><div style={{padding:"0 24px",height:52,display:"flex",alignItems:"center",justifyContent:"space-between"}}><div style={{display:"flex",alignItems:"center",gap:10}}><div style={{width:32,height:32,background:B.accent,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:16,color:B.primary,fontFamily:serif}}>C</div><div style={{lineHeight:1.1}}><div style={{fontFamily:serif,fontSize:14,fontWeight:700,color:B.text}}>Cheddar's</div><div style={{fontSize:9,color:B.textMuted,fontWeight:500,letterSpacing:1.5,textTransform:"uppercase"}}>West Coast</div></div></div><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,cursor:"pointer"}}>🔔</span><div style={{width:30,height:30,borderRadius:"50%",background:B.accent,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:12,color:B.primary}}>PF</div></div></div>{!isMobile&&<div style={{padding:"0 24px",display:"flex",gap:2,borderTop:`1px solid ${B.border}`,height:40,alignItems:"center"}}>{["Dashboard","Inventario","Compras","Pedidos","Despacho","Producción","Calidad","Finanzas","Comercial","Marketing","Más"].map(n=><span key={n} style={{padding:"6px 11px",fontSize:13,fontWeight:n==="Marketing"?650:500,color:n==="Marketing"?B.text:B.textMuted,borderBottom:n==="Marketing"?`2px solid ${B.accent}`:"2px solid transparent",cursor:"pointer"}}>{n}</span>)}</div>}</header><main style={{padding:isMobile?16:"20px 32px",maxWidth:1320,margin:"0 auto"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}><div><h1 style={{fontSize:isMobile?20:24,fontWeight:800,color:B.text,fontFamily:serif}}>📣 Marketing Operativo</h1><p style={{fontSize:13,color:B.textMuted,marginTop:2}}>{activeBrands.length} cuentas activas · 5 personas · IG + TikTok</p></div></div><TabBar tabs={TABS} active={tab} onChange={setTab}/>{tab==="dashboard"&&<DashboardView/>}{tab==="calendario"&&<CalendarioView/>}{tab==="campanas"&&<CampanasView/>}{tab==="tareas"&&<TareasView/>}{tab==="aprobaciones"&&<AprobacionesView/>}{tab==="equipo"&&<EquipoView/>}{tab==="biblioteca"&&<BibliotecaView/>}{tab==="metricas"&&<MetricasView/>}</main></div>}
