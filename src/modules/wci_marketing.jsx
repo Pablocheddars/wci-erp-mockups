@@ -562,7 +562,190 @@ function CalendarioView() {
   );
 }
 
-function CampanasView(){const[expanded,setExpanded]=useState(null);const[filter,setFilter]=useState("todas");let camps=CAMPAIGNS;if(filter!=="todas")camps=camps.filter(c=>c.status===filter);return<div><div style={{display:"flex",gap:8,marginBottom:14,justifyContent:"space-between",flexWrap:"wrap"}}><div style={{display:"flex",gap:6}}>{[{id:"todas",label:"Todas"},...Object.entries(CAMPAIGN_STATUS).map(([k,v])=>({id:k,label:v.label}))].map(f=><Btn key={f.id} variant={filter===f.id?"primary":"default"} onClick={()=>setFilter(f.id)} style={{fontSize:12}}>{f.label}</Btn>)}</div><Btn variant="primary">+ Nueva campaña</Btn></div>{camps.map(c=>{const br=getBrand(c.brand);const st=CAMPAIGN_STATUS[c.status];const isExp=expanded===c.id;const progress=c.pieces>0?Math.round(c.piecesApproved/c.pieces*100):0;return<Card key={c.id} style={{marginBottom:10,cursor:"pointer",borderLeft:`4px solid ${br.color}`}} onClick={()=>setExpanded(isExp?null:c.id)}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{flex:1}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><span style={{fontSize:10,color:B.textMuted}}>{isExp?"▼":"▶"}</span><span style={{fontSize:15,fontWeight:700}}>{c.name}</span><Badge color={st.color} bg={st.bg}>{st.label}</Badge>{br.type==="externo"&&<Badge color={B.success} bg={B.successBg}>Externo</Badge>}</div><div style={{fontSize:12,color:B.textMuted}}>{br.name} · {c.networks.map(n=>NETWORKS.find(nn=>nn.id===n)?.icon).join(" ")} · {c.startDate} — {c.endDate}</div></div><div style={{textAlign:"right"}}><div style={{fontSize:11,color:B.textMuted}}>Progreso</div><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:60,height:6,background:B.surfaceHover,borderRadius:3,overflow:"hidden"}}><div style={{width:`${progress}%`,height:"100%",background:st.color,borderRadius:3}}/></div><span style={{fontSize:12,fontWeight:700}}>{c.piecesApproved}/{c.pieces}</span></div></div></div>{isExp&&<div style={{marginTop:12,paddingTop:12,borderTop:`1px solid ${B.border}`}}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}><div><div style={{fontSize:12,fontWeight:700,color:B.textMuted,marginBottom:6}}>Idea</div><div style={{fontSize:13,lineHeight:1.5}}>{c.idea}</div><div style={{fontSize:12,fontWeight:700,color:B.textMuted,marginTop:10,marginBottom:4}}>Origen</div><Badge>{c.origin==="joaquin"?"Joaquín":c.origin==="pablo"?"Pablo":c.origin==="equipo"?"Propuesta equipo":"Cliente externo"}</Badge></div><div><div style={{fontSize:12,fontWeight:700,color:B.textMuted,marginBottom:6}}>Pipeline</div>{["Propuesta","Idea aprobada","En producción","Material aprobado","Publicada"].map((step,si)=>{const stepMap={propuesta:0,aprobada:1,en_produccion:2,publicada:4,evaluada:4};const current=stepMap[c.status]||0;const done=si<=current;return<div key={si} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0"}}><div style={{width:18,height:18,borderRadius:"50%",background:done?B.success:B.surfaceHover,border:`1.5px solid ${done?B.success:B.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:done?"#fff":B.textLight,fontWeight:700}}>{done?"✓":si+1}</div><span style={{fontSize:12,fontWeight:done?600:400,color:done?B.text:B.textMuted}}>{step}</span></div>})}<div style={{fontSize:12,fontWeight:700,color:B.textMuted,marginTop:10,marginBottom:4}}>Piezas</div><div style={{fontSize:12,color:B.textMuted}}>{c.piecesReady} listas · {c.piecesApproved} aprobadas · {c.pieces-c.piecesReady} pendientes</div></div></div></div>}</Card>})}</div>}
+function CampanasView() {
+  const [expanded, setExpanded] = useState(null);
+  const [filter, setFilter] = useState("todas");
+  let camps = CAMPAIGNS;
+  if (filter !== "todas") camps = camps.filter((c) => c.status === filter);
+  const engagementRateColor = (rate) => {
+    if (rate >= 6) return B.success;
+    if (rate >= 4) return B.warning;
+    return B.danger;
+  };
+  const fmt = (n) => n.toLocaleString();
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 14, justifyContent: "space-between", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[{ id: "todas", label: "Todas" }, ...Object.entries(CAMPAIGN_STATUS).map(([k, v]) => ({ id: k, label: v.label }))].map((f) => (
+            <Btn key={f.id} variant={filter === f.id ? "primary" : "default"} onClick={() => setFilter(f.id)} style={{ fontSize: 12 }}>
+              {f.label}
+            </Btn>
+          ))}
+        </div>
+        <Btn variant="primary">+ Nueva campaña</Btn>
+      </div>
+      {camps.map((c) => {
+        const br = getBrand(c.brand);
+        const st = CAMPAIGN_STATUS[c.status];
+        const isExp = expanded === c.id;
+        const progress = c.pieces > 0 ? Math.round((c.piecesApproved / c.pieces) * 100) : 0;
+        const resultado =
+          (c.status === "publicada" || c.status === "evaluada") ? CAMPAIGN_RESULTS.find((r) => r.campaignId === c.id) : null;
+        return (
+          <Card
+            key={c.id}
+            style={{ marginBottom: 10, cursor: "pointer", borderLeft: `4px solid ${br.color}` }}
+            onClick={() => setExpanded(isExp ? null : c.id)}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 10, color: B.textMuted }}>{isExp ? "▼" : "▶"}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700 }}>{c.name}</span>
+                  <Badge color={st.color} bg={st.bg}>
+                    {st.label}
+                  </Badge>
+                  {br.type === "externo" && (
+                    <Badge color={B.success} bg={B.successBg}>
+                      Externo
+                    </Badge>
+                  )}
+                </div>
+                <div style={{ fontSize: 12, color: B.textMuted }}>
+                  {br.name} · {c.networks.map((n) => NETWORKS.find((nn) => nn.id === n)?.icon).join(" ")} · {c.startDate} — {c.endDate}
+                </div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 11, color: B.textMuted }}>Progreso</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ width: 60, height: 6, background: B.surfaceHover, borderRadius: 3, overflow: "hidden" }}>
+                    <div style={{ width: `${progress}%`, height: "100%", background: st.color, borderRadius: 3 }} />
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>
+                    {c.piecesApproved}/{c.pieces}
+                  </span>
+                </div>
+              </div>
+            </div>
+            {isExp && (
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${B.border}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 6 }}>Idea</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.5 }}>{c.idea}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginTop: 10, marginBottom: 4 }}>Origen</div>
+                    <Badge>
+                      {c.origin === "joaquin"
+                        ? "Joaquín"
+                        : c.origin === "pablo"
+                          ? "Pablo"
+                          : c.origin === "equipo"
+                            ? "Propuesta equipo"
+                            : "Cliente externo"}
+                    </Badge>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginBottom: 6 }}>Pipeline</div>
+                    {["Propuesta", "Idea aprobada", "En producción", "Material aprobado", "Publicada"].map((step, si) => {
+                      const stepMap = { propuesta: 0, aprobada: 1, en_produccion: 2, publicada: 4, evaluada: 4 };
+                      const current = stepMap[c.status] || 0;
+                      const done = si <= current;
+                      return (
+                        <div key={si} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 0" }}>
+                          <div
+                            style={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: "50%",
+                              background: done ? B.success : B.surfaceHover,
+                              border: `1.5px solid ${done ? B.success : B.border}`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 10,
+                              color: done ? "#fff" : B.textLight,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {done ? "✓" : si + 1}
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: done ? 600 : 400, color: done ? B.text : B.textMuted }}>{step}</span>
+                        </div>
+                      );
+                    })}
+                    <div style={{ fontSize: 12, fontWeight: 700, color: B.textMuted, marginTop: 10, marginBottom: 4 }}>Piezas</div>
+                    <div style={{ fontSize: 12, color: B.textMuted }}>
+                      {c.piecesReady} listas · {c.piecesApproved} aprobadas · {c.pieces - c.piecesReady} pendientes
+                    </div>
+                  </div>
+                </div>
+                {resultado && (
+                  <>
+                    <div style={{ borderTop: `1px solid ${B.border}`, marginTop: 12, paddingTop: 12 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700 }}>📈 Resultados</div>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 8 }}>
+                      <Card style={{ padding: "10px 14px" }}>
+                        <div style={{ fontSize: 11, color: B.textMuted }}>Alcance total</div>
+                        <div style={{ fontSize: 18, fontWeight: 800 }}>{fmt(resultado.totalReach)}</div>
+                      </Card>
+                      <Card style={{ padding: "10px 14px" }}>
+                        <div style={{ fontSize: 11, color: B.textMuted }}>Impresiones</div>
+                        <div style={{ fontSize: 18, fontWeight: 800 }}>{fmt(resultado.totalImpressions)}</div>
+                      </Card>
+                      <Card style={{ padding: "10px 14px" }}>
+                        <div style={{ fontSize: 11, color: B.textMuted }}>Engagement</div>
+                        <div style={{ fontSize: 18, fontWeight: 800 }}>{fmt(resultado.totalEngagement)}</div>
+                      </Card>
+                      <Card style={{ padding: "10px 14px" }}>
+                        <div style={{ fontSize: 11, color: B.textMuted }}>Engagement rate</div>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: engagementRateColor(resultado.engagementRate) }}>
+                          {resultado.engagementRate}%
+                        </div>
+                      </Card>
+                      <Card style={{ padding: "10px 14px" }}>
+                        <div style={{ fontSize: 11, color: B.textMuted }}>Nuevos followers</div>
+                        <div style={{ fontSize: 18, fontWeight: 800, color: B.success }}>+{fmt(resultado.newFollowers)}</div>
+                      </Card>
+                      <Card style={{ padding: "10px 14px" }}>
+                        <div style={{ fontSize: 11, color: B.textMuted }}>Clicks</div>
+                        <div style={{ fontSize: 18, fontWeight: 800 }}>{fmt(resultado.clicks)}</div>
+                      </Card>
+                    </div>
+                    {resultado.salesAttributed > 0 && (
+                      <Card
+                        style={{
+                          marginTop: 8,
+                          padding: "10px 14px",
+                          border: `1px solid ${B.success}30`,
+                          background: B.successBg,
+                        }}
+                      >
+                        <div style={{ fontSize: 16, fontWeight: 800, color: B.success }}>
+                          Ventas atribuidas: ${(resultado.salesAttributed / 1000000).toFixed(1)}M
+                        </div>
+                        <div style={{ fontSize: 12, color: B.textMuted, marginTop: 4 }}>+{resultado.newClients} clientes nuevos</div>
+                        <div style={{ marginTop: 8 }}>
+                          <Badge color={B.info} bg={B.infoBg}>
+                            Conecta con Módulo 17 Comercial
+                          </Badge>
+                        </div>
+                      </Card>
+                    )}
+                    <div style={{ fontSize: 12, color: B.textMuted, marginTop: 8 }}>
+                      {resultado.pieces} piezas en {resultado.costHours} horas de trabajo
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
 
 function TareasView(){const[view,setView]=useState("kanban");const[assignedFilter,setAssignedFilter]=useState("todos");let tasks=TASKS;if(assignedFilter!=="todos")tasks=tasks.filter(t=>t.assignedTo===assignedFilter);return<div><div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}><div style={{display:"flex",gap:2,background:B.surfaceHover,borderRadius:8,padding:2}}>{[{id:"kanban",label:"Kanban"},{id:"lista",label:"Lista"}].map(v=><button key={v.id} onClick={()=>setView(v.id)} style={{padding:"6px 14px",borderRadius:6,border:"none",fontSize:13,fontWeight:view===v.id?700:500,background:view===v.id?B.surface:"transparent",color:view===v.id?B.text:B.textMuted,cursor:"pointer",fontFamily:font,boxShadow:view===v.id?"0 1px 3px rgba(0,0,0,0.08)":"none"}}>{v.label}</button>)}</div><Select value={assignedFilter} onChange={setAssignedFilter} options={[{value:"todos",label:"Todo el equipo"},...TEAM.map(t=>({value:t.id,label:t.name}))]}/><div style={{flex:1}}/><Btn variant="primary">+ Nueva tarea</Btn></div>{view==="kanban"&&<div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:10}}>{TASK_STATUS_ORDER.map(status=>{const st=TASK_STATUS[status];const colTasks=tasks.filter(t=>t.status===status);return<div key={status} style={{background:B.surfaceHover,borderRadius:12,padding:10}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10,padding:"0 4px"}}><div style={{width:8,height:8,borderRadius:"50%",background:st.color}}/><span style={{fontSize:13,fontWeight:700}}>{st.label}</span><span style={{fontSize:11,color:B.textMuted,marginLeft:"auto"}}>{colTasks.length}</span></div>{colTasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const pr=PRIORITY[task.priority];return<div key={task.id} style={{background:B.surface,border:`1px solid ${B.border}`,borderRadius:8,padding:"10px 12px",marginBottom:8}}><div style={{display:"flex",gap:4,alignItems:"center",marginBottom:6}}><div style={{width:6,height:6,borderRadius:"50%",background:br.color}}/><span style={{fontSize:10,color:br.color,fontWeight:600}}>{br.name}</span><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></div><div style={{fontSize:12,fontWeight:600,lineHeight:1.3,marginBottom:6}}>{task.title}</div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:10,color:B.textMuted}}>{task.type} · {task.deadline}</span><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div></div></div>})}</div>})}</div>}{view==="lista"&&<Card style={{padding:0,overflow:"hidden"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:13,fontFamily:font}}><thead><tr style={{borderBottom:`1px solid ${B.border}`,background:"#FAFAF8"}}>{["Tarea","Tipo","Marca","Asignado","Deadline","Prioridad","Estado"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontWeight:600,color:B.textMuted,fontSize:12}}>{h}</th>)}</tr></thead><tbody>{tasks.map(task=>{const br=getBrand(task.brand);const person=getPerson(task.assignedTo);const st=TASK_STATUS[task.status];const pr=PRIORITY[task.priority];return<tr key={task.id} style={{borderBottom:`1px solid ${B.border}`}} onMouseEnter={e=>e.currentTarget.style.background=B.surfaceHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}><td style={{padding:"10px 14px",fontWeight:600}}>{task.title}</td><td style={{padding:"10px 14px",color:B.textMuted}}>{task.type}</td><td style={{padding:"10px 14px"}}><Badge color={br.color} bg={`${br.color}12`}>{br.name}</Badge></td><td style={{padding:"10px 14px"}}><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:"50%",background:person.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:800,color:"#fff"}}>{person.short}</div><span style={{fontSize:12}}>{person.name.split(" ")[0]}</span></div></td><td style={{padding:"10px 14px",color:B.textMuted,fontSize:12}}>{task.deadline}</td><td style={{padding:"10px 14px"}}><Badge color={pr.color} bg={pr.bg}>{pr.label}</Badge></td><td style={{padding:"10px 14px"}}><Badge color={st.color} bg={`${st.color}15`}>{st.label}</Badge></td></tr>})}</tbody></table></Card>}</div>}
 
@@ -742,11 +925,8 @@ function BibliotecaView() {
 function MetricasView() {
   const [subTab, setSubTab] = useState("rrss");
   const [sortAccountsBy, setSortAccountsBy] = useState("followers");
-  const [expandedCampaign, setExpandedCampaign] = useState(null);
 
   const fmtNum = (n) => n.toLocaleString("es-CL");
-  const fmtMoney = (n) =>
-    new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(n);
 
   const engagementColor = (rate) => {
     if (rate >= 6) return B.success;
@@ -774,19 +954,12 @@ function MetricasView() {
 
   const topPostsSorted = [...TOP_POSTS].sort((a, b) => b.engagement - a.engagement);
 
-  const campaignRows = CAMPAIGN_RESULTS.map((r) => {
-    const c = CAMPAIGNS.find((cc) => cc.id === r.campaignId);
-    if (!c || (c.status !== "publicada" && c.status !== "evaluada")) return null;
-    return { result: r, campaign: c };
-  }).filter(Boolean);
-
   const maxBenchReach = Math.max(...CONTENT_BENCHMARK.map((b) => b.avgReach), 1);
   const maxBenchEng = Math.max(...CONTENT_BENCHMARK.map((b) => b.avgEngagement), 1);
   const bestEngIdx = CONTENT_BENCHMARK.reduce((bi, b, i, arr) => (b.avgEngagement > arr[bi].avgEngagement ? i : bi), 0);
 
   const subTabs = [
     { id: "rrss", label: "RRSS" },
-    { id: "campanas", label: "Resultados campañas" },
     { id: "benchmark", label: "Benchmark" },
   ];
 
@@ -948,77 +1121,6 @@ function MetricasView() {
               </tbody>
             </table>
           </Card>
-        </div>
-      )}
-
-      {subTab === "campanas" && (
-        <div>
-          {campaignRows.length === 0 && (
-            <Card style={{ textAlign: "center", padding: 32 }}>
-              <div style={{ fontSize: 13, color: B.textMuted }}>No hay campañas publicadas o evaluadas con resultados cargados.</div>
-            </Card>
-          )}
-          {campaignRows.map(({ result: r, campaign: c }) => {
-            const br = getBrand(r.brand);
-            const st = CAMPAIGN_STATUS[c.status];
-            const isExp = expandedCampaign === r.campaignId;
-            const hrsPerPiece = r.pieces > 0 ? (r.costHours / r.pieces).toFixed(1) : "—";
-            return (
-              <Card
-                key={r.campaignId}
-                style={{ marginBottom: 12, cursor: "pointer", borderLeft: `4px solid ${br.color}` }}
-                onClick={() => setExpandedCampaign(isExp ? null : r.campaignId)}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 10, color: B.textMuted }}>{isExp ? "▼" : "▶"}</span>
-                      <span style={{ fontSize: 15, fontWeight: 700 }}>{r.name}</span>
-                      <Badge color={st.color} bg={st.bg}>
-                        {st.label}
-                      </Badge>
-                    </div>
-                    <div style={{ fontSize: 12, color: B.textMuted }}>
-                      {br.name} · {fmtNum(r.pieces)} piezas
-                    </div>
-                  </div>
-                </div>
-                {isExp && (
-                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${B.border}` }} onClick={(e) => e.stopPropagation()}>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8, marginBottom: 12 }}>
-                      {[
-                        { label: "Alcance total", val: fmtNum(r.totalReach) },
-                        { label: "Impresiones", val: fmtNum(r.totalImpressions) },
-                        { label: "Engagement total", val: fmtNum(r.totalEngagement) },
-                        { label: "Engagement rate", val: `${r.engagementRate}%` },
-                        { label: "Nuevos followers", val: fmtNum(r.newFollowers) },
-                        { label: "Clicks", val: fmtNum(r.clicks) },
-                      ].map((k) => (
-                        <Card key={k.label} style={{ padding: "10px 12px" }}>
-                          <div style={{ fontSize: 10, color: B.textMuted, fontWeight: 600 }}>{k.label}</div>
-                          <div style={{ fontSize: 16, fontWeight: 800, color: B.text }}>{k.val}</div>
-                        </Card>
-                      ))}
-                    </div>
-                    {r.salesAttributed > 0 && (
-                      <Card style={{ marginBottom: 12, background: B.successBg, border: `1px solid ${B.success}33` }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: B.success, marginBottom: 4 }}>Ventas atribuidas</div>
-                        <div style={{ fontSize: 22, fontWeight: 800, color: B.text }}>{fmtMoney(r.salesAttributed)}</div>
-                        <div style={{ fontSize: 12, color: B.textMuted, marginTop: 6 }}>Nuevos clientes: {r.newClients}</div>
-                      </Card>
-                    )}
-                    <div style={{ fontSize: 13, color: B.text, marginBottom: 10 }}>
-                      <strong>{r.pieces}</strong> piezas publicadas en <strong>{r.costHours}</strong> h de trabajo → Costo por pieza:{" "}
-                      <strong>{hrsPerPiece}</strong> h
-                    </div>
-                    <Badge color={B.info} bg={B.infoBg}>
-                      Conecta con Módulo 17 Comercial
-                    </Badge>
-                  </div>
-                )}
-              </Card>
-            );
-          })}
         </div>
       )}
 
